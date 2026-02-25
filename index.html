@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Godsplan Capital | Control Financiero</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuración Tailwind: Paleta Crimson/Obsidian -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            DEFAULT: '#DC2626', // Rojo Sangre (Crimson)
+                            dark: '#991B1B',
+                            light: '#EF4444',
+                            glow: 'rgba(220, 38, 38, 0.5)',
+                        },
+                        obsidian: {
+                            900: '#050505', // Fondo principal
+                            800: '#111111', // Tarjetas
+                            700: '#1A1A1A', // Bordes
+                            600: '#2A2A2A', // Hover
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Fuente Outfit (Moderna, Geométrica) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- GSAP para animaciones complejas y fluidas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Iconos Phosphor (Más finos y profesionales) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        body {
+            background-color: theme('colors.obsidian.900');
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Utilidad para ocultar elementos antes de animarlos */
+        .reveal { visibility: hidden; }
+
+        /* Efecto de malla/grid de fondo sutil */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+
+        /* Botón con efecto de barrido brillante */
+        .btn-premium {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-premium::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(45deg) translateY(-100%);
+            transition: transform 0.6s ease;
+        }
+        .btn-premium:hover::after {
+            transform: rotate(45deg) translateY(100%);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand selection:text-white">
+
+    <!-- Fondo Grid -->
+    <div class="fixed inset-0 bg-grid pointer-events-none z-[-1]"></div>
+
+    <!-- Círculo de luz ambiental (Glow) -->
+    <div class="fixed top-[-20%] left-[50%] translate-x-[-50%] w-[800px] h-[800px] bg-brand/10 rounded-full blur-[120px] pointer-events-none z-[-1] animate-pulse-slow"></div>
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 top-0 backdrop-blur-xl bg-obsidian-900/60 border-b border-obsidian-700/50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-between h-24 reveal navbar-elem">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.3)] group-hover:shadow-[0_0_25px_rgba(220,38,38,0.6)] transition-all duration-300">
+                        <i class="ph-bold ph-vault text-white text-xl"></i>
+                    </div>
+                    <span class="font-bold text-2xl tracking-tighter text-white">Godsplan<span class="text-brand font-black">.</span></span>
+                </div>
+                
+                <!-- Acciones (Toggle Tema + Botón) -->
+                <div class="flex items-center gap-6">
+                    <!-- Botón de Tema (Preparado visualmente) -->
+                    <button class="text-gray-400 hover:text-white transition-colors duration-200" title="Cambiar Tema (Próximamente)">
+                        <i class="ph ph-moon text-2xl"></i>
+                    </button>
+
+                    <a href="dashboard.html" class="btn-premium inline-flex items-center justify-center px-7 py-3 text-sm font-bold text-white bg-white/5 border border-white/10 rounded-full hover:bg-white/10 hover:border-brand/50 hover:shadow-[0_0_20px_rgba(220,38,38,0.2)] transition-all duration-300">
+                        Ingresar a la Bóveda
+                        <i class="ph-bold ph-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="relative pt-40 pb-32 lg:pt-56 lg:pb-40 overflow-hidden min-h-screen flex flex-col justify-center">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                
+                <!-- Texto Hero -->
+                <div class="text-left">
+                    <div class="reveal hero-elem inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-obsidian-800 border border-obsidian-700 text-xs font-semibold tracking-wider uppercase text-gray-300 mb-8 shadow-inner">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
+                        </span>
+                        Sistema de Arquitectura Financiera
+                    </div>
+                    
+                    <h1 class="reveal hero-elem text-5xl sm:text-6xl lg:text-7xl font-black tracking-tighter leading-[1.1] mb-8">
+                        Domina tu <br />
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">patrimonio.</span><br />
+                        <span class="text-brand">Bajo tus reglas.</span>
+                    </h1>
+                    
+                    <p class="reveal hero-elem mt-4 text-lg sm:text-xl text-gray-400 max-w-lg mb-12 font-light leading-relaxed">
+                        Un <span class="text-white font-medium">Shadow Ledger</span> personal. Tu banco custodia los fondos; Godsplan orquesta la estrategia, categoriza el flujo y proyecta tu futuro.
+                    </p>
+                    
+                    <div class="reveal hero-elem flex flex-col sm:flex-row items-center gap-5">
+                        <a href="dashboard.html" class="btn-premium w-full sm:w-auto px-8 py-4 text-base font-bold text-white bg-brand rounded-full hover:bg-brand-light shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_50px_rgba(220,38,38,0.5)] transition-all duration-300 flex items-center justify-center gap-2">
+                            <i class="ph-bold ph-rocket-launch text-xl"></i>
+                            Inicializar Dashboard
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Elemento Visual / Gráfico Flotante -->
+                <div class="reveal hero-elem relative hidden lg:block animate-float">
+                    <!-- Tarjeta Principal Mockup -->
+                    <div class="relative z-10 bg-obsidian-800/80 backdrop-blur-2xl border border-obsidian-700 rounded-3xl p-8 shadow-2xl">
+                        <div class="flex justify-between items-center mb-8 border-b border-obsidian-700 pb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-obsidian-900 flex items-center justify-center border border-obsidian-700">
+                                    <i class="ph-fill ph-wallet text-brand text-2xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Balance Total</p>
+                                    <p class="text-2xl font-bold font-mono">$124,500.00</p>
+                                </div>
+                            </div>
+                            <div class="px-3 py-1 bg-green-500/10 text-green-500 rounded-full text-sm font-bold border border-green-500/20">
+                                +12.5%
+                            </div>
+                        </div>
+                        
+                        <!-- Barras de simulación -->
+                        <div class="space-y-4">
+                            <div class="h-12 bg-obsidian-900 rounded-xl border border-obsidian-700 flex items-center px-4">
+                                <div class="w-full bg-obsidian-700 rounded-full h-2">
+                                    <div class="bg-brand h-2 rounded-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div class="h-12 bg-obsidian-900 rounded-xl border border-obsidian-700 flex items-center px-4">
+                                <div class="w-full bg-obsidian-700 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 45%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Elementos decorativos detrás de la tarjeta -->
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-brand/20 rounded-full blur-2xl"></div>
+                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl"></div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Features Section -->
+    <section id="features" class="py-32 relative z-10 border-t border-obsidian-800 bg-obsidian-900/50 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-20 reveal feature-header">
+                <h2 class="text-4xl md:text-5xl font-black mb-6 tracking-tight">Ingeniería para tu capital.</h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto font-light">Diseñado desde cero para ofrecerte una visibilidad granular que tu banco comercial jamás te dará.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Feature 1 -->
+                <div class="reveal feature-card group bg-obsidian-800/50 border border-obsidian-700 hover:border-brand/40 rounded-3xl p-10 transition-all duration-500 hover:-translate-y-2 hover:bg-obsidian-800">
+                    <div class="w-14 h-14 rounded-2xl bg-obsidian-900 border border-obsidian-700 group-hover:border-brand/50 flex items-center justify-center mb-8 transition-colors duration-300">
+                        <i class="ph ph-intersect text-brand text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Cuentas Espejo</h3>
+                    <p class="text-gray-400 leading-relaxed font-light">
+                        Mapea la realidad. Refleja saldos de múltiples instituciones y manéjalos como un único ente unificado en tu dashboard.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="reveal feature-card group bg-obsidian-800/50 border border-obsidian-700 hover:border-brand/40 rounded-3xl p-10 transition-all duration-500 hover:-translate-y-2 hover:bg-obsidian-800">
+                    <div class="w-14 h-14 rounded-2xl bg-obsidian-900 border border-obsidian-700 group-hover:border-brand/50 flex items-center justify-center mb-8 transition-colors duration-300">
+                        <i class="ph ph-chart-polar text-brand text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Base Cero</h3>
+                    <p class="text-gray-400 leading-relaxed font-light">
+                        La filosofía definitiva. Asigna un objetivo a cada centavo entrante antes de que el mes comience. Control proactivo, no reactivo.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="reveal feature-card group bg-obsidian-800/50 border border-obsidian-700 hover:border-brand/40 rounded-3xl p-10 transition-all duration-500 hover:-translate-y-2 hover:bg-obsidian-800">
+                    <div class="w-14 h-14 rounded-2xl bg-obsidian-900 border border-obsidian-700 group-hover:border-brand/50 flex items-center justify-center mb-8 transition-colors duration-300">
+                        <i class="ph ph-fingerprint text-brand text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Fortaleza Privada</h3>
+                    <p class="text-gray-400 leading-relaxed font-light">
+                        Infraestructura Serverless. Tus hábitos financieros son tuyos. Datos encriptados, sin terceros analizando tu perfil de consumo.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-obsidian-800 bg-obsidian-900 py-12 relative z-10">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <i class="ph-fill ph-vault text-obsidian-600 text-2xl"></i>
+                <span class="font-bold text-gray-500 tracking-tight">Godsplan<span class="text-obsidian-700">.</span></span>
+            </div>
+            <div class="text-sm text-gray-600 font-light">
+                &copy; 2026 blqa. Shadow Ledger System. Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts de Animación GSAP -->
+    <script>
+        // Registrar ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Ocultar elementos iniciales para evitar parpadeos
+        gsap.set(".reveal", { autoAlpha: 0 });
+
+        // Animación de la Navbar (Entrada desde arriba)
+        gsap.fromTo(".navbar-elem", 
+            { y: -50, autoAlpha: 0 },
+            { y: 0, autoAlpha: 1, duration: 1, ease: "power3.out", delay: 0.2 }
+        );
+
+        // Animación del Hero (Stagger: aparecen uno tras otro)
+        gsap.fromTo(".hero-elem", 
+            { y: 30, autoAlpha: 0 },
+            { y: 0, autoAlpha: 1, duration: 1, stagger: 0.15, ease: "power3.out", delay: 0.4 }
+        );
+
+        // Animación del Header de Features al hacer scroll
+        gsap.fromTo(".feature-header",
+            { y: 50, autoAlpha: 0 },
+            { 
+                y: 0, 
+                autoAlpha: 1, 
+                duration: 1, 
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: "#features",
+                    start: "top 80%", // Empieza cuando el top de #features llega al 80% de la pantalla
+                }
+            }
+        );
+
+        // Animación de las Tarjetas de Features al hacer scroll
+        gsap.fromTo(".feature-card",
+            { y: 50, autoAlpha: 0 },
+            { 
+                y: 0, 
+                autoAlpha: 1, 
+                duration: 0.8, 
+                stagger: 0.2, 
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: ".feature-header",
+                    start: "top 70%",
+                }
+            }
+        );
+    </script>
+</body>
+</html>
