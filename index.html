@@ -1,322 +1,355 @@
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth dark">
+<!-- Iniciamos en modo oscuro por defecto con la clase 'dark' -->
+<html lang="es" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Godsplan Capital | Control Financiero</title>
+    <title>Godsplan Capital | Shadow Ledger</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Configuración Tailwind: Paleta Crimson/Obsidian -->
+    <!-- Configuración Tailwind -->
     <script>
         tailwind.config = {
-            darkMode: 'class',
+            darkMode: 'class', // Habilita el cambio manual de tema
             theme: {
                 extend: {
-                    colors: {
-                        brand: {
-                            DEFAULT: '#DC2626', // Rojo Sangre (Crimson)
-                            dark: '#991B1B',
-                            light: '#EF4444',
-                            glow: 'rgba(220, 38, 38, 0.5)',
-                        },
-                        obsidian: {
-                            900: '#050505', // Fondo principal
-                            800: '#111111', // Tarjetas
-                            700: '#1A1A1A', // Bordes
-                            600: '#2A2A2A', // Hover
-                        }
-                    },
                     fontFamily: {
-                        sans: ['Outfit', 'sans-serif'],
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        }
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
                     }
                 }
             }
         }
     </script>
     
-    <!-- Fuente Outfit (Moderna, Geométrica) -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Fuentes Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
-    <!-- GSAP para animaciones complejas y fluidas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    
-    <!-- Iconos Phosphor (Más finos y profesionales) -->
+    <!-- Iconos Phosphor -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
         body {
-            background-color: theme('colors.obsidian.900');
-            color: #ffffff;
-            overflow-x: hidden;
+            /* Transición suave para cuando presiones el botón de cambio de tema */
+            transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Utilidad para ocultar elementos antes de animarlos */
-        .reveal { visibility: hidden; }
-
-        /* Efecto de malla/grid de fondo sutil */
-        .bg-grid {
-            background-size: 40px 40px;
-            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        /* Utilidad para el gradiente del texto principal */
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        /* Botón con efecto de barrido brillante */
-        .btn-premium {
-            position: relative;
-            overflow: hidden;
+        .dark .text-gradient {
+            background-image: linear-gradient(to right, #ffffff, #9ca3af);
         }
-        .btn-premium::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
-            transform: rotate(45deg) translateY(-100%);
-            transition: transform 0.6s ease;
-        }
-        .btn-premium:hover::after {
-            transform: rotate(45deg) translateY(100%);
+
+        html:not(.dark) .text-gradient {
+            background-image: linear-gradient(to right, #111827, #4b5563);
         }
     </style>
 </head>
-<body class="antialiased selection:bg-brand selection:text-white">
-
-    <!-- Fondo Grid -->
-    <div class="fixed inset-0 bg-grid pointer-events-none z-[-1]"></div>
-
-    <!-- Círculo de luz ambiental (Glow) -->
-    <div class="fixed top-[-20%] left-[50%] translate-x-[-50%] w-[800px] h-[800px] bg-brand/10 rounded-full blur-[120px] pointer-events-none z-[-1] animate-pulse-slow"></div>
+<!-- 
+  Clases base del body: 
+  bg-white text-zinc-900 (Para Modo Claro)
+  dark:bg-zinc-950 dark:text-zinc-100 (Para Modo Oscuro)
+-->
+<body class="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 min-h-screen flex flex-col">
 
     <!-- Navbar -->
-    <nav class="fixed w-full z-50 top-0 backdrop-blur-xl bg-obsidian-900/60 border-b border-obsidian-700/50 transition-all duration-300">
+    <nav class="fixed w-full z-50 top-0 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-gray-200 dark:border-zinc-800 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="flex items-center justify-between h-24 reveal navbar-elem">
+            <div class="flex items-center justify-between h-20">
+                
                 <!-- Logo -->
-                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer group">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.3)] group-hover:shadow-[0_0_25px_rgba(220,38,38,0.6)] transition-all duration-300">
-                        <i class="ph-bold ph-vault text-white text-xl"></i>
+                <a href="#" class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl flex items-center justify-center font-bold text-xl transition-colors duration-300">
+                        G
                     </div>
-                    <span class="font-bold text-2xl tracking-tighter text-white">Godsplan<span class="text-brand font-black">.</span></span>
+                    <span class="font-bold text-xl tracking-tight text-zinc-900 dark:text-white">Godsplan<span class="text-blue-500">.</span></span>
+                </a>
+                
+                <!-- Enlaces Centrales (Ocultos en móviles) -->
+                <div class="hidden md:flex items-center gap-8 font-medium text-sm text-zinc-500 dark:text-zinc-400">
+                    <a href="#concepto" class="hover:text-zinc-900 dark:hover:text-white transition-colors">Concepto</a>
+                    <a href="#modulos" class="hover:text-zinc-900 dark:hover:text-white transition-colors">Módulos</a>
+                    <a href="#arquitectura" class="hover:text-zinc-900 dark:hover:text-white transition-colors">Arquitectura</a>
+                    <a href="#seguridad" class="hover:text-zinc-900 dark:hover:text-white transition-colors">Seguridad</a>
                 </div>
                 
-                <!-- Acciones (Toggle Tema + Botón) -->
-                <div class="flex items-center gap-6">
-                    <!-- Botón de Tema (Preparado visualmente) -->
-                    <button class="text-gray-400 hover:text-white transition-colors duration-200" title="Cambiar Tema (Próximamente)">
-                        <i class="ph ph-moon text-2xl"></i>
+                <!-- Acciones Derecha -->
+                <div class="flex items-center gap-4">
+                    <!-- Botón Toggle Tema -->
+                    <button id="themeToggle" class="p-2 rounded-full bg-gray-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors" aria-label="Cambiar Tema">
+                        <i class="ph-bold ph-moon dark:hidden text-lg"></i>
+                        <i class="ph-bold ph-sun hidden dark:block text-lg"></i>
                     </button>
-
-                    <a href="dashboard.html" class="btn-premium inline-flex items-center justify-center px-7 py-3 text-sm font-bold text-white bg-white/5 border border-white/10 rounded-full hover:bg-white/10 hover:border-brand/50 hover:shadow-[0_0_20px_rgba(220,38,38,0.2)] transition-all duration-300">
-                        Ingresar a la Bóveda
-                        <i class="ph-bold ph-arrow-right ml-2"></i>
+                    
+                    <a href="/dashboard" class="px-6 py-2.5 text-sm font-bold rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 hover:scale-105 transition-transform duration-200">
+                        Acceder al Sistema
                     </a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <main class="relative pt-40 pb-32 lg:pt-56 lg:pb-40 overflow-hidden min-h-screen flex flex-col justify-center">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full">
+    <!-- 1. El Concepto Central -->
+    <header id="concepto" class="pt-40 pb-24 lg:pt-52 lg:pb-32 px-6 lg:px-8 max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center gap-16">
+        <div class="lg:w-[55%] text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gray-100 border border-gray-200 dark:bg-zinc-900 dark:border-zinc-800 text-xs font-bold tracking-widest uppercase text-zinc-600 dark:text-zinc-400 mb-8 transition-colors duration-300">
+                <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                Shadow Ledger Architecture
+            </div>
             
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-[1.05] mb-6 text-gradient">
+                No movemos dinero.<br>Movemos información.
+            </h1>
+            
+            <p class="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 mb-10 leading-relaxed font-medium transition-colors duration-300">
+                El "libro mayor" definitivo de tu vida financiera. Si compras un café, tu banco real mueve los fondos. En Godsplan, tú registras el movimiento, lo restas de tu saldo virtual y lo asignas a una categoría. <strong>Control analítico sin tocar tu capital.</strong>
+            </p>
+        </div>
+
+        <div class="lg:w-[45%] w-full flex justify-center">
+            <!-- Representación Visual del Concepto (Contrastes cuidados) -->
+            <div class="w-full max-w-md bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl p-6 shadow-2xl transition-colors duration-300">
+                <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100 dark:border-zinc-800">
+                    <span class="font-mono text-xs font-bold text-zinc-500">REALIDAD [BBVA]</span>
+                    <i class="ph-bold ph-arrows-left-right text-blue-500"></i>
+                    <span class="font-mono text-xs font-bold text-zinc-500">ESPEJO [GODSPLAN]</span>
+                </div>
                 
-                <!-- Texto Hero -->
-                <div class="text-left">
-                    <div class="reveal hero-elem inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-obsidian-800 border border-obsidian-700 text-xs font-semibold tracking-wider uppercase text-gray-300 mb-8 shadow-inner">
-                        <span class="relative flex h-2 w-2">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
-                        </span>
-                        Sistema de Arquitectura Financiera
-                    </div>
-                    
-                    <h1 class="reveal hero-elem text-5xl sm:text-6xl lg:text-7xl font-black tracking-tighter leading-[1.1] mb-8">
-                        Domina tu <br />
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">patrimonio.</span><br />
-                        <span class="text-brand">Bajo tus reglas.</span>
-                    </h1>
-                    
-                    <p class="reveal hero-elem mt-4 text-lg sm:text-xl text-gray-400 max-w-lg mb-12 font-light leading-relaxed">
-                        Un <span class="text-white font-medium">Shadow Ledger</span> personal. Tu banco custodia los fondos; Godsplan orquesta la estrategia, categoriza el flujo y proyecta tu futuro.
-                    </p>
-                    
-                    <div class="reveal hero-elem flex flex-col sm:flex-row items-center gap-5">
-                        <a href="dashboard.html" class="btn-premium w-full sm:w-auto px-8 py-4 text-base font-bold text-white bg-brand rounded-full hover:bg-brand-light shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_50px_rgba(220,38,38,0.5)] transition-all duration-300 flex items-center justify-center gap-2">
-                            <i class="ph-bold ph-rocket-launch text-xl"></i>
-                            Inicializar Dashboard
-                        </a>
+                <div class="space-y-4">
+                    <div class="p-4 rounded-xl bg-gray-50 dark:bg-zinc-950 border border-gray-100 dark:border-zinc-800 flex justify-between items-center transition-colors duration-300">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-white dark:bg-zinc-900 shadow-sm flex items-center justify-center text-xl text-zinc-900 dark:text-white"><i class="ph-fill ph-coffee"></i></div>
+                            <div>
+                                <p class="text-sm font-bold text-zinc-900 dark:text-white">Gasto Real</p>
+                                <p class="text-xs text-zinc-500 font-mono">-$85.00 MXN</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 rounded text-[10px] font-bold uppercase tracking-wider">Categorizado</span>
                     </div>
                 </div>
+            </div>
+        </div>
+    </header>
 
-                <!-- Elemento Visual / Gráfico Flotante -->
-                <div class="reveal hero-elem relative hidden lg:block animate-float">
-                    <!-- Tarjeta Principal Mockup -->
-                    <div class="relative z-10 bg-obsidian-800/80 backdrop-blur-2xl border border-obsidian-700 rounded-3xl p-8 shadow-2xl">
-                        <div class="flex justify-between items-center mb-8 border-b border-obsidian-700 pb-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full bg-obsidian-900 flex items-center justify-center border border-obsidian-700">
-                                    <i class="ph-fill ph-wallet text-brand text-2xl"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-400">Balance Total</p>
-                                    <p class="text-2xl font-bold font-mono">$124,500.00</p>
-                                </div>
-                            </div>
-                            <div class="px-3 py-1 bg-green-500/10 text-green-500 rounded-full text-sm font-bold border border-green-500/20">
-                                +12.5%
-                            </div>
+    <!-- 2. Módulos y Funcionalidades -->
+    <section id="modulos" class="py-24 bg-gray-50 dark:bg-zinc-900/50 border-y border-gray-200 dark:border-zinc-800 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <h2 class="text-3xl md:text-4xl font-extrabold mb-16 tracking-tight text-zinc-900 dark:text-white text-center">Núcleo del Sistema</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Tarjeta Módulo -->
+                <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-8 hover:border-blue-500 dark:hover:border-blue-500 transition-colors duration-300">
+                    <div class="w-12 h-12 rounded-lg bg-gray-100 dark:bg-zinc-800 flex items-center justify-center mb-6">
+                        <i class="ph-fill ph-vault text-2xl text-zinc-900 dark:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-zinc-900 dark:text-white">Cuentas Espejo</h3>
+                    <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                        Crea múltiples bóvedas virtuales que representan tu realidad (Débito BBVA, Efectivo Cartera, Tarjeta de Crédito).
+                    </p>
+                </div>
+
+                <!-- Tarjeta Módulo -->
+                <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-8 hover:border-blue-500 dark:hover:border-blue-500 transition-colors duration-300">
+                    <div class="w-12 h-12 rounded-lg bg-gray-100 dark:bg-zinc-800 flex items-center justify-center mb-6">
+                        <i class="ph-fill ph-list-plus text-2xl text-zinc-900 dark:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-zinc-900 dark:text-white">Registro de Transacciones</h3>
+                    <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                        Sistema ultrarrápido para ingresar ingresos, gastos y transferencias <em>internas</em> entre tus propias cuentas.
+                    </p>
+                </div>
+
+                <!-- Tarjeta Módulo -->
+                <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-8 hover:border-blue-500 dark:hover:border-blue-500 transition-colors duration-300">
+                    <div class="w-12 h-12 rounded-lg bg-gray-100 dark:bg-zinc-800 flex items-center justify-center mb-6">
+                        <i class="ph-fill ph-tag text-2xl text-zinc-900 dark:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-zinc-900 dark:text-white">Categorización y Etiquetas</h3>
+                    <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                        Asigna gastos a categorías fijas (Renta, Comida) y utiliza etiquetas dinámicas (#ViajeCancun2026) para proyectos.
+                    </p>
+                </div>
+
+                <!-- Tarjeta Módulo -->
+                <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-8 hover:border-blue-500 dark:hover:border-blue-500 transition-colors duration-300 lg:col-span-1">
+                    <div class="w-12 h-12 rounded-lg bg-gray-100 dark:bg-zinc-800 flex items-center justify-center mb-6">
+                        <i class="ph-fill ph-chart-donut text-2xl text-zinc-900 dark:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-zinc-900 dark:text-white">Presupuestos Inteligentes</h3>
+                    <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                        Define límites mensuales por categoría. Recibe alertas proactivas antes de pasarte de tu presupuesto.
+                    </p>
+                </div>
+
+                <!-- Tarjeta Módulo Larga -->
+                <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-8 hover:border-blue-500 dark:hover:border-blue-500 transition-colors duration-300 lg:col-span-2 flex flex-col md:flex-row gap-6 items-center">
+                    <div class="md:w-1/2">
+                        <div class="w-12 h-12 rounded-lg bg-gray-100 dark:bg-zinc-800 flex items-center justify-center mb-6">
+                            <i class="ph-fill ph-layout text-2xl text-zinc-900 dark:text-white"></i>
                         </div>
-                        
-                        <!-- Barras de simulación -->
-                        <div class="space-y-4">
-                            <div class="h-12 bg-obsidian-900 rounded-xl border border-obsidian-700 flex items-center px-4">
-                                <div class="w-full bg-obsidian-700 rounded-full h-2">
-                                    <div class="bg-brand h-2 rounded-full" style="width: 75%"></div>
-                                </div>
-                            </div>
-                            <div class="h-12 bg-obsidian-900 rounded-xl border border-obsidian-700 flex items-center px-4">
-                                <div class="w-full bg-obsidian-700 rounded-full h-2">
-                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 45%"></div>
-                                </div>
-                            </div>
+                        <h3 class="text-xl font-bold mb-3 text-zinc-900 dark:text-white">Dashboard Financiero</h3>
+                        <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                            Pantalla principal con gráficos visuales que calculan tu patrimonio neto (activos - pasivos), flujo de caja y progreso de metas.
+                        </p>
+                    </div>
+                    <div class="md:w-1/2 w-full">
+                        <div class="h-24 w-full bg-gray-50 dark:bg-zinc-950 rounded-xl border border-gray-100 dark:border-zinc-800 flex items-end gap-2 p-3">
+                            <div class="w-full bg-blue-500 rounded-t h-[40%]"></div>
+                            <div class="w-full bg-blue-400 rounded-t h-[70%]"></div>
+                            <div class="w-full bg-zinc-800 dark:bg-white rounded-t h-[100%]"></div>
+                            <div class="w-full bg-blue-600 rounded-t h-[50%]"></div>
                         </div>
                     </div>
-                    
-                    <!-- Elementos decorativos detrás de la tarjeta -->
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-brand/20 rounded-full blur-2xl"></div>
-                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl"></div>
                 </div>
 
             </div>
         </div>
-    </main>
+    </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-32 relative z-10 border-t border-obsidian-800 bg-obsidian-900/50 backdrop-blur-sm">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-20 reveal feature-header">
-                <h2 class="text-4xl md:text-5xl font-black mb-6 tracking-tight">Ingeniería para tu capital.</h2>
-                <p class="text-gray-400 text-lg max-w-2xl mx-auto font-light">Diseñado desde cero para ofrecerte una visibilidad granular que tu banco comercial jamás te dará.</p>
+    <!-- 3 y 4. Arquitectura y Flujos -->
+    <section id="arquitectura" class="py-24 px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        
+        <!-- Arquitectura DB -->
+        <div class="flex flex-col lg:flex-row gap-16 mb-32 items-center">
+            <div class="lg:w-1/3">
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-6 tracking-tight text-zinc-900 dark:text-white">Arquitectura de Datos</h2>
+                <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium mb-6">
+                    El sistema requiere estructurar cómo se guarda la información para que funcione sin problemas de forma escalable. Estas son las tablas (colecciones) principales.
+                </p>
             </div>
+            
+            <div class="lg:w-2/3 w-full">
+                <!-- Ventana de Código (Siempre oscura para mantener el look de terminal de programación) -->
+                <div class="bg-[#0D0D0D] rounded-2xl border border-zinc-800 shadow-2xl overflow-hidden">
+                    <div class="flex items-center px-4 py-3 border-b border-zinc-800 bg-[#141414]">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <p class="ml-4 text-xs font-mono text-zinc-500">schema_db.json</p>
+                    </div>
+                    <div class="p-6 overflow-x-auto text-sm font-mono leading-relaxed">
+<pre><span class="text-pink-500">"collections"</span><span class="text-zinc-300">: {</span>
+  <span class="text-blue-400">"Usuarios"</span><span class="text-zinc-300">: { </span><span class="text-green-300">"datos_acceso"</span><span class="text-zinc-300">, </span><span class="text-green-300">"preferencias"</span><span class="text-zinc-300"> },</span>
+  <span class="text-blue-400">"Cuentas"</span><span class="text-zinc-300">: {</span>
+    <span class="text-green-300">"nombre"</span><span class="text-zinc-300">: </span><span class="text-yellow-300">"string"</span><span class="text-zinc-300">,</span>
+    <span class="text-green-300">"tipo"</span><span class="text-zinc-300">: </span><span class="text-yellow-300">"débito | crédito | efectivo"</span><span class="text-zinc-300">,</span>
+    <span class="text-green-300">"saldo_inicial"</span><span class="text-zinc-300">: </span><span class="text-orange-400">number</span>
+  <span class="text-zinc-300">},</span>
+  <span class="text-blue-400">"Transacciones"</span><span class="text-zinc-300">: {</span>
+    <span class="text-green-300">"monto"</span><span class="text-zinc-300">: </span><span class="text-orange-400">number</span><span class="text-zinc-300">,</span>
+    <span class="text-green-300">"fecha"</span><span class="text-zinc-300">: </span><span class="text-yellow-300">"timestamp"</span><span class="text-zinc-300">,</span>
+    <span class="text-green-300">"id_cuenta"</span><span class="text-zinc-300">: </span><span class="text-purple-400">ref</span><span class="text-zinc-300">,</span>
+    <span class="text-green-300">"tipo"</span><span class="text-zinc-300">: </span><span class="text-yellow-300">"ingreso | gasto"</span>
+  <span class="text-zinc-300">},</span>
+  <span class="text-blue-400">"Categorías"</span><span class="text-zinc-300">: { </span><span class="text-green-300">"nombre"</span><span class="text-zinc-300">, </span><span class="text-green-300">"icono"</span><span class="text-zinc-300">, </span><span class="text-green-300">"color"</span><span class="text-zinc-300"> },</span>
+  <span class="text-blue-400">"Presupuestos"</span><span class="text-zinc-300">: { </span><span class="text-green-300">"id_categoria"</span><span class="text-zinc-300">, </span><span class="text-green-300">"monto_limite"</span><span class="text-zinc-300"> }</span>
+<span class="text-zinc-300">}</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Flujos de Alimentación -->
+        <div id="flujos">
+            <h2 class="text-3xl md:text-4xl font-extrabold mb-12 tracking-tight text-zinc-900 dark:text-white text-center">Flujos de Alimentación de Datos</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Feature 1 -->
-                <div class="reveal feature-card group bg-obsidian-800/50 border border-obsidian-700 hover:border-brand/40 rounded-3xl p-10 transition-all duration-500 hover:-translate-y-2 hover:bg-obsidian-800">
-                    <div class="w-14 h-14 rounded-2xl bg-obsidian-900 border border-obsidian-700 group-hover:border-brand/50 flex items-center justify-center mb-8 transition-colors duration-300">
-                        <i class="ph ph-intersect text-brand text-3xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Cuentas Espejo</h3>
-                    <p class="text-gray-400 leading-relaxed font-light">
-                        Mapea la realidad. Refleja saldos de múltiples instituciones y manéjalos como un único ente unificado en tu dashboard.
+                <!-- Flujo 1 -->
+                <div class="p-8 border border-gray-200 dark:border-zinc-800 rounded-2xl bg-white dark:bg-zinc-900 transition-colors duration-300 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-zinc-900 dark:bg-white"></div>
+                    <h3 class="text-xl font-bold mb-2 text-zinc-900 dark:text-white">100% Manual</h3>
+                    <p class="text-xs font-bold text-blue-500 uppercase tracking-wider mb-4">Modo Control Total</p>
+                    <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                        Tú registras cada café, pago y nómina a mano. Es el método más seguro y genera la mayor consciencia psicológica de gasto.
                     </p>
                 </div>
-
-                <!-- Feature 2 -->
-                <div class="reveal feature-card group bg-obsidian-800/50 border border-obsidian-700 hover:border-brand/40 rounded-3xl p-10 transition-all duration-500 hover:-translate-y-2 hover:bg-obsidian-800">
-                    <div class="w-14 h-14 rounded-2xl bg-obsidian-900 border border-obsidian-700 group-hover:border-brand/50 flex items-center justify-center mb-8 transition-colors duration-300">
-                        <i class="ph ph-chart-polar text-brand text-3xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Base Cero</h3>
-                    <p class="text-gray-400 leading-relaxed font-light">
-                        La filosofía definitiva. Asigna un objetivo a cada centavo entrante antes de que el mes comience. Control proactivo, no reactivo.
+                <!-- Flujo 2 -->
+                <div class="p-8 border border-gray-200 dark:border-zinc-800 rounded-2xl bg-white dark:bg-zinc-900 transition-colors duration-300">
+                    <h3 class="text-xl font-bold mb-2 text-zinc-900 dark:text-white">Semi-Automatizado</h3>
+                    <p class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4">Importación</p>
+                    <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                        Descargas el estado de cuenta en Excel/CSV de BBVA y la app tiene un importador que acomoda los gastos automáticamente.
                     </p>
                 </div>
-
-                <!-- Feature 3 -->
-                <div class="reveal feature-card group bg-obsidian-800/50 border border-obsidian-700 hover:border-brand/40 rounded-3xl p-10 transition-all duration-500 hover:-translate-y-2 hover:bg-obsidian-800">
-                    <div class="w-14 h-14 rounded-2xl bg-obsidian-900 border border-obsidian-700 group-hover:border-brand/50 flex items-center justify-center mb-8 transition-colors duration-300">
-                        <i class="ph ph-fingerprint text-brand text-3xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Fortaleza Privada</h3>
-                    <p class="text-gray-400 leading-relaxed font-light">
-                        Infraestructura Serverless. Tus hábitos financieros son tuyos. Datos encriptados, sin terceros analizando tu perfil de consumo.
+                <!-- Flujo 3 -->
+                <div class="p-8 border border-gray-200 dark:border-zinc-800 rounded-2xl bg-white dark:bg-zinc-900 transition-colors duration-300">
+                    <h3 class="text-xl font-bold mb-2 text-zinc-900 dark:text-white">Automatizado</h3>
+                    <p class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4">Vía API (Avanzado)</p>
+                    <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                        Uso de servicios de "Open Banking" para conectarse de forma segura a tu banco y jalar movimientos en tiempo real (solo lectura).
                     </p>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- 5. Seguridad y Privacidad -->
+    <section id="seguridad" class="py-24 bg-zinc-900 dark:bg-black text-white border-t border-gray-200 dark:border-zinc-800 transition-colors duration-300 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center gap-16">
+            <div class="md:w-1/3 flex justify-center">
+                <i class="ph-fill ph-shield-check text-[160px] text-white"></i>
+            </div>
+            <div class="md:w-2/3">
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-6 tracking-tight">Seguridad Inquebrantable</h2>
+                <p class="text-lg text-zinc-400 font-medium mb-8 leading-relaxed">
+                    Aunque no haya dinero real, tus datos financieros son extremadamente sensibles. La teoría exige que se cumplan estas 3 reglas:
+                </p>
+                
+                <div class="space-y-6">
+                    <div class="flex gap-4 items-start">
+                        <i class="ph-bold ph-check-circle text-blue-500 text-xl mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-lg mb-1">Base de datos encriptada</h4>
+                            <p class="text-zinc-400 text-sm">Protección criptográfica para tu información almacenada.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start">
+                        <i class="ph-bold ph-check-circle text-blue-500 text-xl mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-lg mb-1">Privacidad Absoluta</h4>
+                            <p class="text-zinc-400 text-sm">Nadie más que tú tiene acceso a ver en qué gastas. Sin recolección de datos para terceros.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start">
+                        <i class="ph-bold ph-check-circle text-blue-500 text-xl mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-lg mb-1">Autenticación (2FA)</h4>
+                            <p class="text-zinc-400 text-sm">El inicio de sesión cuenta con las medidas de seguridad más estrictas de autenticación.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="border-t border-obsidian-800 bg-obsidian-900 py-12 relative z-10">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="flex items-center gap-3">
-                <i class="ph-fill ph-vault text-obsidian-600 text-2xl"></i>
-                <span class="font-bold text-gray-500 tracking-tight">Godsplan<span class="text-obsidian-700">.</span></span>
-            </div>
-            <div class="text-sm text-gray-600 font-light">
-                &copy; 2026 blqa. Shadow Ledger System. Todos los derechos reservados.
-            </div>
+    <!-- Footer Simple -->
+    <footer class="bg-zinc-950 dark:bg-black py-8 border-t border-zinc-800">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 flex justify-between items-center text-xs text-zinc-500 font-mono">
+            <span>[ SYSTEM // GODSPLAN_ARCH_V1 ]</span>
+            <span>PROYECTO BLQA</span>
         </div>
     </footer>
 
-    <!-- Scripts de Animación GSAP -->
+    <!-- SCRIPT PARA EL TOGGLE DE TEMA CLARO/OSCURO -->
     <script>
-        // Registrar ScrollTrigger
-        gsap.registerPlugin(ScrollTrigger);
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
 
-        // Ocultar elementos iniciales para evitar parpadeos
-        gsap.set(".reveal", { autoAlpha: 0 });
-
-        // Animación de la Navbar (Entrada desde arriba)
-        gsap.fromTo(".navbar-elem", 
-            { y: -50, autoAlpha: 0 },
-            { y: 0, autoAlpha: 1, duration: 1, ease: "power3.out", delay: 0.2 }
-        );
-
-        // Animación del Hero (Stagger: aparecen uno tras otro)
-        gsap.fromTo(".hero-elem", 
-            { y: 30, autoAlpha: 0 },
-            { y: 0, autoAlpha: 1, duration: 1, stagger: 0.15, ease: "power3.out", delay: 0.4 }
-        );
-
-        // Animación del Header de Features al hacer scroll
-        gsap.fromTo(".feature-header",
-            { y: 50, autoAlpha: 0 },
-            { 
-                y: 0, 
-                autoAlpha: 1, 
-                duration: 1, 
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: "#features",
-                    start: "top 80%", // Empieza cuando el top de #features llega al 80% de la pantalla
-                }
-            }
-        );
-
-        // Animación de las Tarjetas de Features al hacer scroll
-        gsap.fromTo(".feature-card",
-            { y: 50, autoAlpha: 0 },
-            { 
-                y: 0, 
-                autoAlpha: 1, 
-                duration: 0.8, 
-                stagger: 0.2, 
-                ease: "power2.out",
-                scrollTrigger: {
-                    trigger: ".feature-header",
-                    start: "top 70%",
-                }
-            }
-        );
+        themeToggleBtn.addEventListener('click', () => {
+            // Alterna la clase 'dark' en el <html>
+            htmlElement.classList.toggle('dark');
+        });
     </script>
 </body>
 </html>
