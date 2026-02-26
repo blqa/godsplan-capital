@@ -4,94 +4,460 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Godsplan | Core Dashboard</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script>
-        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brand: '#3B82F6' }, fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] } } } }
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gp: {
+                            bg: '#050505',
+                            surface: '#121212',
+                            border: '#262626',
+                            text: '#FFFFFF',
+                            muted: '#A1A1AA',
+                            brand: '#3B82F6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-</head>
-<body class="bg-gray-50 text-gray-900 dark:bg-zinc-950 dark:text-zinc-100 min-h-screen flex transition-colors duration-300">
 
-    <!-- CORTINA DE SEGURIDAD (Oculta el dashboard hasta comprobar auth) -->
-    <div id="security-curtain" class="fixed inset-0 z-50 bg-zinc-950 flex flex-col items-center justify-center">
+    <style>
+        body { transition: background-color 0.3s ease, color 0.3s ease; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Animación suave al cambiar de vistas */
+        .view-section {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gp-bg dark:text-gp-text min-h-screen flex">
+
+    <!-- CORTINA DE SEGURIDAD FIREBASE -->
+    <div id="security-curtain" class="fixed inset-0 z-[100] bg-white dark:bg-gp-bg flex flex-col items-center justify-center transition-colors">
         <i class="ph-bold ph-shield-check text-5xl text-blue-500 mb-4 animate-pulse"></i>
-        <p class="font-mono text-zinc-400 text-sm">Validando token de acceso...</p>
+        <p class="font-mono text-gray-500 dark:text-gp-muted text-sm">Validando token de acceso...</p>
     </div>
 
-    <!-- SIDEBAR -->
-    <aside class="w-64 fixed h-full bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 flex flex-col z-40">
-        <div class="h-20 flex items-center px-6 border-b border-gray-200 dark:border-zinc-800">
+    <!-- SIDEBAR (Navegación) -->
+    <aside class="w-64 fixed h-full bg-white dark:bg-gp-surface border-r border-gray-200 dark:border-gp-border flex flex-col z-40 transition-colors">
+        <div class="h-20 flex items-center px-6 border-b border-gray-200 dark:border-gp-border">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-lg flex items-center justify-center font-bold">G</div>
-                <span class="font-bold text-lg tracking-tight">Godsplan.</span>
+                <span class="font-bold text-lg tracking-tight text-gray-900 dark:text-white">Godsplan.</span>
             </div>
         </div>
 
-        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
-            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-100 dark:bg-zinc-800 text-zinc-900 dark:text-white font-medium">
+        <nav class="flex-1 overflow-y-auto no-scrollbar py-6 px-4 space-y-1">
+            <p class="px-3 text-[10px] font-bold text-gray-400 dark:text-zinc-600 uppercase tracking-widest mb-2">Visibilidad</p>
+            
+            <button data-target="view-dashboard" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-100 dark:bg-zinc-800 text-blue-600 dark:text-white font-medium transition-colors">
                 <i class="ph-fill ph-layout text-xl"></i> Dashboard
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-white transition-colors">
+            </button>
+            <button data-target="view-history" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <i class="ph-fill ph-clock-counter-clockwise text-xl"></i> Historial
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-white transition-colors">
+            </button>
+            
+            <p class="px-3 text-[10px] font-bold text-gray-400 dark:text-zinc-600 uppercase tracking-widest mt-6 mb-2">Operaciones</p>
+            
+            <button data-target="view-payments" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <i class="ph-fill ph-swap text-xl"></i> Transacciones
+            </button>
+            
+            <p class="px-3 text-[10px] font-bold text-gray-400 dark:text-zinc-600 uppercase tracking-widest mt-6 mb-2">Configuración</p>
+
+            <button data-target="view-accounts" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <i class="ph-fill ph-vault text-xl"></i> Cuentas Espejo
-            </a>
+            </button>
+            <button data-target="view-settings" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <i class="ph-fill ph-sliders text-xl"></i> Preferencias
+            </button>
         </nav>
 
-        <div class="p-4 border-t border-gray-200 dark:border-zinc-800">
+        <div class="p-4 border-t border-gray-200 dark:border-gp-border">
             <div class="mb-4 px-3">
-                <p class="text-xs text-zinc-500 font-mono truncate" id="user-display">cargando...</p>
+                <p class="text-[10px] text-gray-400 dark:text-zinc-500 uppercase tracking-wider mb-1">Bóveda Activa</p>
+                <p class="text-xs text-gray-900 dark:text-white font-mono truncate" id="user-display">cargando...</p>
             </div>
             
-            <button id="themeToggleBtn" class="w-full flex items-center justify-center gap-2 px-3 py-2.5 mb-2 rounded-xl text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-800 transition-colors">
+            <button id="themeToggleBtn" class="w-full flex items-center justify-center gap-2 px-3 py-2.5 mb-2 rounded-xl text-gray-600 dark:text-gp-muted hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors">
                 <i class="ph-bold ph-moon dark:hidden"></i>
                 <i class="ph-bold ph-sun hidden dark:block"></i>
-                <span class="text-sm font-medium">Cambiar Tema</span>
+                <span class="text-sm font-medium">Tema Visual</span>
             </button>
             
             <button id="logout-btn" class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
                 <i class="ph-bold ph-sign-out"></i>
-                <span class="text-sm font-medium">Cerrar Sesión</span>
+                <span class="text-sm font-medium">Desconectar</span>
             </button>
         </div>
     </aside>
 
-    <!-- MAIN APP -->
-    <main class="flex-1 ml-64 p-8">
-        <header class="flex justify-between items-center mb-10">
-            <div>
-                <h1 class="text-3xl font-bold">Patrimonio Consolidado</h1>
-                <p class="text-zinc-500 text-sm mt-1">Sincronización manual activa</p>
-            </div>
-            <button class="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-transform shadow-lg">
-                <i class="ph-bold ph-plus"></i> Ingresar Registro
-            </button>
-        </header>
+    <!-- MAIN APP AREA -->
+    <main class="flex-1 ml-64 p-8 relative">
 
-        <!-- Tarjetas de prueba -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 bg-white dark:bg-zinc-900 rounded-3xl p-8 border border-gray-200 dark:border-zinc-800 shadow-sm">
-                <div class="flex items-center gap-2 text-zinc-500 font-medium text-sm mb-4">
-                    <i class="ph-fill ph-scales"></i> Balance Neto
+        <!-- ================================================================= -->
+        <!-- VISTA 1: DASHBOARD (/dashboard)                                   -->
+        <!-- ================================================================= -->
+        <section id="view-dashboard" class="view-section block">
+            <header class="flex justify-between items-end mb-10">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Centro de Mando</h1>
+                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Visión global de tu patrimonio</p>
                 </div>
-                <h2 class="text-5xl font-mono font-extrabold tracking-tight">$0.00</h2>
-                <p class="text-sm text-zinc-500 mt-4">Esperando inicialización de Firestore...</p>
+                <button onclick="document.querySelector('[data-target=\'view-payments\']').click()" class="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-transform shadow-lg">
+                    <i class="ph-bold ph-plus"></i> Ingresar Registro
+                </button>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Tarjeta Patrimonio -->
+                <div class="lg:col-span-2 bg-white dark:bg-gp-surface rounded-3xl p-8 border border-gray-200 dark:border-gp-border shadow-sm flex flex-col justify-between">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="flex items-center gap-2 text-gray-500 dark:text-gp-muted font-medium text-sm uppercase tracking-wider">
+                            <i class="ph-fill ph-scales"></i> Patrimonio Neto
+                        </div>
+                        <span class="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400 rounded-md text-xs font-bold font-mono">+12.5%</span>
+                    </div>
+                    <div>
+                        <h2 class="text-5xl lg:text-6xl font-mono font-extrabold text-gray-900 dark:text-white tracking-tight">$184,320<span class="text-gray-400 dark:text-zinc-600 text-3xl">.00</span></h2>
+                        <p class="text-sm text-gray-500 dark:text-gp-muted mt-2">Suma total de cuentas espejo</p>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Flujo Mensual -->
+                <div class="bg-white dark:bg-gp-surface rounded-3xl p-8 border border-gray-200 dark:border-gp-border shadow-sm">
+                    <h3 class="text-sm font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-6">Flujo de Caja (Octubre)</h3>
+                    
+                    <div class="mb-6">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-900 dark:text-white font-medium">Ingresos</span>
+                            <span class="text-green-600 dark:text-green-400 font-mono font-bold">$32,000</span>
+                        </div>
+                        <div class="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-900 dark:text-white font-medium">Gastos</span>
+                            <span class="text-red-600 dark:text-red-400 font-mono font-bold">-$14,500</span>
+                        </div>
+                        <div class="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-2">
+                            <div class="bg-red-500 h-2 rounded-full" style="width: 45%"></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gp-border flex justify-between">
+                        <span class="text-xs text-gray-500 dark:text-gp-muted font-medium">Retención actual</span>
+                        <span class="text-sm text-blue-600 dark:text-blue-400 font-bold font-mono">54.6%</span>
+                    </div>
+                </div>
             </div>
-            <div class="bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 rounded-3xl p-8 flex flex-col justify-center">
-                <i class="ph-fill ph-check-circle text-4xl text-blue-500 mb-4"></i>
-                <h3 class="font-bold text-lg text-blue-900 dark:text-blue-400 mb-2">Bóveda Protegida</h3>
-                <p class="text-sm text-blue-700 dark:text-blue-300">Sesión validada exitosamente. Tus datos locales están listos.</p>
+
+            <!-- Sección Inferior: Alertas Presupuesto -->
+            <div>
+                <h3 class="font-bold text-gray-900 dark:text-white mb-4">Estado de Presupuestos Inteligentes</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Presupuesto 1 -->
+                    <div class="bg-white dark:bg-gp-surface p-5 rounded-2xl border border-gray-200 dark:border-gp-border shadow-sm">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold text-gray-500 dark:text-gp-muted uppercase"><i class="ph-fill ph-fork-knife mr-1"></i> Comida</span>
+                            <span class="text-xs text-red-500 font-bold">85%</span>
+                        </div>
+                        <p class="font-mono text-gray-900 dark:text-white font-bold">$4,250 / <span class="text-gray-400">$5,000</span></p>
+                        <div class="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-1.5 mt-3">
+                            <div class="bg-red-500 h-1.5 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <!-- Presupuesto 2 -->
+                    <div class="bg-white dark:bg-gp-surface p-5 rounded-2xl border border-gray-200 dark:border-gp-border shadow-sm">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold text-gray-500 dark:text-gp-muted uppercase"><i class="ph-fill ph-car mr-1"></i> Transporte</span>
+                            <span class="text-xs text-yellow-500 font-bold">40%</span>
+                        </div>
+                        <p class="font-mono text-gray-900 dark:text-white font-bold">$800 / <span class="text-gray-400">$2,000</span></p>
+                        <div class="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-1.5 mt-3">
+                            <div class="bg-yellow-500 h-1.5 rounded-full" style="width: 40%"></div>
+                        </div>
+                    </div>
+                    <!-- Presupuesto 3 -->
+                    <div class="bg-white dark:bg-gp-surface p-5 rounded-2xl border border-gray-200 dark:border-gp-border shadow-sm">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold text-gray-500 dark:text-gp-muted uppercase"><i class="ph-fill ph-house mr-1"></i> Hogar</span>
+                            <span class="text-xs text-green-500 font-bold">100%</span>
+                        </div>
+                        <p class="font-mono text-gray-900 dark:text-white font-bold">$12,000 / <span class="text-gray-400">$12,000</span></p>
+                        <div class="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-1.5 mt-3">
+                            <div class="bg-green-500 h-1.5 rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <!-- Base Cero -->
+                    <div class="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-2xl border border-blue-200 dark:border-blue-800/50 shadow-sm flex flex-col justify-center items-center text-center">
+                        <span class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mb-1">Sin asignar</span>
+                        <p class="font-mono text-xl text-blue-700 dark:text-blue-300 font-bold">$2,950</p>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VISTA 2: HISTORIAL (/history)                                     -->
+        <!-- ================================================================= -->
+        <section id="view-history" class="view-section hidden">
+            <header class="flex justify-between items-end mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Libro Mayor (Ledger)</h1>
+                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Registro inmutable de todas tus operaciones</p>
+                </div>
+            </header>
+
+            <!-- Filtros -->
+            <div class="flex gap-4 mb-6">
+                <input type="month" class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border text-sm rounded-lg px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-blue-500" value="2026-10">
+                <select class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border text-sm rounded-lg px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                    <option value="">Todas las cuentas</option>
+                    <option value="bbva">BBVA Principal</option>
+                    <option value="nu">Nu Bank</option>
+                    <option value="cash">Efectivo</option>
+                </select>
+                <button class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border text-sm rounded-lg px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                    <i class="ph-bold ph-funnel mr-1"></i> Más filtros
+                </button>
+            </div>
+
+            <!-- Tabla de Historial -->
+            <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl overflow-hidden shadow-sm">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-gp-border text-xs uppercase tracking-wider text-gray-500 dark:text-gp-muted">
+                            <th class="p-4 font-medium">Fecha</th>
+                            <th class="p-4 font-medium">Descripción</th>
+                            <th class="p-4 font-medium">Categoría</th>
+                            <th class="p-4 font-medium">Cuenta</th>
+                            <th class="p-4 font-medium text-right">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gp-border text-sm">
+                        <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
+                            <td class="p-4 text-gray-500 dark:text-gp-muted font-mono">26 Oct, 14:30</td>
+                            <td class="p-4 font-medium text-gray-900 dark:text-white">Starbucks Centro</td>
+                            <td class="p-4"><span class="px-2 py-1 bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 rounded text-xs font-bold">#Café</span></td>
+                            <td class="p-4 text-gray-500 dark:text-gp-muted">Nu Bank</td>
+                            <td class="p-4 text-right font-mono font-bold text-gray-900 dark:text-white">-$85.00</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
+                            <td class="p-4 text-gray-500 dark:text-gp-muted font-mono">25 Oct, 09:00</td>
+                            <td class="p-4 font-medium text-gray-900 dark:text-white">Nómina Quincenal</td>
+                            <td class="p-4"><span class="px-2 py-1 bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 rounded text-xs font-bold">#Ingresos</span></td>
+                            <td class="p-4 text-gray-500 dark:text-gp-muted">BBVA Principal</td>
+                            <td class="p-4 text-right font-mono font-bold text-green-600 dark:text-green-400">+$15,000.00</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
+                            <td class="p-4 text-gray-500 dark:text-gp-muted font-mono">24 Oct, 18:15</td>
+                            <td class="p-4 font-medium text-gray-900 dark:text-white">Transferencia a Efectivo</td>
+                            <td class="p-4"><span class="px-2 py-1 bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded text-xs font-bold"><i class="ph-bold ph-arrows-left-right"></i> Interno</span></td>
+                            <td class="p-4 text-gray-500 dark:text-gp-muted">BBVA -> Efectivo</td>
+                            <td class="p-4 text-right font-mono font-bold text-gray-500 dark:text-gp-muted">$2,000.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VISTA 3: TRANSACCIONES (/payments)                                -->
+        <!-- ================================================================= -->
+        <section id="view-payments" class="view-section hidden max-w-2xl mx-auto">
+            <header class="mb-10 text-center">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Nueva Transacción</h1>
+                <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Registra un movimiento en tu Shadow Ledger</p>
+            </header>
+
+            <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-3xl p-8 shadow-xl">
+                
+                <!-- Pestañas (Gasto | Ingreso | Transferencia) -->
+                <div class="flex p-1 bg-gray-100 dark:bg-gp-bg rounded-xl mb-8">
+                    <button class="flex-1 py-2 rounded-lg bg-white dark:bg-gp-surface text-gray-900 dark:text-white font-bold shadow-sm text-sm">Gasto</button>
+                    <button class="flex-1 py-2 rounded-lg text-gray-500 dark:text-gp-muted font-medium text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Ingreso</button>
+                    <button class="flex-1 py-2 rounded-lg text-gray-500 dark:text-gp-muted font-medium text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Transferencia</button>
+                </div>
+
+                <form class="space-y-6">
+                    <!-- Monto -->
+                    <div class="text-center">
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Monto</label>
+                        <div class="flex items-center justify-center text-5xl font-mono font-bold text-gray-900 dark:text-white">
+                            <span class="text-gray-400 dark:text-zinc-600 mr-2">$</span>
+                            <input type="number" placeholder="0.00" class="bg-transparent w-48 text-center focus:outline-none placeholder-gray-300 dark:placeholder-zinc-700">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Cuenta Espejo -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Cuenta Origen</label>
+                            <select class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                                <option>BBVA Principal</option>
+                                <option>Nu Bank</option>
+                                <option>Efectivo</option>
+                            </select>
+                        </div>
+                        <!-- Categoría -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Categoría</label>
+                            <select class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                                <option>Comida y Restaurantes</option>
+                                <option>Transporte</option>
+                                <option>Hogar y Servicios</option>
+                                <option>Entretenimiento</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Descripción (Opcional)</label>
+                        <input type="text" placeholder="Ej. Cena con amigos" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <!-- Botón Guardar -->
+                    <button type="button" class="w-full py-4 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 font-bold text-lg hover:scale-[1.02] transition-transform shadow-lg">
+                        Registrar Movimiento
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VISTA 4: CUENTAS ESPEJO (/accounts)                               -->
+        <!-- ================================================================= -->
+        <section id="view-accounts" class="view-section hidden">
+            <header class="flex justify-between items-end mb-10">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Tus Bóvedas</h1>
+                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Administra tus cuentas espejo sin conexión real</p>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cuenta Existente 1 -->
+                <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl p-6 flex flex-col justify-between h-48 relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                    <div class="flex justify-between items-start">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl">
+                            <i class="ph-fill ph-bank"></i>
+                        </div>
+                        <button class="text-gray-400 hover:text-gray-900 dark:hover:text-white"><i class="ph-bold ph-dots-three-outline-vertical text-lg"></i></button>
+                    </div>
+                    <div>
+                        <p class="font-bold text-lg text-gray-900 dark:text-white">BBVA Principal</p>
+                        <div class="flex justify-between items-end mt-1">
+                            <p class="text-sm text-gray-500 dark:text-gp-muted">Débito</p>
+                            <p class="font-mono font-bold text-gray-900 dark:text-white text-xl">$145,000.00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cuenta Existente 2 -->
+                <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl p-6 flex flex-col justify-between h-48 relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
+                    <div class="flex justify-between items-start">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl">
+                            <i class="ph-fill ph-credit-card"></i>
+                        </div>
+                        <button class="text-gray-400 hover:text-gray-900 dark:hover:text-white"><i class="ph-bold ph-dots-three-outline-vertical text-lg"></i></button>
+                    </div>
+                    <div>
+                        <p class="font-bold text-lg text-gray-900 dark:text-white">Nu Bank</p>
+                        <div class="flex justify-between items-end mt-1">
+                            <p class="text-sm text-gray-500 dark:text-gp-muted">Crédito</p>
+                            <p class="font-mono font-bold text-red-500 text-xl">-$12,400.00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón Añadir Cuenta -->
+                <button class="bg-gray-50 dark:bg-gp-bg border-2 border-dashed border-gray-300 dark:border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center h-48 hover:bg-gray-100 dark:hover:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-600 transition-all text-gray-500 dark:text-gp-muted hover:text-gray-900 dark:hover:text-white group">
+                    <i class="ph-bold ph-plus text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
+                    <p class="font-bold text-sm">Nueva Bóveda</p>
+                </button>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VISTA 5: SETTINGS (/settings)                                     -->
+        <!-- ================================================================= -->
+        <section id="view-settings" class="view-section hidden max-w-4xl">
+            <header class="mb-10">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Preferencias del Sistema</h1>
+                <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Configura categorías y comportamiento de la aplicación</p>
+            </header>
+
+            <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-3xl overflow-hidden shadow-sm">
+                
+                <div class="p-8 border-b border-gray-100 dark:border-gp-border">
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Gestión de Categorías</h2>
+                    <p class="text-sm text-gray-500 dark:text-gp-muted mb-6">Administra las etiquetas que utilizas para organizar tus gastos y asignar presupuestos.</p>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gp-bg rounded-xl border border-gray-200 dark:border-gp-border">
+                            <div class="flex items-center gap-3">
+                                <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                <span class="font-medium text-gray-900 dark:text-white text-sm">Comida y Restaurantes</span>
+                            </div>
+                            <button class="text-gray-400 hover:text-red-500"><i class="ph-bold ph-trash"></i></button>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gp-bg rounded-xl border border-gray-200 dark:border-gp-border">
+                            <div class="flex items-center gap-3">
+                                <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                                <span class="font-medium text-gray-900 dark:text-white text-sm">Transporte y Gasolina</span>
+                            </div>
+                            <button class="text-gray-400 hover:text-red-500"><i class="ph-bold ph-trash"></i></button>
+                        </div>
+                        <button class="w-full py-3 mt-2 border border-dashed border-gray-300 dark:border-zinc-700 text-gray-500 dark:text-gp-muted rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                            + Añadir nueva categoría
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-8">
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Exportación de Datos</h2>
+                    <p class="text-sm text-gray-500 dark:text-gp-muted mb-6">Tus datos son tuyos. Descarga todo tu ledger en formato procesable.</p>
+                    <button class="px-5 py-2.5 bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-white font-medium rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors flex items-center gap-2">
+                        <i class="ph-bold ph-download-simple"></i> Exportar Ledger (.CSV)
+                    </button>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <!-- SCRIPT DE FIREBASE -->
+    <!-- LOGICA DE LA APLICACIÓN (SPA Router & Firebase Auth) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
+        // 1. CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyB9eeepHd1fcRBQbS17fyRWsO1ba734dbw",
             authDomain: "capital-gp.firebaseapp.com",
@@ -100,35 +466,62 @@
             messagingSenderId: "14321430221",
             appId: "1:14321430221:web:7c827dc99b8d9446ae8384"
         };
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        
         const curtain = document.getElementById('security-curtain');
 
-        // VIGILANTE: Protege la ruta del Dashboard
+        // 2. PROTECCIÓN DE RUTA (Auth Guard)
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // SÍ HAY USUARIO: Quitar cortina, dejarlo usar el dashboard
-                curtain.style.display = 'none';
+                curtain.style.opacity = '0';
+                setTimeout(() => curtain.style.display = 'none', 300);
                 document.getElementById('user-display').textContent = user.email;
             } else {
-                // NO HAY USUARIO: Expulsarlo a la pantalla de Auth
                 window.location.href = 'auth.html';
             }
         });
 
-        // Cerrar Sesión
+        // 3. CERRAR SESIÓN
         document.getElementById('logout-btn').addEventListener('click', () => {
-            signOut(auth).then(() => {
-                // Al cerrar sesión, el 'onAuthStateChanged' detectará que no hay user
-                // y ejecutará el window.location.href = 'auth.html' automáticamente.
-            });
+            signOut(auth); // Redirigirá automáticamente por onAuthStateChanged
         });
 
-        // Dark/Light Mode
-        document.getElementById('themeToggleBtn').addEventListener('click', () => {
+        // 4. MODO CLARO / OSCURO
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        themeToggleBtn.addEventListener('click', () => {
             document.documentElement.classList.toggle('dark');
+        });
+
+        // 5. ENRUTADOR SPA (Cambio de Vistas sin recargar)
+        const navLinks = document.querySelectorAll('.nav-link');
+        const viewSections = document.querySelectorAll('.view-section');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const targetId = link.getAttribute('data-target');
+                
+                // Ocultar todas las vistas
+                viewSections.forEach(section => {
+                    section.classList.add('hidden');
+                    section.classList.remove('block');
+                });
+                
+                // Mostrar la vista objetivo
+                const targetSection = document.getElementById(targetId);
+                targetSection.classList.remove('hidden');
+                targetSection.classList.add('block');
+
+                // Actualizar estilos activos en el Sidebar
+                navLinks.forEach(nav => {
+                    // Resetear estilos a inactivo
+                    nav.classList.remove('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white');
+                    nav.classList.add('text-gray-500', 'dark:text-gp-muted');
+                });
+                
+                // Poner estilo activo al clickeado
+                link.classList.remove('text-gray-500', 'dark:text-gp-muted');
+                link.classList.add('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white');
+            });
         });
     </script>
 </body>
