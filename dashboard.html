@@ -76,8 +76,6 @@
             <button data-target="view-history" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <i class="ph-fill ph-clock-counter-clockwise text-xl"></i> Historial
             </button>
-            
-            <!-- NUEVO: Enlace a la subpágina de Estados de Cuenta -->
             <a href="statements.html" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <i class="ph-fill ph-file-text text-xl"></i> Estados de Cuenta
             </a>
@@ -310,7 +308,7 @@
         <section id="view-settings" class="view-section hidden max-w-4xl mx-auto">
             <header class="mb-10">
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Preferencias del Sistema</h1>
-                <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Configura etiquetas personalizadas y exporta tu información</p>
+                <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Configura etiquetas, importa y exporta tu información</p>
             </header>
 
             <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-3xl overflow-hidden shadow-sm">
@@ -326,7 +324,7 @@
                     </div>
                 </div>
 
-                <!-- Categorías (AHORA SON DINÁMICAS) -->
+                <!-- Categorías -->
                 <div class="p-8 border-b border-gray-100 dark:border-gp-border">
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Gestión de Categorías</h2>
                     <p class="text-sm text-gray-500 dark:text-gp-muted mb-6">Crea etiquetas personalizadas para organizar tus transacciones en el Ledger.</p>
@@ -343,13 +341,23 @@
                     </div>
                 </div>
 
-                <!-- Exportar -->
+                <!-- Datos (Importar / Exportar) -->
                 <div class="p-8 bg-gray-50 dark:bg-gp-bg">
-                    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Exportación de Datos</h2>
-                    <p class="text-sm text-gray-500 dark:text-gp-muted mb-6">Tus datos te pertenecen. Descarga un archivo con toda la historia de tu bóveda para abrirlo en Excel o Numbers.</p>
-                    <button id="export-csv-btn" class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border text-gray-900 dark:text-white px-6 py-3 rounded-xl font-bold text-sm hover:border-blue-500 transition-colors flex items-center gap-2 shadow-sm">
-                        <i class="ph-bold ph-download-simple text-lg text-blue-500"></i> Descargar Ledger (.CSV)
-                    </button>
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Migración y Respaldo de Datos</h2>
+                    <p class="text-sm text-gray-500 dark:text-gp-muted mb-6">Importa datos de un sistema anterior o descarga un respaldo completo de tu Ledger.</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <!-- Botón Exportar -->
+                        <button id="export-csv-btn" class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border text-gray-900 dark:text-white px-6 py-3 rounded-xl font-bold text-sm hover:border-blue-500 transition-colors flex items-center justify-center gap-2 shadow-sm flex-1">
+                            <i class="ph-bold ph-download-simple text-lg text-blue-500"></i> Descargar CSV
+                        </button>
+                        
+                        <!-- Botón Importar -->
+                        <input type="file" id="import-json-input" accept=".json" class="hidden">
+                        <button id="import-json-btn" class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border text-gray-900 dark:text-white px-6 py-3 rounded-xl font-bold text-sm hover:border-green-500 transition-colors flex items-center justify-center gap-2 shadow-sm flex-1">
+                            <i class="ph-bold ph-upload-simple text-lg text-green-500"></i> Importar Backup (.JSON)
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -362,7 +370,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc, updateDoc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB9eeepHd1fcRBQbS17fyRWsO1ba734dbw",
@@ -395,7 +403,7 @@
 
         // --- LISTENERS FIRESTORE EN TIEMPO REAL ---
         function iniciarListenersBD() {
-            // Escuchar Categorías (NUEVO)
+            // Escuchar Categorías
             const qCategorias = query(collection(db, `usuarios/${currentUser.uid}/categorias`), orderBy("nombre", "asc"));
             onSnapshot(qCategorias, (snapshot) => {
                 estadoApp.categorias = [];
@@ -467,33 +475,6 @@
                 catch (error) { alert("Error al eliminar."); }
             }
         };
-
-        // --- EXPORTAR A CSV (NUEVO) ---
-        document.getElementById('export-csv-btn').addEventListener('click', () => {
-            if(estadoApp.transacciones.length === 0) {
-                alert("No hay transacciones en el Ledger para exportar.");
-                return;
-            }
-            // Cabeceras del CSV
-            let csvContent = "Fecha,Descripcion,Cuenta,Categoria,Tipo,Monto\n";
-            
-            // Llenar filas
-            estadoApp.transacciones.forEach(tx => {
-                let fechaStr = tx.fecha ? tx.fecha.toDate().toISOString() : new Date().toISOString();
-                // Envolver strings en comillas para evitar errores con comas en las descripciones
-                csvContent += `${fechaStr},"${tx.descripcion}","${tx.cuenta}","${tx.categoria}",${tx.tipo},${tx.monto}\n`;
-            });
-
-            // Crear y descargar archivo
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", `godsplan_ledger_${new Date().toLocaleDateString('es-MX').replace(/\//g, '-')}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
 
         // --- MOTOR DE CÁLCULO (CUENTAS Y PATRIMONIO) ---
         function calcularYRenderizar() {
@@ -628,6 +609,112 @@
             } catch (error) { alert("Error."); } finally { btn.disabled = false; }
         });
 
+        // --- MIGRACIÓN JSON A FIREBASE (NUEVO) ---
+        document.getElementById('import-json-btn').addEventListener('click', () => {
+            document.getElementById('import-json-input').click();
+        });
+
+        document.getElementById('import-json-input').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const btn = document.getElementById('import-json-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-lg"></i> Procesando Backup...`;
+            btn.disabled = true;
+
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    if (!data.transactions || !Array.isArray(data.transactions)) {
+                        throw new Error("El archivo JSON no contiene un array válido llamado 'transactions'.");
+                    }
+
+                    // 1. Crear Bóveda para el historial migrado (si no existe)
+                    let cuentaMigrada = estadoApp.cuentas.find(c => c.nombre === "Bóveda Anterior");
+                    if (!cuentaMigrada) {
+                        await addDoc(collection(db, `usuarios/${currentUser.uid}/cuentas`), {
+                            nombre: "Bóveda Anterior",
+                            tipo: "Efectivo",
+                            saldo_inicial: 0,
+                            fecha_creacion: serverTimestamp()
+                        });
+                    }
+
+                    // 2. Extraer Categorías Únicas del JSON y crearlas si no existen
+                    const categoriasViejas = [...new Set(data.transactions.map(t => t.category).filter(Boolean))];
+                    for (const cat of categoriasViejas) {
+                        if (!estadoApp.categorias.find(c => c.nombre.toLowerCase() === cat.toLowerCase())) {
+                             await addDoc(collection(db, `usuarios/${currentUser.uid}/categorias`), { nombre: cat });
+                        }
+                    }
+
+                    // 3. Subir Transacciones mediante lotes (Batches) para que sea veloz y no sature la API
+                    const chunkSize = 400; // Firebase permite max 500 operaciones por batch
+                    for (let i = 0; i < data.transactions.length; i += chunkSize) {
+                        const chunk = data.transactions.slice(i, i + chunkSize);
+                        const batch = writeBatch(db);
+                        
+                        chunk.forEach(tx => {
+                            const txRef = doc(collection(db, `usuarios/${currentUser.uid}/transacciones`));
+                            
+                            // Mapear "expense"/"income" a "gasto"/"ingreso"
+                            let tipoMapeado = 'gasto';
+                            if (tx.type === 'income') tipoMapeado = 'ingreso';
+
+                            // Procesar la fecha
+                            let fechaObj = new Date();
+                            if (tx.createdAt) fechaObj = new Date(tx.createdAt);
+                            else if (tx.date) fechaObj = new Date(tx.date + "T12:00:00");
+
+                            batch.set(txRef, {
+                                monto: Number(tx.amount) || 0,
+                                descripcion: tx.title || "Transacción Importada",
+                                cuenta: "Bóveda Anterior",
+                                categoria: tx.category || "General",
+                                tipo: tipoMapeado,
+                                fecha: fechaObj
+                            });
+                        });
+                        await batch.commit(); // Ejecutar el lote a la base de datos
+                    }
+
+                    mostrarNotificacion(`¡Se importaron ${data.transactions.length} registros exitosamente!`);
+                    e.target.value = ''; // Resetear el input
+
+                } catch (error) {
+                    console.error("Error al importar:", error);
+                    alert("Error procesando el archivo: " + error.message);
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // --- EXPORTAR CSV ---
+        document.getElementById('export-csv-btn').addEventListener('click', () => {
+            if(estadoApp.transacciones.length === 0) {
+                alert("No hay transacciones en el Ledger para exportar.");
+                return;
+            }
+            let csvContent = "Fecha,Descripcion,Cuenta,Categoria,Tipo,Monto\n";
+            estadoApp.transacciones.forEach(tx => {
+                let fechaStr = tx.fecha ? tx.fecha.toDate().toISOString() : new Date().toISOString();
+                csvContent += `${fechaStr},"${tx.descripcion}","${tx.cuenta}","${tx.categoria}",${tx.tipo},${tx.monto}\n`;
+            });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `godsplan_ledger_${new Date().toLocaleDateString('es-MX').replace(/\//g, '-')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
         // --- FUNCIONES ACCESIBLES GLOBALMENTE ---
         window.borrarTx = async (id) => { if(confirm("¿Eliminar este registro?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, id)); mostrarNotificacion("Registro eliminado"); };
         window.borrarCuenta = async (id) => { if(confirm("¿Eliminar esta bóveda?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/cuentas`, id)); mostrarNotificacion("Bóveda eliminada"); };
@@ -688,13 +775,15 @@
         const navLinks = document.querySelectorAll('.nav-link');
         const viewSections = document.querySelectorAll('.view-section');
         navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                const targetId = link.getAttribute('data-target');
-                viewSections.forEach(s => s.classList.add('hidden'));
-                document.getElementById(targetId).classList.remove('hidden');
-                navLinks.forEach(nav => { nav.classList.remove('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white'); nav.classList.add('text-gray-500', 'dark:text-gp-muted'); });
-                link.classList.remove('text-gray-500', 'dark:text-gp-muted'); link.classList.add('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white');
-            });
+            if(link.hasAttribute('data-target')) {
+                link.addEventListener('click', () => {
+                    const targetId = link.getAttribute('data-target');
+                    viewSections.forEach(s => s.classList.add('hidden'));
+                    document.getElementById(targetId).classList.remove('hidden');
+                    navLinks.forEach(nav => { nav.classList.remove('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white'); nav.classList.add('text-gray-500', 'dark:text-gp-muted'); });
+                    link.classList.remove('text-gray-500', 'dark:text-gp-muted'); link.classList.add('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white');
+                });
+            }
         });
 
     </script>
