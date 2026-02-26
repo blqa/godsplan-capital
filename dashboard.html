@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Godsplan | Core Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brand: '#3B82F6' }, fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] } } } }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-zinc-950 dark:text-zinc-100 min-h-screen flex transition-colors duration-300">
+
+    <!-- CORTINA DE SEGURIDAD (Oculta el dashboard hasta comprobar auth) -->
+    <div id="security-curtain" class="fixed inset-0 z-50 bg-zinc-950 flex flex-col items-center justify-center">
+        <i class="ph-bold ph-shield-check text-5xl text-blue-500 mb-4 animate-pulse"></i>
+        <p class="font-mono text-zinc-400 text-sm">Validando token de acceso...</p>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 fixed h-full bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 flex flex-col z-40">
+        <div class="h-20 flex items-center px-6 border-b border-gray-200 dark:border-zinc-800">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-lg flex items-center justify-center font-bold">G</div>
+                <span class="font-bold text-lg tracking-tight">Godsplan.</span>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-100 dark:bg-zinc-800 text-zinc-900 dark:text-white font-medium">
+                <i class="ph-fill ph-layout text-xl"></i> Dashboard
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-white transition-colors">
+                <i class="ph-fill ph-clock-counter-clockwise text-xl"></i> Historial
+            </a>
+            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-white transition-colors">
+                <i class="ph-fill ph-vault text-xl"></i> Cuentas Espejo
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-gray-200 dark:border-zinc-800">
+            <div class="mb-4 px-3">
+                <p class="text-xs text-zinc-500 font-mono truncate" id="user-display">cargando...</p>
+            </div>
+            
+            <button id="themeToggleBtn" class="w-full flex items-center justify-center gap-2 px-3 py-2.5 mb-2 rounded-xl text-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-800 transition-colors">
+                <i class="ph-bold ph-moon dark:hidden"></i>
+                <i class="ph-bold ph-sun hidden dark:block"></i>
+                <span class="text-sm font-medium">Cambiar Tema</span>
+            </button>
+            
+            <button id="logout-btn" class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                <i class="ph-bold ph-sign-out"></i>
+                <span class="text-sm font-medium">Cerrar Sesión</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN APP -->
+    <main class="flex-1 ml-64 p-8">
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-3xl font-bold">Patrimonio Consolidado</h1>
+                <p class="text-zinc-500 text-sm mt-1">Sincronización manual activa</p>
+            </div>
+            <button class="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-transform shadow-lg">
+                <i class="ph-bold ph-plus"></i> Ingresar Registro
+            </button>
+        </header>
+
+        <!-- Tarjetas de prueba -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-white dark:bg-zinc-900 rounded-3xl p-8 border border-gray-200 dark:border-zinc-800 shadow-sm">
+                <div class="flex items-center gap-2 text-zinc-500 font-medium text-sm mb-4">
+                    <i class="ph-fill ph-scales"></i> Balance Neto
+                </div>
+                <h2 class="text-5xl font-mono font-extrabold tracking-tight">$0.00</h2>
+                <p class="text-sm text-zinc-500 mt-4">Esperando inicialización de Firestore...</p>
+            </div>
+            <div class="bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 rounded-3xl p-8 flex flex-col justify-center">
+                <i class="ph-fill ph-check-circle text-4xl text-blue-500 mb-4"></i>
+                <h3 class="font-bold text-lg text-blue-900 dark:text-blue-400 mb-2">Bóveda Protegida</h3>
+                <p class="text-sm text-blue-700 dark:text-blue-300">Sesión validada exitosamente. Tus datos locales están listos.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- SCRIPT DE FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB9eeepHd1fcRBQbS17fyRWsO1ba734dbw",
+            authDomain: "capital-gp.firebaseapp.com",
+            projectId: "capital-gp",
+            storageBucket: "capital-gp.firebasestorage.app",
+            messagingSenderId: "14321430221",
+            appId: "1:14321430221:web:7c827dc99b8d9446ae8384"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        
+        const curtain = document.getElementById('security-curtain');
+
+        // VIGILANTE: Protege la ruta del Dashboard
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // SÍ HAY USUARIO: Quitar cortina, dejarlo usar el dashboard
+                curtain.style.display = 'none';
+                document.getElementById('user-display').textContent = user.email;
+            } else {
+                // NO HAY USUARIO: Expulsarlo a la pantalla de Auth
+                window.location.href = 'auth.html';
+            }
+        });
+
+        // Cerrar Sesión
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                // Al cerrar sesión, el 'onAuthStateChanged' detectará que no hay user
+                // y ejecutará el window.location.href = 'auth.html' automáticamente.
+            });
+        });
+
+        // Dark/Light Mode
+        document.getElementById('themeToggleBtn').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+    </script>
+</body>
+</html>
