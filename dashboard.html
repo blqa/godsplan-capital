@@ -6,6 +6,7 @@
     <title>Godsplan | Core Dashboard</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -29,6 +30,7 @@
             }
         }
     </script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -116,7 +118,7 @@
             <header class="flex justify-between items-end mb-10">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Centro de Mando</h1>
-                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Visión global de tu patrimonio</p>
+                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Visión global de tu patrimonio en tiempo real</p>
                 </div>
                 <button onclick="document.querySelector('[data-target=\'view-payments\']').click()" class="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-transform shadow-lg">
                     <i class="ph-bold ph-plus"></i> Ingresar Registro
@@ -133,7 +135,7 @@
                     </div>
                     <div>
                         <h2 class="text-5xl lg:text-6xl font-mono font-extrabold text-gray-900 dark:text-white tracking-tight" id="display-patrimonio">$0<span class="text-gray-400 dark:text-zinc-600 text-3xl">.00</span></h2>
-                        <p class="text-sm text-gray-500 dark:text-gp-muted mt-2">Sumatoria en tiempo real de saldos actuales</p>
+                        <p class="text-sm text-gray-500 dark:text-gp-muted mt-2">Suma de saldos iniciales ± transacciones</p>
                     </div>
                 </div>
 
@@ -195,13 +197,11 @@
 
             <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-3xl p-8 shadow-xl relative">
                 
-                <!-- Botón Cancelar Edición (Oculto por defecto) -->
-                <button id="cancel-edit-btn" class="hidden absolute top-4 right-4 text-xs font-bold text-red-500 bg-red-50 dark:bg-red-500/10 px-3 py-1 rounded-lg hover:bg-red-100 dark:hover:bg-red-500/20">
+                <button id="cancel-edit-btn" class="hidden absolute top-4 right-4 text-xs font-bold text-red-500 bg-red-50 dark:bg-red-500/10 px-3 py-1 rounded-lg hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">
                     <i class="ph-bold ph-x"></i> Cancelar Edición
                 </button>
 
                 <form id="transaction-form" class="space-y-6">
-                    <!-- Variable oculta para saber si estamos editando -->
                     <input type="hidden" id="tx-id-hidden" value="">
 
                     <!-- Tipo -->
@@ -235,10 +235,8 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Categoría</label>
                             <select id="tx-category" required class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
-                                <option value="General">General</option>
-                                <option value="Comida">Comida</option>
-                                <option value="Hogar">Hogar</option>
-                                <option value="Transporte">Transporte</option>
+                                <option value="General" selected>General</option>
+                                <!-- Categorías dinámicas se inyectan aquí -->
                             </select>
                         </div>
                     </div>
@@ -302,15 +300,52 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- VISTA 5: SETTINGS (/settings)                                     -->
+        <!-- VISTA 5: SETTINGS (/settings)   *** RESTAURADO Y MEJORADO *** -->
         <!-- ================================================================= -->
         <section id="view-settings" class="view-section hidden max-w-4xl mx-auto">
             <header class="mb-10">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Preferencias</h1>
-                <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Configuración del sistema</p>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Preferencias del Sistema</h1>
+                <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Configura etiquetas personalizadas y exporta tu información</p>
             </header>
-            <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-3xl p-8 shadow-sm">
-                <p class="text-zinc-500">Tu cuenta segura: <span id="settings-email" class="text-blue-500 font-mono"></span></p>
+
+            <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-3xl overflow-hidden shadow-sm">
+                
+                <!-- Perfil -->
+                <div class="p-8 border-b border-gray-100 dark:border-gp-border flex items-center gap-6">
+                    <div class="w-20 h-20 rounded-full bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center text-4xl text-blue-500">
+                        <i class="ph-fill ph-user-circle"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white" id="settings-email">usuario@correo.com</h2>
+                        <p class="text-sm text-gray-500 dark:text-gp-muted font-mono mt-1"><i class="ph-fill ph-lock-key"></i> Autenticado vía Firebase Auth</p>
+                    </div>
+                </div>
+
+                <!-- Categorías (AHORA SON DINÁMICAS) -->
+                <div class="p-8 border-b border-gray-100 dark:border-gp-border">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Gestión de Categorías</h2>
+                    <p class="text-sm text-gray-500 dark:text-gp-muted mb-6">Crea etiquetas personalizadas para organizar tus transacciones en el Ledger.</p>
+                    
+                    <form id="category-form" class="flex flex-col sm:flex-row gap-3 mb-6">
+                        <input type="text" id="cat-name" required placeholder="Nueva etiqueta (ej. Viaje Japón)" class="flex-1 bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                        <button type="submit" id="submit-cat-btn" class="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-6 py-3 rounded-xl font-bold text-sm hover:scale-[1.02] transition-transform">
+                            Añadir Etiqueta
+                        </button>
+                    </form>
+
+                    <div id="categories-list" class="space-y-3">
+                        <!-- Las categorías de la DB se pintan aquí -->
+                    </div>
+                </div>
+
+                <!-- Exportar -->
+                <div class="p-8 bg-gray-50 dark:bg-gp-bg">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Exportación de Datos</h2>
+                    <p class="text-sm text-gray-500 dark:text-gp-muted mb-6">Tus datos te pertenecen. Descarga un archivo con toda la historia de tu bóveda para abrirlo en Excel o Numbers.</p>
+                    <button id="export-csv-btn" class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border text-gray-900 dark:text-white px-6 py-3 rounded-xl font-bold text-sm hover:border-blue-500 transition-colors flex items-center gap-2 shadow-sm">
+                        <i class="ph-bold ph-download-simple text-lg text-blue-500"></i> Descargar Ledger (.CSV)
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -324,7 +359,6 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // 1. CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyB9eeepHd1fcRBQbS17fyRWsO1ba734dbw",
             authDomain: "capital-gp.firebaseapp.com",
@@ -338,128 +372,32 @@
         const db = getFirestore(app);
         let currentUser = null;
 
-        // ESTADO GLOBAL DE LA APLICACIÓN (Como Redux/Vuex pero en Vanilla JS)
-        let estadoApp = {
-            cuentas: [],       // Lista de bóvedas
-            transacciones: []  // Lista de movimientos
-        };
+        // ESTADO GLOBAL DE LA APP
+        let estadoApp = { cuentas: [], transacciones: [], categorias: [] };
 
-        // --- SEGURIDAD Y ARRANQUE ---
+        // --- SEGURIDAD ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
                 document.getElementById('user-display').textContent = user.email;
                 document.getElementById('settings-email').textContent = user.email;
                 document.getElementById('security-curtain').style.display = 'none';
-                
-                // Activar Escuchadores en Tiempo Real
                 iniciarListenersBD();
             } else {
                 window.location.href = 'auth.html';
             }
         });
 
-        // --- MOTOR DE CÁLCULO Y RENDERIZADO (LA MAGIA) ---
-        // Se ejecuta automáticamente CADA VEZ que Firebase detecta un cambio en Cuentas o Transacciones
-        function calcularYRenderizar() {
-            let patrimonioNetoTotal = 0;
-            let totalIngresos = 0;
-            let totalGastos = 0;
-
-            // 1. Clonamos las cuentas para calcular sus saldos actuales sin alterar los iniciales
-            let cuentasCalculadas = estadoApp.cuentas.map(c => ({
-                ...c, 
-                saldo_actual: c.saldo_inicial
-            }));
-
-            // 2. Procesamos cada transacción
-            estadoApp.transacciones.forEach(tx => {
-                // Encontrar la cuenta afectada
-                let cuentaAfectada = cuentasCalculadas.find(c => c.nombre === tx.cuenta);
-                
-                if (tx.tipo === 'ingreso') {
-                    totalIngresos += tx.monto;
-                    if(cuentaAfectada) cuentaAfectada.saldo_actual += tx.monto;
-                } else if (tx.tipo === 'gasto') {
-                    totalGastos += tx.monto;
-                    if(cuentaAfectada) cuentaAfectada.saldo_actual -= tx.monto;
-                }
-            });
-
-            // 3. Sumar el Patrimonio Total (Suma de los saldos actuales de TODAS las cuentas)
-            patrimonioNetoTotal = cuentasCalculadas.reduce((sum, c) => sum + c.saldo_actual, 0);
-
-            // 4. ACTUALIZAR INTERFAZ: DASHBOARD
-            document.getElementById('display-patrimonio').innerHTML = `$${patrimonioNetoTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-            document.getElementById('display-ingresos').textContent = `$${totalIngresos.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-            document.getElementById('display-gastos').textContent = `$${totalGastos.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-
-            // 5. ACTUALIZAR INTERFAZ: CUENTAS ESPEJO Y SELECTORES
-            const accountsGrid = document.getElementById('accounts-grid');
-            const txAccountSelect = document.getElementById('tx-account');
-            
-            accountsGrid.innerHTML = '';
-            txAccountSelect.innerHTML = '<option value="" disabled selected>Selecciona bóveda...</option>';
-
-            cuentasCalculadas.forEach(acc => {
-                // UI Tarjetas
-                let icon = 'ph-bank'; let colorClass = 'text-blue-500'; let bgClass = 'bg-blue-100 dark:bg-blue-500/10';
-                if(acc.tipo === 'Crédito') { icon = 'ph-credit-card'; colorClass = 'text-purple-500'; bgClass = 'bg-purple-100 dark:bg-purple-500/10'; }
-                if(acc.tipo === 'Efectivo') { icon = 'ph-wallet'; colorClass = 'text-green-500'; bgClass = 'bg-green-100 dark:bg-green-500/10'; }
-                
-                // EL SALDO MOSTRADO AHORA ES EL 'SALDO_ACTUAL'
-                const cardHTML = `
-                <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl p-6 flex flex-col justify-between h-48 relative overflow-hidden group">
-                    <div class="absolute top-0 left-0 w-1 h-full ${bgClass.split(' ')[0].replace('100','500')}"></div>
-                    <div class="flex justify-between items-start">
-                        <div class="w-10 h-10 rounded-full ${bgClass} ${colorClass} flex items-center justify-center text-xl"><i class="ph-fill ${icon}"></i></div>
-                        <button onclick="window.borrarCuenta('${acc.id}')" class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Eliminar Bóveda"><i class="ph-bold ph-trash text-lg"></i></button>
-                    </div>
-                    <div>
-                        <p class="font-bold text-lg text-gray-900 dark:text-white">${acc.nombre}</p>
-                        <div class="flex justify-between items-end mt-1">
-                            <p class="text-sm text-gray-500 dark:text-gp-muted">${acc.tipo}</p>
-                            <p class="font-mono font-bold text-gray-900 dark:text-white text-xl ${acc.saldo_actual < 0 ? 'text-red-500' : ''}">$${acc.saldo_actual.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
-                        </div>
-                    </div>
-                </div>`;
-                accountsGrid.insertAdjacentHTML('beforeend', cardHTML);
-
-                // UI Selector
-                txAccountSelect.insertAdjacentHTML('beforeend', `<option value="${acc.nombre}">${acc.nombre} ($${acc.saldo_actual.toFixed(2)})</option>`);
-            });
-
-            // 6. ACTUALIZAR INTERFAZ: HISTORIAL (Tabla)
-            const tbody = document.getElementById('history-table-body');
-            tbody.innerHTML = '';
-            estadoApp.transacciones.forEach(tx => {
-                let fechaStr = "Procesando...";
-                if(tx.fecha) fechaStr = tx.fecha.toDate().toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' });
-                const colorMonto = tx.tipo === 'ingreso' ? 'text-green-500' : 'text-red-500';
-                const signo = tx.tipo === 'ingreso' ? '+' : '-';
-                
-                const filaHTML = `
-                    <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
-                        <td class="p-4 text-gray-500 dark:text-gp-muted font-mono whitespace-nowrap">${fechaStr}</td>
-                        <td class="p-4 font-medium text-gray-900 dark:text-white">
-                            ${tx.descripcion} <br>
-                            <span class="text-[10px] text-gray-400 font-normal uppercase tracking-wider">#${tx.categoria}</span>
-                        </td>
-                        <td class="p-4 text-gray-500 dark:text-gp-muted">${tx.cuenta}</td>
-                        <td class="p-4 text-xs uppercase font-bold text-gray-500">${tx.tipo}</td>
-                        <td class="p-4 text-right font-mono font-bold ${colorMonto}">${signo}$${tx.monto.toFixed(2)}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="window.editarTx('${tx.id}')" class="text-blue-500 hover:text-blue-400 mr-2" title="Editar"><i class="ph-bold ph-pencil"></i></button>
-                            <button onclick="window.borrarTx('${tx.id}')" class="text-red-500 hover:text-red-400" title="Eliminar"><i class="ph-bold ph-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-                tbody.insertAdjacentHTML('beforeend', filaHTML);
-            });
-        }
-
-        // --- LISTENERS FIRESTORE ---
+        // --- LISTENERS FIRESTORE EN TIEMPO REAL ---
         function iniciarListenersBD() {
+            // Escuchar Categorías (NUEVO)
+            const qCategorias = query(collection(db, `usuarios/${currentUser.uid}/categorias`), orderBy("nombre", "asc"));
+            onSnapshot(qCategorias, (snapshot) => {
+                estadoApp.categorias = [];
+                snapshot.forEach(doc => estadoApp.categorias.push({ id: doc.id, ...doc.data() }));
+                renderizarCategorias();
+            });
+
             // Escuchar Cuentas
             const qCuentas = query(collection(db, `usuarios/${currentUser.uid}/cuentas`), orderBy("fecha_creacion", "asc"));
             onSnapshot(qCuentas, (snapshot) => {
@@ -477,26 +415,157 @@
             });
         }
 
-        // --- FORMULARIOS ---
-        
-        // Formulario Cuentas
-        document.getElementById('account-form').addEventListener('submit', async (e) => {
+        // --- RENDERIZAR CATEGORÍAS (PREFERENCIAS Y SELECTOR) ---
+        function renderizarCategorias() {
+            const list = document.getElementById('categories-list');
+            const select = document.getElementById('tx-category');
+            
+            list.innerHTML = '';
+            select.innerHTML = '<option value="General" selected>General</option>'; // Opción por defecto
+
+            estadoApp.categorias.forEach(cat => {
+                // Pintar en Vista de Preferencias
+                list.insertAdjacentHTML('beforeend', `
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gp-bg rounded-xl border border-gray-200 dark:border-gp-border group hover:border-blue-500 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                            <span class="font-medium text-gray-900 dark:text-white text-sm">${cat.nombre}</span>
+                        </div>
+                        <button onclick="window.borrarCategoria('${cat.id}')" class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Eliminar Etiqueta">
+                            <i class="ph-bold ph-trash"></i>
+                        </button>
+                    </div>
+                `);
+                
+                // Pintar en Formulario de Transacciones
+                select.insertAdjacentHTML('beforeend', `<option value="${cat.nombre}">${cat.nombre}</option>`);
+            });
+        }
+
+        // --- AÑADIR NUEVA CATEGORÍA ---
+        document.getElementById('category-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submit-acc-btn');
+            const btn = document.getElementById('submit-cat-btn');
+            const nameInput = document.getElementById('cat-name');
             btn.disabled = true;
             try {
-                await addDoc(collection(db, `usuarios/${currentUser.uid}/cuentas`), {
-                    nombre: document.getElementById('acc-name').value,
-                    tipo: document.getElementById('acc-type').value,
-                    saldo_inicial: parseFloat(document.getElementById('acc-balance').value),
-                    fecha_creacion: serverTimestamp()
-                });
-                document.getElementById('account-form').reset();
-                mostrarNotificacion("Bóveda creada exitosamente");
-            } catch (error) { alert("Error al crear cuenta."); } finally { btn.disabled = false; }
+                await addDoc(collection(db, `usuarios/${currentUser.uid}/categorias`), { nombre: nameInput.value });
+                nameInput.value = '';
+                mostrarNotificacion("Etiqueta añadida");
+            } catch (error) { alert("Error al añadir etiqueta."); } finally { btn.disabled = false; }
         });
 
-        // Formulario Transacciones (Sirve para Crear y Editar)
+        // --- ELIMINAR CATEGORÍA ---
+        window.borrarCategoria = async (id) => {
+            if(confirm("¿Eliminar esta etiqueta? (Las transacciones previas conservarán el nombre como texto).")) {
+                try { await deleteDoc(doc(db, `usuarios/${currentUser.uid}/categorias`, id)); mostrarNotificacion("Etiqueta eliminada"); } 
+                catch (error) { alert("Error al eliminar."); }
+            }
+        };
+
+        // --- EXPORTAR A CSV (NUEVO) ---
+        document.getElementById('export-csv-btn').addEventListener('click', () => {
+            if(estadoApp.transacciones.length === 0) {
+                alert("No hay transacciones en el Ledger para exportar.");
+                return;
+            }
+            // Cabeceras del CSV
+            let csvContent = "Fecha,Descripcion,Cuenta,Categoria,Tipo,Monto\n";
+            
+            // Llenar filas
+            estadoApp.transacciones.forEach(tx => {
+                let fechaStr = tx.fecha ? tx.fecha.toDate().toISOString() : new Date().toISOString();
+                // Envolver strings en comillas para evitar errores con comas en las descripciones
+                csvContent += `${fechaStr},"${tx.descripcion}","${tx.cuenta}","${tx.categoria}",${tx.tipo},${tx.monto}\n`;
+            });
+
+            // Crear y descargar archivo
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `godsplan_ledger_${new Date().toLocaleDateString('es-MX').replace(/\//g, '-')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // --- MOTOR DE CÁLCULO (CUENTAS Y PATRIMONIO) ---
+        function calcularYRenderizar() {
+            let patrimonioNetoTotal = 0; let totalIngresos = 0; let totalGastos = 0;
+            let cuentasCalculadas = estadoApp.cuentas.map(c => ({ ...c, saldo_actual: c.saldo_inicial }));
+
+            estadoApp.transacciones.forEach(tx => {
+                let cuentaAfectada = cuentasCalculadas.find(c => c.nombre === tx.cuenta);
+                if (tx.tipo === 'ingreso') { totalIngresos += tx.monto; if(cuentaAfectada) cuentaAfectada.saldo_actual += tx.monto; } 
+                else if (tx.tipo === 'gasto') { totalGastos += tx.monto; if(cuentaAfectada) cuentaAfectada.saldo_actual -= tx.monto; }
+            });
+
+            patrimonioNetoTotal = cuentasCalculadas.reduce((sum, c) => sum + c.saldo_actual, 0);
+
+            // Actualizar UI General
+            document.getElementById('display-patrimonio').innerHTML = `$${patrimonioNetoTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('display-ingresos').textContent = `$${totalIngresos.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('display-gastos').textContent = `$${totalGastos.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+
+            // Actualizar Tarjetas Cuentas
+            const accountsGrid = document.getElementById('accounts-grid');
+            const txAccountSelect = document.getElementById('tx-account');
+            accountsGrid.innerHTML = '';
+            txAccountSelect.innerHTML = '<option value="" disabled selected>Selecciona bóveda...</option>';
+
+            cuentasCalculadas.forEach(acc => {
+                let icon = 'ph-bank'; let colorClass = 'text-blue-500'; let bgClass = 'bg-blue-100 dark:bg-blue-500/10';
+                if(acc.tipo === 'Crédito') { icon = 'ph-credit-card'; colorClass = 'text-purple-500'; bgClass = 'bg-purple-100 dark:bg-purple-500/10'; }
+                if(acc.tipo === 'Efectivo') { icon = 'ph-wallet'; colorClass = 'text-green-500'; bgClass = 'bg-green-100 dark:bg-green-500/10'; }
+                
+                accountsGrid.insertAdjacentHTML('beforeend', `
+                <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl p-6 flex flex-col justify-between h-48 relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-1 h-full ${bgClass.split(' ')[0].replace('100','500')}"></div>
+                    <div class="flex justify-between items-start">
+                        <div class="w-10 h-10 rounded-full ${bgClass} ${colorClass} flex items-center justify-center text-xl"><i class="ph-fill ${icon}"></i></div>
+                        <button onclick="window.borrarCuenta('${acc.id}')" class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Eliminar Bóveda"><i class="ph-bold ph-trash text-lg"></i></button>
+                    </div>
+                    <div>
+                        <p class="font-bold text-lg text-gray-900 dark:text-white">${acc.nombre}</p>
+                        <div class="flex justify-between items-end mt-1">
+                            <p class="text-sm text-gray-500 dark:text-gp-muted">${acc.tipo}</p>
+                            <p class="font-mono font-bold text-gray-900 dark:text-white text-xl ${acc.saldo_actual < 0 ? 'text-red-500' : ''}">$${acc.saldo_actual.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                        </div>
+                    </div>
+                </div>`);
+                txAccountSelect.insertAdjacentHTML('beforeend', `<option value="${acc.nombre}">${acc.nombre} ($${acc.saldo_actual.toFixed(2)})</option>`);
+            });
+
+            // Actualizar Historial
+            const tbody = document.getElementById('history-table-body');
+            tbody.innerHTML = '';
+            estadoApp.transacciones.forEach(tx => {
+                let fechaStr = "Procesando...";
+                if(tx.fecha) fechaStr = tx.fecha.toDate().toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' });
+                const colorMonto = tx.tipo === 'ingreso' ? 'text-green-500' : 'text-red-500';
+                const signo = tx.tipo === 'ingreso' ? '+' : '-';
+                
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
+                        <td class="p-4 text-gray-500 dark:text-gp-muted font-mono whitespace-nowrap">${fechaStr}</td>
+                        <td class="p-4 font-medium text-gray-900 dark:text-white">
+                            ${tx.descripcion} <br>
+                            <span class="text-[10px] text-gray-400 font-normal uppercase tracking-wider">#${tx.categoria}</span>
+                        </td>
+                        <td class="p-4 text-gray-500 dark:text-gp-muted">${tx.cuenta}</td>
+                        <td class="p-4 text-xs uppercase font-bold text-gray-500">${tx.tipo}</td>
+                        <td class="p-4 text-right font-mono font-bold ${colorMonto}">${signo}$${tx.monto.toFixed(2)}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="window.editarTx('${tx.id}')" class="text-blue-500 hover:text-blue-400 mr-2" title="Editar"><i class="ph-bold ph-pencil"></i></button>
+                            <button onclick="window.borrarTx('${tx.id}')" class="text-red-500 hover:text-red-400" title="Eliminar"><i class="ph-bold ph-trash"></i></button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        // --- CREAR Y EDITAR TRANSACCIONES ---
         const txForm = document.getElementById('transaction-form');
         txForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -514,72 +583,56 @@
 
             try {
                 if (idEdicion) {
-                    // MODO EDICIÓN
                     await updateDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, idEdicion), data);
                     mostrarNotificacion("Transacción actualizada");
-                    cancelarEdicion(); // Limpiar UI
+                    cancelarEdicion();
                 } else {
-                    // MODO CREACIÓN
                     data.fecha = serverTimestamp();
                     await addDoc(collection(db, `usuarios/${currentUser.uid}/transacciones`), data);
                     mostrarNotificacion("Transacción registrada");
                 }
                 txForm.reset();
                 document.querySelector('[data-target="view-dashboard"]').click();
-            } catch (error) { alert("Error en operación."); console.error(error); } finally { btn.disabled = false; }
+            } catch (error) { alert("Error en operación."); } finally { btn.disabled = false; }
         });
 
-        // --- FUNCIONES CRUD GLOBALES (Llamadas desde el HTML) ---
-        
-        // BORRAR TRANSACCIÓN
-        window.borrarTx = async (id) => {
-            if(confirm("¿Estás seguro de eliminar este registro? El saldo de la cuenta se recalculará automáticamente.")) {
-                try {
-                    await deleteDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, id));
-                    mostrarNotificacion("Registro eliminado");
-                } catch (error) { alert("Error al eliminar."); }
-            }
-        };
-
-        // EDITAR TRANSACCIÓN (Carga datos en el form)
-        window.editarTx = async (id) => {
+        // Crear Cuenta
+        document.getElementById('account-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-acc-btn');
+            btn.disabled = true;
             try {
-                // 1. Obtener datos de Firestore
-                const docRef = doc(db, `usuarios/${currentUser.uid}/transacciones`, id);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const tx = docSnap.data();
-                    
-                    // 2. Llenar el formulario
-                    document.getElementById('tx-id-hidden').value = id;
-                    document.getElementById('tx-amount').value = tx.monto;
-                    document.getElementById('tx-desc').value = tx.descripcion;
-                    document.getElementById('tx-account').value = tx.cuenta;
-                    document.getElementById('tx-category').value = tx.categoria;
-                    document.querySelector(`input[name="tx_type"][value="${tx.tipo}"]`).checked = true;
-                    
-                    // 3. Cambiar UI a Modo Edición
-                    document.getElementById('tx-header-title').textContent = "Editar Operación";
-                    document.getElementById('submit-tx-btn').textContent = "Actualizar Cambios";
-                    document.getElementById('cancel-edit-btn').classList.remove('hidden');
+                await addDoc(collection(db, `usuarios/${currentUser.uid}/cuentas`), {
+                    nombre: document.getElementById('acc-name').value,
+                    tipo: document.getElementById('acc-type').value,
+                    saldo_inicial: parseFloat(document.getElementById('acc-balance').value),
+                    fecha_creacion: serverTimestamp()
+                });
+                document.getElementById('account-form').reset();
+                mostrarNotificacion("Bóveda creada");
+            } catch (error) { alert("Error."); } finally { btn.disabled = false; }
+        });
 
-                    // 4. Navegar a la vista de pagos
-                    document.querySelector('[data-target="view-payments"]').click();
-                }
-            } catch (error) { console.error("Error cargando edición", error); }
-        };
-
-        // BORRAR CUENTA ESPEJO
-        window.borrarCuenta = async (id) => {
-            if(confirm("¿Eliminar esta bóveda? NOTA: Las transacciones asociadas a esta cuenta NO se borrarán, pero quedarán sin bóveda de destino.")) {
-                try {
-                    await deleteDoc(doc(db, `usuarios/${currentUser.uid}/cuentas`, id));
-                    mostrarNotificacion("Bóveda eliminada");
-                } catch (error) { alert("Error al eliminar."); }
+        // --- FUNCIONES ACCESIBLES GLOBALMENTE ---
+        window.borrarTx = async (id) => { if(confirm("¿Eliminar este registro?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, id)); mostrarNotificacion("Registro eliminado"); };
+        window.borrarCuenta = async (id) => { if(confirm("¿Eliminar esta bóveda?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/cuentas`, id)); mostrarNotificacion("Bóveda eliminada"); };
+        window.editarTx = async (id) => {
+            const docSnap = await getDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, id));
+            if (docSnap.exists()) {
+                const tx = docSnap.data();
+                document.getElementById('tx-id-hidden').value = id;
+                document.getElementById('tx-amount').value = tx.monto;
+                document.getElementById('tx-desc').value = tx.descripcion;
+                document.getElementById('tx-account').value = tx.cuenta;
+                document.getElementById('tx-category').value = tx.categoria;
+                document.querySelector(`input[name="tx_type"][value="${tx.tipo}"]`).checked = true;
+                document.getElementById('tx-header-title').textContent = "Editar Operación";
+                document.getElementById('submit-tx-btn').textContent = "Actualizar Cambios";
+                document.getElementById('cancel-edit-btn').classList.remove('hidden');
+                document.querySelector('[data-target="view-payments"]').click();
             }
         };
 
-        // UI Auxiliar para Cancelar Edición
         function cancelarEdicion() {
             document.getElementById('tx-id-hidden').value = '';
             document.getElementById('transaction-form').reset();
@@ -587,15 +640,12 @@
             document.getElementById('submit-tx-btn').textContent = "Guardar Operación";
             document.getElementById('cancel-edit-btn').classList.add('hidden');
         }
-        document.getElementById('cancel-edit-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            cancelarEdicion();
-        });
+        document.getElementById('cancel-edit-btn').addEventListener('click', (e) => { e.preventDefault(); cancelarEdicion(); });
 
-
-        // --- UTILIDADES GLOBALES (UI) ---
+        // --- UTILIDADES UI ---
         document.getElementById('themeToggleBtn').addEventListener('click', () => { document.documentElement.classList.toggle('dark'); });
         document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); });
+        function mostrarNotificacion(m) { const t = document.getElementById('toast-alert'); document.getElementById('toast-message').textContent = m; t.classList.remove('translate-x-[150%]', 'opacity-0'); setTimeout(() => t.classList.add('translate-x-[150%]', 'opacity-0'), 3000); }
 
         const navLinks = document.querySelectorAll('.nav-link');
         const viewSections = document.querySelectorAll('.view-section');
@@ -604,13 +654,8 @@
                 const targetId = link.getAttribute('data-target');
                 viewSections.forEach(s => s.classList.add('hidden'));
                 document.getElementById(targetId).classList.remove('hidden');
-                
-                navLinks.forEach(nav => {
-                    nav.classList.remove('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white');
-                    nav.classList.add('text-gray-500', 'dark:text-gp-muted');
-                });
-                link.classList.remove('text-gray-500', 'dark:text-gp-muted');
-                link.classList.add('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white');
+                navLinks.forEach(nav => { nav.classList.remove('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white'); nav.classList.add('text-gray-500', 'dark:text-gp-muted'); });
+                link.classList.remove('text-gray-500', 'dark:text-gp-muted'); link.classList.add('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white');
             });
         });
 
