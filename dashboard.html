@@ -84,6 +84,10 @@
             <button data-target="view-payments" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <i class="ph-fill ph-swap text-xl"></i> Transacciones
             </button>
+            <!-- NUEVO SUBMENÚ: Pagos Fijos -->
+            <button data-target="view-fixed-payments" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <i class="ph-fill ph-calendar-blank text-xl"></i> Pagos Fijos
+            </button>
             
             <p class="px-3 text-[10px] font-bold text-gray-400 dark:text-zinc-600 uppercase tracking-widest mt-6 mb-2">Configuración</p>
             <button data-target="view-accounts" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
@@ -258,6 +262,56 @@
         </section>
 
         <!-- ================================================================= -->
+        <!-- VISTA 3.5: PAGOS FIJOS (/fixed-payments)  *** NUEVO MÓDULO *** -->
+        <!-- ================================================================= -->
+        <section id="view-fixed-payments" class="view-section hidden max-w-6xl mx-auto">
+            <header class="flex justify-between items-end mb-10">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Pagos Fijos</h1>
+                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Planifica tus gastos recurrentes mensuales (Renta, Luz, Suscripciones)</p>
+                </div>
+            </header>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Lista de Pagos Fijos -->
+                <div class="lg:w-2/3">
+                    <div id="fixed-payments-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Se inyectan con JS -->
+                    </div>
+                </div>
+
+                <!-- Formulario Agregar Pago Fijo -->
+                <div class="lg:w-1/3">
+                    <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-3xl p-6 shadow-sm sticky top-8">
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                            <i class="ph-bold ph-calendar-plus text-blue-500"></i> Nuevo Pago Fijo
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gp-muted mb-4">NOTA: Estos pagos son planificadores. Debes registrarlos manualmente como transacción el día del cobro para afectar tu saldo.</p>
+                        <form id="fixed-form" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Concepto</label>
+                                <input type="text" id="fixed-title" required placeholder="Ej. Renta Casa" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Monto</label>
+                                    <input type="number" id="fixed-amount" step="0.01" required placeholder="0.00" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm font-mono text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Día de cobro</label>
+                                    <input type="number" id="fixed-day" min="1" max="31" required placeholder="1-31" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm font-mono text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                                </div>
+                            </div>
+                            <button type="submit" id="submit-fixed-btn" class="w-full mt-4 px-6 py-3 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 font-bold hover:scale-[1.02] transition-transform shadow-lg">
+                                Guardar Pago
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
         <!-- VISTA 4: CUENTAS ESPEJO (/accounts)                               -->
         <!-- ================================================================= -->
         <section id="view-accounts" class="view-section hidden max-w-6xl mx-auto">
@@ -303,7 +357,7 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- VISTA 5: SETTINGS (/settings)   *** RESTAURADO Y MEJORADO *** -->
+        <!-- VISTA 5: SETTINGS (/settings)                                     -->
         <!-- ================================================================= -->
         <section id="view-settings" class="view-section hidden max-w-4xl mx-auto">
             <header class="mb-10">
@@ -344,7 +398,7 @@
                 <!-- Datos (Importar / Exportar) -->
                 <div class="p-8 bg-gray-50 dark:bg-gp-bg">
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Migración y Respaldo de Datos</h2>
-                    <p class="text-sm text-gray-500 dark:text-gp-muted mb-6">Importa datos de un sistema anterior o descarga un respaldo completo de tu Ledger.</p>
+                    <p class="text-sm text-gray-500 dark:text-gp-muted mb-6">Importa datos de un sistema anterior (incluye Transacciones y Pagos Fijos) o descarga un respaldo completo de tu Ledger.</p>
                     
                     <div class="flex flex-col sm:flex-row gap-4">
                         <!-- Botón Exportar -->
@@ -385,8 +439,8 @@
         const db = getFirestore(app);
         let currentUser = null;
 
-        // ESTADO GLOBAL DE LA APP
-        let estadoApp = { cuentas: [], transacciones: [], categorias: [] };
+        // ESTADO GLOBAL DE LA APP (Añadido: pagosFijos)
+        let estadoApp = { cuentas: [], transacciones: [], categorias: [], pagosFijos: [] };
 
         // --- SEGURIDAD ---
         onAuthStateChanged(auth, (user) => {
@@ -426,7 +480,62 @@
                 snapshot.forEach(doc => estadoApp.transacciones.push({ id: doc.id, ...doc.data() }));
                 calcularYRenderizar();
             });
+
+            // Escuchar Pagos Fijos (NUEVO)
+            const qFijos = query(collection(db, `usuarios/${currentUser.uid}/pagos_fijos`), orderBy("dia", "asc"));
+            onSnapshot(qFijos, (snapshot) => {
+                estadoApp.pagosFijos = [];
+                snapshot.forEach(doc => estadoApp.pagosFijos.push({ id: doc.id, ...doc.data() }));
+                renderizarPagosFijos();
+            });
         }
+
+        // --- RENDERIZAR PAGOS FIJOS (NUEVO) ---
+        function renderizarPagosFijos() {
+            const grid = document.getElementById('fixed-payments-grid');
+            grid.innerHTML = '';
+
+            if(estadoApp.pagosFijos.length === 0) {
+                grid.innerHTML = '<p class="text-sm text-gray-500 col-span-2">Aún no tienes pagos fijos registrados.</p>';
+                return;
+            }
+
+            estadoApp.pagosFijos.forEach(pago => {
+                grid.insertAdjacentHTML('beforeend', `
+                    <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl p-5 flex items-center justify-between group hover:border-blue-500 transition-colors">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 flex flex-col items-center justify-center text-blue-600 dark:text-blue-400">
+                                <span class="text-[10px] font-bold uppercase tracking-wider mb-0.5">Día</span>
+                                <span class="text-xl font-black font-mono leading-none">${pago.dia}</span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-900 dark:text-white">${pago.titulo}</p>
+                                <p class="text-sm font-mono font-bold text-red-500 mt-1">-$${pago.monto.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                            </div>
+                        </div>
+                        <button onclick="window.borrarPagoFijo('${pago.id}')" class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Eliminar Pago Fijo">
+                            <i class="ph-bold ph-trash text-lg"></i>
+                        </button>
+                    </div>
+                `);
+            });
+        }
+
+        // --- AÑADIR NUEVO PAGO FIJO ---
+        document.getElementById('fixed-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-fixed-btn');
+            btn.disabled = true;
+            try {
+                await addDoc(collection(db, `usuarios/${currentUser.uid}/pagos_fijos`), { 
+                    titulo: document.getElementById('fixed-title').value,
+                    monto: parseFloat(document.getElementById('fixed-amount').value),
+                    dia: parseInt(document.getElementById('fixed-day').value)
+                });
+                document.getElementById('fixed-form').reset();
+                mostrarNotificacion("Pago fijo guardado");
+            } catch (error) { alert("Error al guardar el pago fijo."); } finally { btn.disabled = false; }
+        });
 
         // --- RENDERIZAR CATEGORÍAS (PREFERENCIAS Y SELECTOR) ---
         function renderizarCategorias() {
@@ -609,7 +718,7 @@
             } catch (error) { alert("Error."); } finally { btn.disabled = false; }
         });
 
-        // --- MIGRACIÓN JSON A FIREBASE (NUEVO) ---
+        // --- MIGRACIÓN JSON A FIREBASE ---
         document.getElementById('import-json-btn').addEventListener('click', () => {
             document.getElementById('import-json-input').click();
         });
@@ -627,13 +736,10 @@
             reader.onload = async (event) => {
                 try {
                     const data = JSON.parse(event.target.result);
-                    if (!data.transactions || !Array.isArray(data.transactions)) {
-                        throw new Error("El archivo JSON no contiene un array válido llamado 'transactions'.");
-                    }
-
-                    // 1. Crear Bóveda para el historial migrado (si no existe)
+                    
+                    // 1. Crear Bóveda comodín para transacciones importadas
                     let cuentaMigrada = estadoApp.cuentas.find(c => c.nombre === "Bóveda Anterior");
-                    if (!cuentaMigrada) {
+                    if (!cuentaMigrada && data.transactions && data.transactions.length > 0) {
                         await addDoc(collection(db, `usuarios/${currentUser.uid}/cuentas`), {
                             nombre: "Bóveda Anterior",
                             tipo: "Efectivo",
@@ -642,46 +748,54 @@
                         });
                     }
 
-                    // 2. Extraer Categorías Únicas del JSON y crearlas si no existen
-                    const categoriasViejas = [...new Set(data.transactions.map(t => t.category).filter(Boolean))];
-                    for (const cat of categoriasViejas) {
-                        if (!estadoApp.categorias.find(c => c.nombre.toLowerCase() === cat.toLowerCase())) {
-                             await addDoc(collection(db, `usuarios/${currentUser.uid}/categorias`), { nombre: cat });
+                    // 2. Importar Transacciones
+                    if (data.transactions && Array.isArray(data.transactions)) {
+                        const categoriasViejas = [...new Set(data.transactions.map(t => t.category).filter(Boolean))];
+                        for (const cat of categoriasViejas) {
+                            if (!estadoApp.categorias.find(c => c.nombre.toLowerCase() === cat.toLowerCase())) {
+                                 await addDoc(collection(db, `usuarios/${currentUser.uid}/categorias`), { nombre: cat });
+                            }
+                        }
+
+                        const chunkSize = 400;
+                        for (let i = 0; i < data.transactions.length; i += chunkSize) {
+                            const chunk = data.transactions.slice(i, i + chunkSize);
+                            const batch = writeBatch(db);
+                            
+                            chunk.forEach(tx => {
+                                const txRef = doc(collection(db, `usuarios/${currentUser.uid}/transacciones`));
+                                let tipoMapeado = tx.type === 'income' ? 'ingreso' : 'gasto';
+                                let fechaObj = tx.createdAt ? new Date(tx.createdAt) : new Date((tx.date || '') + "T12:00:00");
+
+                                batch.set(txRef, {
+                                    monto: Number(tx.amount) || 0,
+                                    descripcion: tx.title || "Transacción Importada",
+                                    cuenta: "Bóveda Anterior",
+                                    categoria: tx.category || "General",
+                                    tipo: tipoMapeado,
+                                    fecha: fechaObj
+                                });
+                            });
+                            await batch.commit();
                         }
                     }
 
-                    // 3. Subir Transacciones mediante lotes (Batches) para que sea veloz y no sature la API
-                    const chunkSize = 400; // Firebase permite max 500 operaciones por batch
-                    for (let i = 0; i < data.transactions.length; i += chunkSize) {
-                        const chunk = data.transactions.slice(i, i + chunkSize);
-                        const batch = writeBatch(db);
-                        
-                        chunk.forEach(tx => {
-                            const txRef = doc(collection(db, `usuarios/${currentUser.uid}/transacciones`));
-                            
-                            // Mapear "expense"/"income" a "gasto"/"ingreso"
-                            let tipoMapeado = 'gasto';
-                            if (tx.type === 'income') tipoMapeado = 'ingreso';
-
-                            // Procesar la fecha
-                            let fechaObj = new Date();
-                            if (tx.createdAt) fechaObj = new Date(tx.createdAt);
-                            else if (tx.date) fechaObj = new Date(tx.date + "T12:00:00");
-
-                            batch.set(txRef, {
-                                monto: Number(tx.amount) || 0,
-                                descripcion: tx.title || "Transacción Importada",
-                                cuenta: "Bóveda Anterior",
-                                categoria: tx.category || "General",
-                                tipo: tipoMapeado,
-                                fecha: fechaObj
+                    // 3. Importar Pagos Fijos (MODIFICACIÓN PARA EL NUEVO MÓDULO)
+                    if (data.fixed && Array.isArray(data.fixed)) {
+                        const batchFijos = writeBatch(db);
+                        data.fixed.forEach(fijo => {
+                            const docRef = doc(collection(db, `usuarios/${currentUser.uid}/pagos_fijos`));
+                            batchFijos.set(docRef, {
+                                titulo: fijo.title || "Pago Fijo Importado",
+                                monto: Number(fijo.amount) || 0,
+                                dia: Number(fijo.day) || 1
                             });
                         });
-                        await batch.commit(); // Ejecutar el lote a la base de datos
+                        await batchFijos.commit();
                     }
 
-                    mostrarNotificacion(`¡Se importaron ${data.transactions.length} registros exitosamente!`);
-                    e.target.value = ''; // Resetear el input
+                    mostrarNotificacion(`Backup importado exitosamente.`);
+                    e.target.value = '';
 
                 } catch (error) {
                     console.error("Error al importar:", error);
@@ -718,7 +832,8 @@
         // --- FUNCIONES ACCESIBLES GLOBALMENTE ---
         window.borrarTx = async (id) => { if(confirm("¿Eliminar este registro?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, id)); mostrarNotificacion("Registro eliminado"); };
         window.borrarCuenta = async (id) => { if(confirm("¿Eliminar esta bóveda?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/cuentas`, id)); mostrarNotificacion("Bóveda eliminada"); };
-        
+        window.borrarPagoFijo = async (id) => { if(confirm("¿Dejar de dar seguimiento a este pago fijo?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/pagos_fijos`, id)); mostrarNotificacion("Pago fijo eliminado"); };
+
         window.ajustarCuenta = async (id, saldoActual, nombre) => {
             const saldoRealStr = prompt(`Saldo actual calculado de ${nombre}: $${saldoActual.toFixed(2)}\n\n¿Cuánto dinero REAL tienes en esta cuenta ahora mismo?`);
             if (saldoRealStr === null || saldoRealStr.trim() === '') return;
