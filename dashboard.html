@@ -499,6 +499,7 @@
                 let cuentaAfectada = cuentasCalculadas.find(c => c.nombre === tx.cuenta);
                 if (tx.tipo === 'ingreso') { totalIngresos += tx.monto; if(cuentaAfectada) cuentaAfectada.saldo_actual += tx.monto; } 
                 else if (tx.tipo === 'gasto') { totalGastos += tx.monto; if(cuentaAfectada) cuentaAfectada.saldo_actual -= tx.monto; }
+                else if (tx.tipo === 'ajuste') { if(cuentaAfectada) cuentaAfectada.saldo_actual += tx.monto; }
             });
 
             patrimonioNetoTotal = cuentasCalculadas.reduce((sum, c) => sum + c.saldo_actual, 0);
@@ -524,7 +525,10 @@
                     <div class="absolute top-0 left-0 w-1 h-full ${bgClass.split(' ')[0].replace('100','500')}"></div>
                     <div class="flex justify-between items-start">
                         <div class="w-10 h-10 rounded-full ${bgClass} ${colorClass} flex items-center justify-center text-xl"><i class="ph-fill ${icon}"></i></div>
-                        <button onclick="window.borrarCuenta('${acc.id}')" class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Eliminar Bóveda"><i class="ph-bold ph-trash text-lg"></i></button>
+                        <div class="flex gap-2">
+                            <button onclick="window.ajustarCuenta('${acc.id}', ${acc.saldo_actual}, '${acc.nombre}')" class="text-gray-400 hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Ajustar Saldo Real"><i class="ph-bold ph-sliders text-lg"></i></button>
+                            <button onclick="window.borrarCuenta('${acc.id}')" class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Eliminar Bóveda"><i class="ph-bold ph-trash text-lg"></i></button>
+                        </div>
                     </div>
                     <div>
                         <p class="font-bold text-lg text-gray-900 dark:text-white">${acc.nombre}</p>
@@ -543,8 +547,14 @@
             estadoApp.transacciones.forEach(tx => {
                 let fechaStr = "Procesando...";
                 if(tx.fecha) fechaStr = tx.fecha.toDate().toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' });
-                const colorMonto = tx.tipo === 'ingreso' ? 'text-green-500' : 'text-red-500';
-                const signo = tx.tipo === 'ingreso' ? '+' : '-';
+                
+                let colorMonto = 'text-gray-500';
+                let signo = '';
+                let montoMostrado = Math.abs(tx.monto).toFixed(2);
+                
+                if (tx.tipo === 'ingreso') { colorMonto = 'text-green-500'; signo = '+'; }
+                else if (tx.tipo === 'gasto') { colorMonto = 'text-red-500'; signo = '-'; }
+                else if (tx.tipo === 'ajuste') { colorMonto = 'text-blue-500'; signo = tx.monto >= 0 ? '+' : '-'; }
                 
                 tbody.insertAdjacentHTML('beforeend', `
                     <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
@@ -555,7 +565,7 @@
                         </td>
                         <td class="p-4 text-gray-500 dark:text-gp-muted">${tx.cuenta}</td>
                         <td class="p-4 text-xs uppercase font-bold text-gray-500">${tx.tipo}</td>
-                        <td class="p-4 text-right font-mono font-bold ${colorMonto}">${signo}$${tx.monto.toFixed(2)}</td>
+                        <td class="p-4 text-right font-mono font-bold ${colorMonto}">${signo}$${montoMostrado}</td>
                         <td class="p-4 text-center">
                             <button onclick="window.editarTx('${tx.id}')" class="text-blue-500 hover:text-blue-400 mr-2" title="Editar"><i class="ph-bold ph-pencil"></i></button>
                             <button onclick="window.borrarTx('${tx.id}')" class="text-red-500 hover:text-red-400" title="Eliminar"><i class="ph-bold ph-trash"></i></button>
@@ -616,6 +626,29 @@
         // --- FUNCIONES ACCESIBLES GLOBALMENTE ---
         window.borrarTx = async (id) => { if(confirm("¿Eliminar este registro?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, id)); mostrarNotificacion("Registro eliminado"); };
         window.borrarCuenta = async (id) => { if(confirm("¿Eliminar esta bóveda?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/cuentas`, id)); mostrarNotificacion("Bóveda eliminada"); };
+        
+        window.ajustarCuenta = async (id, saldoActual, nombre) => {
+            const saldoRealStr = prompt(`Saldo actual calculado de ${nombre}: $${saldoActual.toFixed(2)}\n\n¿Cuánto dinero REAL tienes en esta cuenta ahora mismo?`);
+            if (saldoRealStr === null || saldoRealStr.trim() === '') return;
+            const saldoReal = parseFloat(saldoRealStr);
+            if (isNaN(saldoReal)) { alert("Por favor ingresa un número válido."); return; }
+            
+            const diferencia = saldoReal - saldoActual;
+            if (diferencia === 0) { mostrarNotificacion("El saldo cuadra perfectamente."); return; }
+
+            try {
+                await addDoc(collection(db, `usuarios/${currentUser.uid}/transacciones`), {
+                    monto: diferencia,
+                    descripcion: 'Ajuste de sistema (Cuadre de caja)',
+                    cuenta: nombre,
+                    categoria: 'Sistema',
+                    tipo: 'ajuste',
+                    fecha: serverTimestamp()
+                });
+                mostrarNotificacion("Saldo ajustado correctamente");
+            } catch (error) { alert("Error al realizar el ajuste."); console.error(error); }
+        };
+
         window.editarTx = async (id) => {
             const docSnap = await getDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, id));
             if (docSnap.exists()) {
