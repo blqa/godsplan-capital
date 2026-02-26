@@ -38,11 +38,7 @@
         body { transition: background-color 0.3s ease, color 0.3s ease; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Animación suave al cambiar de vistas */
-        .view-section {
-            animation: fadeIn 0.3s ease-in-out;
-        }
+        .view-section { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -51,13 +47,13 @@
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-gp-bg dark:text-gp-text min-h-screen flex">
 
-    <!-- CORTINA DE SEGURIDAD FIREBASE -->
+    <!-- CORTINA DE SEGURIDAD -->
     <div id="security-curtain" class="fixed inset-0 z-[100] bg-white dark:bg-gp-bg flex flex-col items-center justify-center transition-colors">
         <i class="ph-bold ph-shield-check text-5xl text-blue-500 mb-4 animate-pulse"></i>
-        <p class="font-mono text-gray-500 dark:text-gp-muted text-sm">Validando token de acceso...</p>
+        <p class="font-mono text-gray-500 dark:text-gp-muted text-sm">Conectando a la bóveda...</p>
     </div>
 
-    <!-- SIDEBAR (Navegación) -->
+    <!-- SIDEBAR -->
     <aside class="w-64 fixed h-full bg-white dark:bg-gp-surface border-r border-gray-200 dark:border-gp-border flex flex-col z-40 transition-colors">
         <div class="h-20 flex items-center px-6 border-b border-gray-200 dark:border-gp-border">
             <div class="flex items-center gap-3">
@@ -114,6 +110,12 @@
     <!-- MAIN APP AREA -->
     <main class="flex-1 ml-64 p-8 relative">
 
+        <!-- ALERTA DINÁMICA (Para notificar cuando se guarda algo) -->
+        <div id="toast-alert" class="fixed top-8 right-8 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-50 flex items-center gap-3 font-medium">
+            <i class="ph-bold ph-check-circle text-xl"></i>
+            <span id="toast-message">Transacción registrada</span>
+        </div>
+
         <!-- ================================================================= -->
         <!-- VISTA 1: DASHBOARD (/dashboard)                                   -->
         <!-- ================================================================= -->
@@ -121,7 +123,7 @@
             <header class="flex justify-between items-end mb-10">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Centro de Mando</h1>
-                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Visión global de tu patrimonio</p>
+                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Visión global de tu patrimonio en tiempo real</p>
                 </div>
                 <button onclick="document.querySelector('[data-target=\'view-payments\']').click()" class="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-transform shadow-lg">
                     <i class="ph-bold ph-plus"></i> Ingresar Registro
@@ -129,92 +131,33 @@
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                <!-- Tarjeta Patrimonio -->
+                <!-- Tarjeta Patrimonio Dinámica -->
                 <div class="lg:col-span-2 bg-white dark:bg-gp-surface rounded-3xl p-8 border border-gray-200 dark:border-gp-border shadow-sm flex flex-col justify-between">
                     <div class="flex justify-between items-start mb-6">
                         <div class="flex items-center gap-2 text-gray-500 dark:text-gp-muted font-medium text-sm uppercase tracking-wider">
                             <i class="ph-fill ph-scales"></i> Patrimonio Neto
                         </div>
-                        <span class="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400 rounded-md text-xs font-bold font-mono">+12.5%</span>
                     </div>
                     <div>
-                        <h2 class="text-5xl lg:text-6xl font-mono font-extrabold text-gray-900 dark:text-white tracking-tight">$184,320<span class="text-gray-400 dark:text-zinc-600 text-3xl">.00</span></h2>
-                        <p class="text-sm text-gray-500 dark:text-gp-muted mt-2">Suma total de cuentas espejo</p>
+                        <!-- ESTE NÚMERO SE ACTUALIZARÁ CON FIREBASE -->
+                        <h2 class="text-5xl lg:text-6xl font-mono font-extrabold text-gray-900 dark:text-white tracking-tight" id="display-patrimonio">$0<span class="text-gray-400 dark:text-zinc-600 text-3xl">.00</span></h2>
+                        <p class="text-sm text-gray-500 dark:text-gp-muted mt-2">Calculado desde Firestore</p>
                     </div>
                 </div>
 
-                <!-- Tarjeta Flujo Mensual -->
-                <div class="bg-white dark:bg-gp-surface rounded-3xl p-8 border border-gray-200 dark:border-gp-border shadow-sm">
-                    <h3 class="text-sm font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-6">Flujo de Caja (Octubre)</h3>
+                <!-- Resumen Rápido -->
+                <div class="bg-white dark:bg-gp-surface rounded-3xl p-8 border border-gray-200 dark:border-gp-border shadow-sm flex flex-col justify-center">
+                    <h3 class="text-sm font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-6">Totales Históricos</h3>
                     
-                    <div class="mb-6">
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-gray-900 dark:text-white font-medium">Ingresos</span>
-                            <span class="text-green-600 dark:text-green-400 font-mono font-bold">$32,000</span>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gp-bg rounded-lg border border-gray-100 dark:border-gp-border">
+                            <span class="text-xs font-bold text-gray-500 uppercase"><i class="ph-fill ph-arrow-down text-green-500 mr-1"></i> Entradas</span>
+                            <span class="font-mono text-green-500 font-bold" id="display-ingresos">$0.00</span>
                         </div>
-                        <div class="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-2">
-                            <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gp-bg rounded-lg border border-gray-100 dark:border-gp-border">
+                            <span class="text-xs font-bold text-gray-500 uppercase"><i class="ph-fill ph-arrow-up text-red-500 mr-1"></i> Salidas</span>
+                            <span class="font-mono text-red-500 font-bold" id="display-gastos">$0.00</span>
                         </div>
-                    </div>
-                    
-                    <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-gray-900 dark:text-white font-medium">Gastos</span>
-                            <span class="text-red-600 dark:text-red-400 font-mono font-bold">-$14,500</span>
-                        </div>
-                        <div class="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-2">
-                            <div class="bg-red-500 h-2 rounded-full" style="width: 45%"></div>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gp-border flex justify-between">
-                        <span class="text-xs text-gray-500 dark:text-gp-muted font-medium">Retención actual</span>
-                        <span class="text-sm text-blue-600 dark:text-blue-400 font-bold font-mono">54.6%</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sección Inferior: Alertas Presupuesto -->
-            <div>
-                <h3 class="font-bold text-gray-900 dark:text-white mb-4">Estado de Presupuestos Inteligentes</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Presupuesto 1 -->
-                    <div class="bg-white dark:bg-gp-surface p-5 rounded-2xl border border-gray-200 dark:border-gp-border shadow-sm">
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-xs font-bold text-gray-500 dark:text-gp-muted uppercase"><i class="ph-fill ph-fork-knife mr-1"></i> Comida</span>
-                            <span class="text-xs text-red-500 font-bold">85%</span>
-                        </div>
-                        <p class="font-mono text-gray-900 dark:text-white font-bold">$4,250 / <span class="text-gray-400">$5,000</span></p>
-                        <div class="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-1.5 mt-3">
-                            <div class="bg-red-500 h-1.5 rounded-full" style="width: 85%"></div>
-                        </div>
-                    </div>
-                    <!-- Presupuesto 2 -->
-                    <div class="bg-white dark:bg-gp-surface p-5 rounded-2xl border border-gray-200 dark:border-gp-border shadow-sm">
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-xs font-bold text-gray-500 dark:text-gp-muted uppercase"><i class="ph-fill ph-car mr-1"></i> Transporte</span>
-                            <span class="text-xs text-yellow-500 font-bold">40%</span>
-                        </div>
-                        <p class="font-mono text-gray-900 dark:text-white font-bold">$800 / <span class="text-gray-400">$2,000</span></p>
-                        <div class="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-1.5 mt-3">
-                            <div class="bg-yellow-500 h-1.5 rounded-full" style="width: 40%"></div>
-                        </div>
-                    </div>
-                    <!-- Presupuesto 3 -->
-                    <div class="bg-white dark:bg-gp-surface p-5 rounded-2xl border border-gray-200 dark:border-gp-border shadow-sm">
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-xs font-bold text-gray-500 dark:text-gp-muted uppercase"><i class="ph-fill ph-house mr-1"></i> Hogar</span>
-                            <span class="text-xs text-green-500 font-bold">100%</span>
-                        </div>
-                        <p class="font-mono text-gray-900 dark:text-white font-bold">$12,000 / <span class="text-gray-400">$12,000</span></p>
-                        <div class="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-1.5 mt-3">
-                            <div class="bg-green-500 h-1.5 rounded-full" style="width: 100%"></div>
-                        </div>
-                    </div>
-                    <!-- Base Cero -->
-                    <div class="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-2xl border border-blue-200 dark:border-blue-800/50 shadow-sm flex flex-col justify-center items-center text-center">
-                        <span class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mb-1">Sin asignar</span>
-                        <p class="font-mono text-xl text-blue-700 dark:text-blue-300 font-bold">$2,950</p>
                     </div>
                 </div>
             </div>
@@ -227,58 +170,23 @@
             <header class="flex justify-between items-end mb-8">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Libro Mayor (Ledger)</h1>
-                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Registro inmutable de todas tus operaciones</p>
+                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Tus transacciones extraídas de Firestore</p>
                 </div>
             </header>
 
-            <!-- Filtros -->
-            <div class="flex gap-4 mb-6">
-                <input type="month" class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border text-sm rounded-lg px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-blue-500" value="2026-10">
-                <select class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border text-sm rounded-lg px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
-                    <option value="">Todas las cuentas</option>
-                    <option value="bbva">BBVA Principal</option>
-                    <option value="nu">Nu Bank</option>
-                    <option value="cash">Efectivo</option>
-                </select>
-                <button class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border text-sm rounded-lg px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
-                    <i class="ph-bold ph-funnel mr-1"></i> Más filtros
-                </button>
-            </div>
-
-            <!-- Tabla de Historial -->
             <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl overflow-hidden shadow-sm">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-gp-border text-xs uppercase tracking-wider text-gray-500 dark:text-gp-muted">
                             <th class="p-4 font-medium">Fecha</th>
                             <th class="p-4 font-medium">Descripción</th>
-                            <th class="p-4 font-medium">Categoría</th>
-                            <th class="p-4 font-medium">Cuenta</th>
+                            <th class="p-4 font-medium">Tipo</th>
                             <th class="p-4 font-medium text-right">Monto</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gp-border text-sm">
-                        <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
-                            <td class="p-4 text-gray-500 dark:text-gp-muted font-mono">26 Oct, 14:30</td>
-                            <td class="p-4 font-medium text-gray-900 dark:text-white">Starbucks Centro</td>
-                            <td class="p-4"><span class="px-2 py-1 bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 rounded text-xs font-bold">#Café</span></td>
-                            <td class="p-4 text-gray-500 dark:text-gp-muted">Nu Bank</td>
-                            <td class="p-4 text-right font-mono font-bold text-gray-900 dark:text-white">-$85.00</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
-                            <td class="p-4 text-gray-500 dark:text-gp-muted font-mono">25 Oct, 09:00</td>
-                            <td class="p-4 font-medium text-gray-900 dark:text-white">Nómina Quincenal</td>
-                            <td class="p-4"><span class="px-2 py-1 bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 rounded text-xs font-bold">#Ingresos</span></td>
-                            <td class="p-4 text-gray-500 dark:text-gp-muted">BBVA Principal</td>
-                            <td class="p-4 text-right font-mono font-bold text-green-600 dark:text-green-400">+$15,000.00</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
-                            <td class="p-4 text-gray-500 dark:text-gp-muted font-mono">24 Oct, 18:15</td>
-                            <td class="p-4 font-medium text-gray-900 dark:text-white">Transferencia a Efectivo</td>
-                            <td class="p-4"><span class="px-2 py-1 bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded text-xs font-bold"><i class="ph-bold ph-arrows-left-right"></i> Interno</span></td>
-                            <td class="p-4 text-gray-500 dark:text-gp-muted">BBVA -> Efectivo</td>
-                            <td class="p-4 text-right font-mono font-bold text-gray-500 dark:text-gp-muted">$2,000.00</td>
-                        </tr>
+                    <!-- ESTE CUERPO SE LLENARÁ DINÁMICAMENTE CON JS -->
+                    <tbody id="history-table-body" class="divide-y divide-gray-100 dark:divide-gp-border text-sm">
+                        <!-- Las filas se inyectan aquí -->
                     </tbody>
                 </table>
             </div>
@@ -290,174 +198,62 @@
         <section id="view-payments" class="view-section hidden max-w-2xl mx-auto">
             <header class="mb-10 text-center">
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Nueva Transacción</h1>
-                <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Registra un movimiento en tu Shadow Ledger</p>
+                <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Registra un movimiento en Firestore</p>
             </header>
 
             <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-3xl p-8 shadow-xl">
                 
-                <!-- Pestañas (Gasto | Ingreso | Transferencia) -->
-                <div class="flex p-1 bg-gray-100 dark:bg-gp-bg rounded-xl mb-8">
-                    <button class="flex-1 py-2 rounded-lg bg-white dark:bg-gp-surface text-gray-900 dark:text-white font-bold shadow-sm text-sm">Gasto</button>
-                    <button class="flex-1 py-2 rounded-lg text-gray-500 dark:text-gp-muted font-medium text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Ingreso</button>
-                    <button class="flex-1 py-2 rounded-lg text-gray-500 dark:text-gp-muted font-medium text-sm hover:text-gray-900 dark:hover:text-white transition-colors">Transferencia</button>
-                </div>
+                <form id="transaction-form" class="space-y-6">
+                    
+                    <!-- Tipo de Transacción (Radio Buttons) -->
+                    <div class="flex gap-4 p-1 bg-gray-100 dark:bg-gp-bg rounded-xl mb-6">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="tx_type" value="gasto" class="peer sr-only" checked>
+                            <div class="text-center py-2 rounded-lg text-sm font-medium text-gray-500 peer-checked:bg-white peer-checked:dark:bg-gp-surface peer-checked:text-red-500 peer-checked:shadow-sm transition-all">Gasto</div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="tx_type" value="ingreso" class="peer sr-only">
+                            <div class="text-center py-2 rounded-lg text-sm font-medium text-gray-500 peer-checked:bg-white peer-checked:dark:bg-gp-surface peer-checked:text-green-500 peer-checked:shadow-sm transition-all">Ingreso</div>
+                        </label>
+                    </div>
 
-                <form class="space-y-6">
                     <!-- Monto -->
                     <div class="text-center">
                         <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Monto</label>
                         <div class="flex items-center justify-center text-5xl font-mono font-bold text-gray-900 dark:text-white">
                             <span class="text-gray-400 dark:text-zinc-600 mr-2">$</span>
-                            <input type="number" placeholder="0.00" class="bg-transparent w-48 text-center focus:outline-none placeholder-gray-300 dark:placeholder-zinc-700">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <!-- Cuenta Espejo -->
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Cuenta Origen</label>
-                            <select class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
-                                <option>BBVA Principal</option>
-                                <option>Nu Bank</option>
-                                <option>Efectivo</option>
-                            </select>
-                        </div>
-                        <!-- Categoría -->
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Categoría</label>
-                            <select class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
-                                <option>Comida y Restaurantes</option>
-                                <option>Transporte</option>
-                                <option>Hogar y Servicios</option>
-                                <option>Entretenimiento</option>
-                            </select>
+                            <input type="number" id="tx-amount" step="0.01" required placeholder="0.00" class="bg-transparent w-48 text-center focus:outline-none placeholder-gray-300 dark:placeholder-zinc-700">
                         </div>
                     </div>
 
                     <!-- Descripción -->
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Descripción (Opcional)</label>
-                        <input type="text" placeholder="Ej. Cena con amigos" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Descripción</label>
+                        <input type="text" id="tx-desc" required placeholder="Ej. Compra supermercado" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
                     </div>
 
                     <!-- Botón Guardar -->
-                    <button type="button" class="w-full py-4 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 font-bold text-lg hover:scale-[1.02] transition-transform shadow-lg">
-                        Registrar Movimiento
+                    <button type="submit" id="submit-tx-btn" class="w-full py-4 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 font-bold text-lg hover:scale-[1.02] transition-transform shadow-lg disabled:opacity-50">
+                        Guardar en Nube
                     </button>
                 </form>
             </div>
         </section>
 
-        <!-- ================================================================= -->
-        <!-- VISTA 4: CUENTAS ESPEJO (/accounts)                               -->
-        <!-- ================================================================= -->
-        <section id="view-accounts" class="view-section hidden">
-            <header class="flex justify-between items-end mb-10">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Tus Bóvedas</h1>
-                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Administra tus cuentas espejo sin conexión real</p>
-                </div>
-            </header>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Cuenta Existente 1 -->
-                <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl p-6 flex flex-col justify-between h-48 relative overflow-hidden group">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
-                    <div class="flex justify-between items-start">
-                        <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl">
-                            <i class="ph-fill ph-bank"></i>
-                        </div>
-                        <button class="text-gray-400 hover:text-gray-900 dark:hover:text-white"><i class="ph-bold ph-dots-three-outline-vertical text-lg"></i></button>
-                    </div>
-                    <div>
-                        <p class="font-bold text-lg text-gray-900 dark:text-white">BBVA Principal</p>
-                        <div class="flex justify-between items-end mt-1">
-                            <p class="text-sm text-gray-500 dark:text-gp-muted">Débito</p>
-                            <p class="font-mono font-bold text-gray-900 dark:text-white text-xl">$145,000.00</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cuenta Existente 2 -->
-                <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl p-6 flex flex-col justify-between h-48 relative overflow-hidden group">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
-                    <div class="flex justify-between items-start">
-                        <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl">
-                            <i class="ph-fill ph-credit-card"></i>
-                        </div>
-                        <button class="text-gray-400 hover:text-gray-900 dark:hover:text-white"><i class="ph-bold ph-dots-three-outline-vertical text-lg"></i></button>
-                    </div>
-                    <div>
-                        <p class="font-bold text-lg text-gray-900 dark:text-white">Nu Bank</p>
-                        <div class="flex justify-between items-end mt-1">
-                            <p class="text-sm text-gray-500 dark:text-gp-muted">Crédito</p>
-                            <p class="font-mono font-bold text-red-500 text-xl">-$12,400.00</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Botón Añadir Cuenta -->
-                <button class="bg-gray-50 dark:bg-gp-bg border-2 border-dashed border-gray-300 dark:border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center h-48 hover:bg-gray-100 dark:hover:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-600 transition-all text-gray-500 dark:text-gp-muted hover:text-gray-900 dark:hover:text-white group">
-                    <i class="ph-bold ph-plus text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
-                    <p class="font-bold text-sm">Nueva Bóveda</p>
-                </button>
-            </div>
-        </section>
-
-        <!-- ================================================================= -->
-        <!-- VISTA 5: SETTINGS (/settings)                                     -->
-        <!-- ================================================================= -->
-        <section id="view-settings" class="view-section hidden max-w-4xl">
-            <header class="mb-10">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Preferencias del Sistema</h1>
-                <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Configura categorías y comportamiento de la aplicación</p>
-            </header>
-
-            <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-3xl overflow-hidden shadow-sm">
-                
-                <div class="p-8 border-b border-gray-100 dark:border-gp-border">
-                    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Gestión de Categorías</h2>
-                    <p class="text-sm text-gray-500 dark:text-gp-muted mb-6">Administra las etiquetas que utilizas para organizar tus gastos y asignar presupuestos.</p>
-                    
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gp-bg rounded-xl border border-gray-200 dark:border-gp-border">
-                            <div class="flex items-center gap-3">
-                                <span class="w-3 h-3 rounded-full bg-red-500"></span>
-                                <span class="font-medium text-gray-900 dark:text-white text-sm">Comida y Restaurantes</span>
-                            </div>
-                            <button class="text-gray-400 hover:text-red-500"><i class="ph-bold ph-trash"></i></button>
-                        </div>
-                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gp-bg rounded-xl border border-gray-200 dark:border-gp-border">
-                            <div class="flex items-center gap-3">
-                                <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-                                <span class="font-medium text-gray-900 dark:text-white text-sm">Transporte y Gasolina</span>
-                            </div>
-                            <button class="text-gray-400 hover:text-red-500"><i class="ph-bold ph-trash"></i></button>
-                        </div>
-                        <button class="w-full py-3 mt-2 border border-dashed border-gray-300 dark:border-zinc-700 text-gray-500 dark:text-gp-muted rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
-                            + Añadir nueva categoría
-                        </button>
-                    </div>
-                </div>
-
-                <div class="p-8">
-                    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Exportación de Datos</h2>
-                    <p class="text-sm text-gray-500 dark:text-gp-muted mb-6">Tus datos son tuyos. Descarga todo tu ledger en formato procesable.</p>
-                    <button class="px-5 py-2.5 bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-white font-medium rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors flex items-center gap-2">
-                        <i class="ph-bold ph-download-simple"></i> Exportar Ledger (.CSV)
-                    </button>
-                </div>
-            </div>
-        </section>
+        <!-- (Accounts y Settings se omiten para enfocar en la Base de Datos, puedes agregar los estáticos de antes si quieres) -->
+        <section id="view-accounts" class="view-section hidden"><p class="text-center mt-20 text-gray-500">Módulo en construcción...</p></section>
+        <section id="view-settings" class="view-section hidden"><p class="text-center mt-20 text-gray-500">Módulo en construcción...</p></section>
 
     </main>
 
-    <!-- LOGICA DE LA APLICACIÓN (SPA Router & Firebase Auth) -->
+    <!-- LOGICA DE LA APLICACIÓN Y FIREBASE FIRESTORE -->
     <script type="module">
+        // 1. IMPORTACIONES FIREBASE v11
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // 1. CONFIGURACIÓN FIREBASE
+        // 2. CONFIGURACIÓN
         const firebaseConfig = {
             apiKey: "AIzaSyB9eeepHd1fcRBQbS17fyRWsO1ba734dbw",
             authDomain: "capital-gp.firebaseapp.com",
@@ -466,63 +262,157 @@
             messagingSenderId: "14321430221",
             appId: "1:14321430221:web:7c827dc99b8d9446ae8384"
         };
+        
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const curtain = document.getElementById('security-curtain');
+        const db = getFirestore(app); // INICIALIZAMOS LA BASE DE DATOS
+        
+        let currentUser = null; // Variable para saber de quién son los datos
 
-        // 2. PROTECCIÓN DE RUTA (Auth Guard)
+        // 3. PROTECCIÓN Y ARRANQUE
+        const curtain = document.getElementById('security-curtain');
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                currentUser = user;
+                document.getElementById('user-display').textContent = user.email;
                 curtain.style.opacity = '0';
                 setTimeout(() => curtain.style.display = 'none', 300);
-                document.getElementById('user-display').textContent = user.email;
+                
+                // INICIAR ESCUCHA DE LA BASE DE DATOS PARA ESTE USUARIO
+                cargarDatosFinancieros();
             } else {
                 window.location.href = 'auth.html';
             }
         });
 
-        // 3. CERRAR SESIÓN
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            signOut(auth); // Redirigirá automáticamente por onAuthStateChanged
+        // 4. LÓGICA DEL FORMULARIO (ESCRIBIR EN FIRESTORE)
+        const txForm = document.getElementById('transaction-form');
+        const btnSubmit = document.getElementById('submit-tx-btn');
+        
+        txForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = "Guardando...";
+
+            // Obtener datos del formulario
+            const amount = parseFloat(document.getElementById('tx-amount').value);
+            const desc = document.getElementById('tx-desc').value;
+            const type = document.querySelector('input[name="tx_type"]:checked').value;
+
+            try {
+                // GUARDAR DOCUMENTO EN FIRESTORE
+                // Ruta estructurada: /usuarios/{user_id}/transacciones/{doc_id}
+                await addDoc(collection(db, `usuarios/${currentUser.uid}/transacciones`), {
+                    monto: amount,
+                    descripcion: desc,
+                    tipo: type,
+                    fecha: serverTimestamp() // Tiempo exacto del servidor de Google
+                });
+
+                // Limpiar form y mostrar éxito
+                txForm.reset();
+                mostrarNotificacion("Transacción registrada con éxito");
+                
+                // Redirigir al Dashboard para ver el resultado
+                document.querySelector('[data-target="view-dashboard"]').click();
+            } catch (error) {
+                console.error("Error al guardar: ", error);
+                alert("Error al guardar en la nube. Revisa la consola.");
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = "Guardar en Nube";
+            }
         });
 
-        // 4. MODO CLARO / OSCURO
+        // 5. ESCUCHAR FIRESTORE EN TIEMPO REAL (LEER DATOS)
+        function cargarDatosFinancieros() {
+            // Referencia a la colección de este usuario específico, ordenado por fecha
+            const transaccionesRef = collection(db, `usuarios/${currentUser.uid}/transacciones`);
+            const q = query(transaccionesRef, orderBy("fecha", "desc"));
+
+            // onSnapshot se ejecuta CADA VEZ que hay un cambio en la base de datos
+            onSnapshot(q, (snapshot) => {
+                let patrimonioNeto = 0;
+                let totalIngresos = 0;
+                let totalGastos = 0;
+                
+                const tbody = document.getElementById('history-table-body');
+                tbody.innerHTML = ''; // Limpiamos tabla vieja
+
+                snapshot.forEach((doc) => {
+                    const tx = doc.data();
+                    
+                    // 5.1 Calcular Totales
+                    if (tx.tipo === 'ingreso') {
+                        patrimonioNeto += tx.monto;
+                        totalIngresos += tx.monto;
+                    } else if (tx.tipo === 'gasto') {
+                        patrimonioNeto -= tx.monto;
+                        totalGastos += tx.monto;
+                    }
+
+                    // 5.2 Formatear Fecha
+                    let fechaMostrada = "Hace un momento";
+                    if(tx.fecha) {
+                        const date = tx.fecha.toDate();
+                        fechaMostrada = date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' });
+                    }
+
+                    // 5.3 Construir Fila para la Tabla de Historial
+                    const colorMonto = tx.tipo === 'ingreso' ? 'text-green-500' : 'text-red-500';
+                    const signo = tx.tipo === 'ingreso' ? '+' : '-';
+                    
+                    const filaHTML = `
+                        <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
+                            <td class="p-4 text-gray-500 dark:text-gp-muted font-mono">${fechaMostrada}</td>
+                            <td class="p-4 font-medium text-gray-900 dark:text-white">${tx.descripcion}</td>
+                            <td class="p-4 text-xs uppercase font-bold text-gray-500">${tx.tipo}</td>
+                            <td class="p-4 text-right font-mono font-bold ${colorMonto}">${signo}$${tx.monto.toFixed(2)}</td>
+                        </tr>
+                    `;
+                    tbody.insertAdjacentHTML('beforeend', filaHTML);
+                });
+
+                // 5.4 Actualizar Dashboard UI
+                document.getElementById('display-patrimonio').innerHTML = `$${patrimonioNeto.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('display-ingresos').textContent = `$${totalIngresos.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                document.getElementById('display-gastos').textContent = `$${totalGastos.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            });
+        }
+
+        // ==========================================
+        // UTILIDADES UI (Navegación y Tema)
+        // ==========================================
         const themeToggleBtn = document.getElementById('themeToggleBtn');
-        themeToggleBtn.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-        });
+        themeToggleBtn.addEventListener('click', () => { document.documentElement.classList.toggle('dark'); });
 
-        // 5. ENRUTADOR SPA (Cambio de Vistas sin recargar)
+        document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); });
+
         const navLinks = document.querySelectorAll('.nav-link');
         const viewSections = document.querySelectorAll('.view-section');
-
         navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
+            link.addEventListener('click', () => {
                 const targetId = link.getAttribute('data-target');
+                viewSections.forEach(s => s.classList.add('hidden'));
+                document.getElementById(targetId).classList.remove('hidden');
                 
-                // Ocultar todas las vistas
-                viewSections.forEach(section => {
-                    section.classList.add('hidden');
-                    section.classList.remove('block');
-                });
-                
-                // Mostrar la vista objetivo
-                const targetSection = document.getElementById(targetId);
-                targetSection.classList.remove('hidden');
-                targetSection.classList.add('block');
-
-                // Actualizar estilos activos en el Sidebar
                 navLinks.forEach(nav => {
-                    // Resetear estilos a inactivo
                     nav.classList.remove('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white');
                     nav.classList.add('text-gray-500', 'dark:text-gp-muted');
                 });
-                
-                // Poner estilo activo al clickeado
                 link.classList.remove('text-gray-500', 'dark:text-gp-muted');
                 link.classList.add('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white');
             });
         });
+
+        function mostrarNotificacion(mensaje) {
+            const toast = document.getElementById('toast-alert');
+            document.getElementById('toast-message').textContent = mensaje;
+            toast.classList.remove('translate-x-[150%]', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-x-[150%]', 'opacity-0');
+            }, 3000);
+        }
     </script>
 </body>
 </html>
