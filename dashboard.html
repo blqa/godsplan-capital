@@ -84,9 +84,13 @@
             <button data-target="view-payments" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <i class="ph-fill ph-swap text-xl"></i> Transacciones
             </button>
-            <!-- NUEVO SUBMENÚ: Pagos Fijos -->
             <button data-target="view-fixed-payments" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <i class="ph-fill ph-calendar-blank text-xl"></i> Pagos Fijos
+            </button>
+            
+            <!-- EL NUEVO ORGANIZADOR TDC -->
+            <button data-target="view-tdc" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <i class="ph-fill ph-credit-card text-xl"></i> Organizador TDC
             </button>
             
             <p class="px-3 text-[10px] font-bold text-gray-400 dark:text-zinc-600 uppercase tracking-widest mt-6 mb-2">Configuración</p>
@@ -211,7 +215,6 @@
                 <form id="transaction-form" class="space-y-6">
                     <input type="hidden" id="tx-id-hidden" value="">
 
-                    <!-- Tipo -->
                     <div class="flex gap-4 p-1 bg-gray-100 dark:bg-gp-bg rounded-xl mb-6">
                         <label class="flex-1 cursor-pointer">
                             <input type="radio" name="tx_type" id="tx_type_gasto" value="gasto" class="peer sr-only" checked>
@@ -223,7 +226,6 @@
                         </label>
                     </div>
 
-                    <!-- Monto -->
                     <div class="text-center">
                         <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Monto</label>
                         <div class="flex items-center justify-center text-5xl font-mono font-bold text-gray-900 dark:text-white">
@@ -243,15 +245,20 @@
                             <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Categoría</label>
                             <select id="tx-category" required class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
                                 <option value="General" selected>General</option>
-                                <!-- Categorías dinámicas se inyectan aquí -->
                             </select>
                         </div>
                     </div>
 
-                    <!-- Descripción -->
                     <div>
                         <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Descripción</label>
                         <input type="text" id="tx-desc" required placeholder="Ej. Compra supermercado" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <!-- NUEVO: Campo de Fecha (Opcional, por defecto es hoy) -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Fecha (Opcional)</label>
+                        <input type="datetime-local" id="tx-date" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                        <p class="text-[10px] text-gray-500 mt-1">Si lo dejas vacío, se registrará con la hora actual. Útil para registrar compras de días pasados.</p>
                     </div>
 
                     <button type="submit" id="submit-tx-btn" class="w-full py-4 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 font-bold text-lg hover:scale-[1.02] transition-transform shadow-lg disabled:opacity-50">
@@ -262,31 +269,28 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- VISTA 3.5: PAGOS FIJOS (/fixed-payments)  *** NUEVO MÓDULO *** -->
+        <!-- VISTA 3.5: PAGOS FIJOS (/fixed-payments)                          -->
         <!-- ================================================================= -->
         <section id="view-fixed-payments" class="view-section hidden max-w-6xl mx-auto">
             <header class="flex justify-between items-end mb-10">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Pagos Fijos</h1>
-                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Planifica tus gastos recurrentes mensuales (Renta, Luz, Suscripciones)</p>
+                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Planifica tus gastos recurrentes mensuales</p>
                 </div>
             </header>
 
             <div class="flex flex-col lg:flex-row gap-8">
-                <!-- Lista de Pagos Fijos -->
                 <div class="lg:w-2/3">
                     <div id="fixed-payments-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Se inyectan con JS -->
                     </div>
                 </div>
 
-                <!-- Formulario Agregar Pago Fijo -->
                 <div class="lg:w-1/3">
                     <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-3xl p-6 shadow-sm sticky top-8">
                         <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                             <i class="ph-bold ph-calendar-plus text-blue-500"></i> Nuevo Pago Fijo
                         </h3>
-                        <p class="text-xs text-gray-500 dark:text-gp-muted mb-4">NOTA: Estos pagos son planificadores. Debes registrarlos manualmente como transacción el día del cobro para afectar tu saldo.</p>
                         <form id="fixed-form" class="space-y-4">
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Concepto</label>
@@ -298,7 +302,7 @@
                                     <input type="number" id="fixed-amount" step="0.01" required placeholder="0.00" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm font-mono text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Día de cobro</label>
+                                    <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Día cobro</label>
                                     <input type="number" id="fixed-day" min="1" max="31" required placeholder="1-31" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm font-mono text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
                                 </div>
                             </div>
@@ -308,6 +312,66 @@
                         </form>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VISTA 3.6: ORGANIZADOR TDC (/tdc)  *** EL VERDADERO ORGANIZADOR *** -->
+        <!-- ================================================================= -->
+        <section id="view-tdc" class="view-section hidden max-w-6xl mx-auto">
+            <header class="flex justify-between items-end mb-10">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Organizador TDC</h1>
+                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Cálculo de fechas de corte y pagos para no generar intereses basados en tus transacciones.</p>
+                </div>
+            </header>
+
+            <div class="flex flex-col xl:flex-row gap-8">
+                
+                <!-- Panel de Tarjetas de Crédito Calculadas -->
+                <div class="xl:w-2/3">
+                    <div id="tdc-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Las tarjetas configuradas se inyectan aquí con JS -->
+                    </div>
+                </div>
+
+                <!-- Formulario de Configuración TDC -->
+                <div class="xl:w-1/3">
+                    <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-3xl p-6 shadow-sm sticky top-8">
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                            <i class="ph-bold ph-faders text-blue-500"></i> Configurar Tarjeta
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gp-muted mb-6">Selecciona una de tus cuentas de tipo 'Crédito' para asignarle fechas.</p>
+                        
+                        <form id="tdc-config-form" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Cuenta (Crédito)</label>
+                                <select id="tdc-config-account" required class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                                    <option value="" disabled selected>Selecciona tarjeta...</option>
+                                    <!-- Se llena dinámicamente -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Límite de Crédito Total</label>
+                                <input type="number" id="tdc-config-limit" step="0.01" required placeholder="Ej. 25000" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm font-mono text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Día de Corte</label>
+                                    <input type="number" id="tdc-config-cutoff" min="1" max="31" required placeholder="Ej. 5" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm font-mono text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Día Límite Pago</label>
+                                    <input type="number" id="tdc-config-payment" min="1" max="31" required placeholder="Ej. 25" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm font-mono text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                                </div>
+                            </div>
+                            <button type="submit" id="submit-tdc-config-btn" class="w-full mt-4 px-6 py-3 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 font-bold hover:scale-[1.02] transition-transform shadow-lg">
+                                Guardar / Actualizar Config
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -424,7 +488,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc, updateDoc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc, updateDoc, getDoc, writeBatch, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB9eeepHd1fcRBQbS17fyRWsO1ba734dbw",
@@ -439,8 +503,11 @@
         const db = getFirestore(app);
         let currentUser = null;
 
-        // ESTADO GLOBAL DE LA APP (Añadido: pagosFijos)
-        let estadoApp = { cuentas: [], transacciones: [], categorias: [], pagosFijos: [] };
+        // ESTADO GLOBAL DE LA APP
+        let estadoApp = { cuentas: [], transacciones: [], categorias: [], pagosFijos: [], tdcConfig: [] };
+
+        // Almacenamos variables temporales de cuentas calculadas para usarlas en TDC
+        let cuentasConSaldosGlobal = [];
 
         // --- SEGURIDAD ---
         onAuthStateChanged(auth, (user) => {
@@ -458,136 +525,45 @@
         // --- LISTENERS FIRESTORE EN TIEMPO REAL ---
         function iniciarListenersBD() {
             // Escuchar Categorías
-            const qCategorias = query(collection(db, `usuarios/${currentUser.uid}/categorias`), orderBy("nombre", "asc"));
-            onSnapshot(qCategorias, (snapshot) => {
+            onSnapshot(query(collection(db, `usuarios/${currentUser.uid}/categorias`), orderBy("nombre", "asc")), (snapshot) => {
                 estadoApp.categorias = [];
                 snapshot.forEach(doc => estadoApp.categorias.push({ id: doc.id, ...doc.data() }));
                 renderizarCategorias();
             });
 
-            // Escuchar Cuentas
-            const qCuentas = query(collection(db, `usuarios/${currentUser.uid}/cuentas`), orderBy("fecha_creacion", "asc"));
-            onSnapshot(qCuentas, (snapshot) => {
+            // Escuchar Pagos Fijos
+            onSnapshot(query(collection(db, `usuarios/${currentUser.uid}/pagos_fijos`), orderBy("dia", "asc")), (snapshot) => {
+                estadoApp.pagosFijos = [];
+                snapshot.forEach(doc => estadoApp.pagosFijos.push({ id: doc.id, ...doc.data() }));
+                renderizarPagosFijos();
+            });
+
+            // Escuchar Configuración de Tarjetas de Crédito
+            onSnapshot(query(collection(db, `usuarios/${currentUser.uid}/tdc_config`)), (snapshot) => {
+                estadoApp.tdcConfig = [];
+                snapshot.forEach(doc => estadoApp.tdcConfig.push({ id: doc.id, ...doc.data() }));
+                actualizarVistaTDC(); // Repintar organizador
+            });
+
+            // Escuchar Cuentas (Al actualizarse, desencadena cálculo completo)
+            onSnapshot(query(collection(db, `usuarios/${currentUser.uid}/cuentas`), orderBy("fecha_creacion", "asc")), (snapshot) => {
                 estadoApp.cuentas = [];
                 snapshot.forEach(doc => estadoApp.cuentas.push({ id: doc.id, ...doc.data() }));
                 calcularYRenderizar();
             });
 
             // Escuchar Transacciones
-            const qTx = query(collection(db, `usuarios/${currentUser.uid}/transacciones`), orderBy("fecha", "desc"));
-            onSnapshot(qTx, (snapshot) => {
+            onSnapshot(query(collection(db, `usuarios/${currentUser.uid}/transacciones`), orderBy("fecha", "desc")), (snapshot) => {
                 estadoApp.transacciones = [];
                 snapshot.forEach(doc => estadoApp.transacciones.push({ id: doc.id, ...doc.data() }));
                 calcularYRenderizar();
             });
-
-            // Escuchar Pagos Fijos (NUEVO)
-            const qFijos = query(collection(db, `usuarios/${currentUser.uid}/pagos_fijos`), orderBy("dia", "asc"));
-            onSnapshot(qFijos, (snapshot) => {
-                estadoApp.pagosFijos = [];
-                snapshot.forEach(doc => estadoApp.pagosFijos.push({ id: doc.id, ...doc.data() }));
-                renderizarPagosFijos();
-            });
         }
 
-        // --- RENDERIZAR PAGOS FIJOS (NUEVO) ---
-        function renderizarPagosFijos() {
-            const grid = document.getElementById('fixed-payments-grid');
-            grid.innerHTML = '';
-
-            if(estadoApp.pagosFijos.length === 0) {
-                grid.innerHTML = '<p class="text-sm text-gray-500 col-span-2">Aún no tienes pagos fijos registrados.</p>';
-                return;
-            }
-
-            estadoApp.pagosFijos.forEach(pago => {
-                grid.insertAdjacentHTML('beforeend', `
-                    <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl p-5 flex items-center justify-between group hover:border-blue-500 transition-colors">
-                        <div class="flex items-center gap-4">
-                            <div class="w-14 h-14 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 flex flex-col items-center justify-center text-blue-600 dark:text-blue-400">
-                                <span class="text-[10px] font-bold uppercase tracking-wider mb-0.5">Día</span>
-                                <span class="text-xl font-black font-mono leading-none">${pago.dia}</span>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-900 dark:text-white">${pago.titulo}</p>
-                                <p class="text-sm font-mono font-bold text-red-500 mt-1">-$${pago.monto.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
-                            </div>
-                        </div>
-                        <button onclick="window.borrarPagoFijo('${pago.id}')" class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Eliminar Pago Fijo">
-                            <i class="ph-bold ph-trash text-lg"></i>
-                        </button>
-                    </div>
-                `);
-            });
-        }
-
-        // --- AÑADIR NUEVO PAGO FIJO ---
-        document.getElementById('fixed-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submit-fixed-btn');
-            btn.disabled = true;
-            try {
-                await addDoc(collection(db, `usuarios/${currentUser.uid}/pagos_fijos`), { 
-                    titulo: document.getElementById('fixed-title').value,
-                    monto: parseFloat(document.getElementById('fixed-amount').value),
-                    dia: parseInt(document.getElementById('fixed-day').value)
-                });
-                document.getElementById('fixed-form').reset();
-                mostrarNotificacion("Pago fijo guardado");
-            } catch (error) { alert("Error al guardar el pago fijo."); } finally { btn.disabled = false; }
-        });
-
-        // --- RENDERIZAR CATEGORÍAS (PREFERENCIAS Y SELECTOR) ---
-        function renderizarCategorias() {
-            const list = document.getElementById('categories-list');
-            const select = document.getElementById('tx-category');
-            
-            list.innerHTML = '';
-            select.innerHTML = '<option value="General" selected>General</option>'; // Opción por defecto
-
-            estadoApp.categorias.forEach(cat => {
-                // Pintar en Vista de Preferencias
-                list.insertAdjacentHTML('beforeend', `
-                    <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gp-bg rounded-xl border border-gray-200 dark:border-gp-border group hover:border-blue-500 transition-colors">
-                        <div class="flex items-center gap-3">
-                            <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-                            <span class="font-medium text-gray-900 dark:text-white text-sm">${cat.nombre}</span>
-                        </div>
-                        <button onclick="window.borrarCategoria('${cat.id}')" class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Eliminar Etiqueta">
-                            <i class="ph-bold ph-trash"></i>
-                        </button>
-                    </div>
-                `);
-                
-                // Pintar en Formulario de Transacciones
-                select.insertAdjacentHTML('beforeend', `<option value="${cat.nombre}">${cat.nombre}</option>`);
-            });
-        }
-
-        // --- AÑADIR NUEVA CATEGORÍA ---
-        document.getElementById('category-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submit-cat-btn');
-            const nameInput = document.getElementById('cat-name');
-            btn.disabled = true;
-            try {
-                await addDoc(collection(db, `usuarios/${currentUser.uid}/categorias`), { nombre: nameInput.value });
-                nameInput.value = '';
-                mostrarNotificacion("Etiqueta añadida");
-            } catch (error) { alert("Error al añadir etiqueta."); } finally { btn.disabled = false; }
-        });
-
-        // --- ELIMINAR CATEGORÍA ---
-        window.borrarCategoria = async (id) => {
-            if(confirm("¿Eliminar esta etiqueta? (Las transacciones previas conservarán el nombre como texto).")) {
-                try { await deleteDoc(doc(db, `usuarios/${currentUser.uid}/categorias`, id)); mostrarNotificacion("Etiqueta eliminada"); } 
-                catch (error) { alert("Error al eliminar."); }
-            }
-        };
-
-        // --- MOTOR DE CÁLCULO (CUENTAS Y PATRIMONIO) ---
+        // --- MOTOR DE CÁLCULO CENTRAL (CUENTAS Y PATRIMONIO) ---
         function calcularYRenderizar() {
             let patrimonioNetoTotal = 0; let totalIngresos = 0; let totalGastos = 0;
+            // Copiamos base para no mutar original
             let cuentasCalculadas = estadoApp.cuentas.map(c => ({ ...c, saldo_actual: c.saldo_inicial }));
 
             estadoApp.transacciones.forEach(tx => {
@@ -599,12 +575,15 @@
 
             patrimonioNetoTotal = cuentasCalculadas.reduce((sum, c) => sum + c.saldo_actual, 0);
 
-            // Actualizar UI General
+            // Guardamos en memoria global para el Organizador TDC
+            cuentasConSaldosGlobal = cuentasCalculadas;
+
+            // 1. Actualizar Dashboard General
             document.getElementById('display-patrimonio').innerHTML = `$${patrimonioNetoTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             document.getElementById('display-ingresos').textContent = `$${totalIngresos.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             document.getElementById('display-gastos').textContent = `$${totalGastos.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
 
-            // Actualizar Tarjetas Cuentas
+            // 2. Actualizar Tarjetas Cuentas Espejo
             const accountsGrid = document.getElementById('accounts-grid');
             const txAccountSelect = document.getElementById('tx-account');
             accountsGrid.innerHTML = '';
@@ -636,17 +615,14 @@
                 txAccountSelect.insertAdjacentHTML('beforeend', `<option value="${acc.nombre}">${acc.nombre} ($${acc.saldo_actual.toFixed(2)})</option>`);
             });
 
-            // Actualizar Historial
+            // 3. Actualizar Historial
             const tbody = document.getElementById('history-table-body');
             tbody.innerHTML = '';
             estadoApp.transacciones.forEach(tx => {
                 let fechaStr = "Procesando...";
                 if(tx.fecha) fechaStr = tx.fecha.toDate().toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' });
                 
-                let colorMonto = 'text-gray-500';
-                let signo = '';
-                let montoMostrado = Math.abs(tx.monto).toFixed(2);
-                
+                let colorMonto = 'text-gray-500'; let signo = ''; let montoMostrado = Math.abs(tx.monto).toFixed(2);
                 if (tx.tipo === 'ingreso') { colorMonto = 'text-green-500'; signo = '+'; }
                 else if (tx.tipo === 'gasto') { colorMonto = 'text-red-500'; signo = '-'; }
                 else if (tx.tipo === 'ajuste') { colorMonto = 'text-blue-500'; signo = tx.monto >= 0 ? '+' : '-'; }
@@ -668,16 +644,258 @@
                     </tr>
                 `);
             });
+
+            // 4. Actualizar Organizador TDC
+            actualizarVistaTDC();
         }
+
+        // --- ORGANIZADOR TDC: LÓGICA DE FECHAS Y RENDERIZADO ---
+        function actualizarVistaTDC() {
+            const grid = document.getElementById('tdc-cards-grid');
+            const selectConfig = document.getElementById('tdc-config-account');
+            
+            grid.innerHTML = '';
+            selectConfig.innerHTML = '<option value="" disabled selected>Selecciona tarjeta...</option>';
+
+            // Filtrar solo cuentas de Crédito
+            const tarjetasCredito = cuentasConSaldosGlobal.filter(c => c.tipo === 'Crédito');
+
+            if(tarjetasCredito.length === 0) {
+                grid.innerHTML = '<p class="text-sm text-gray-500">No tienes cuentas de tipo "Crédito" registradas en tus Bóvedas.</p>';
+                return;
+            }
+
+            const hoy = new Date();
+            const diaActual = hoy.getDate();
+            const mesActual = hoy.getMonth();
+            const anioActual = hoy.getFullYear();
+
+            tarjetasCredito.forEach(acc => {
+                // Llenar selector del formulario de configuración
+                selectConfig.insertAdjacentHTML('beforeend', `<option value="${acc.nombre}">${acc.nombre}</option>`);
+
+                // Buscar su configuración
+                const config = estadoApp.tdcConfig.find(c => c.cuenta === acc.nombre);
+                
+                if(!config) {
+                    grid.insertAdjacentHTML('beforeend', `
+                        <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl p-6 flex flex-col justify-center items-center h-48 border-dashed">
+                            <i class="ph-bold ph-credit-card text-gray-400 text-3xl mb-2"></i>
+                            <p class="font-bold text-gray-900 dark:text-white">${acc.nombre}</p>
+                            <p class="text-xs text-gray-500 text-center mt-1">Requiere configuración de fechas de corte para usar el organizador.</p>
+                        </div>
+                    `);
+                    return;
+                }
+
+                // MATEMÁTICAS DE TARJETA DE CRÉDITO
+                const limite = parseFloat(config.limite);
+                const diaCorte = parseInt(config.dia_corte);
+                const diaPago = parseInt(config.dia_pago);
+
+                // 1. Calcular Fecha del Último Corte
+                let fechaUltimoCorte = new Date(anioActual, mesActual, diaCorte, 23, 59, 59);
+                if (diaActual < diaCorte) {
+                    fechaUltimoCorte.setMonth(fechaUltimoCorte.getMonth() - 1);
+                }
+
+                // 2. Calcular Fecha Límite de Pago
+                let fechaLimitePago = new Date(fechaUltimoCorte);
+                fechaLimitePago.setDate(diaPago);
+                if (fechaLimitePago <= fechaUltimoCorte) {
+                    fechaLimitePago.setMonth(fechaLimitePago.getMonth() + 1);
+                }
+
+                // 3. Calcular Gastos en Tránsito (Realizados DESPUÉS del último corte)
+                let gastosTransito = 0;
+                estadoApp.transacciones.forEach(tx => {
+                    if (tx.cuenta === acc.nombre && tx.tipo === 'gasto') {
+                        const txDate = tx.fecha ? tx.fecha.toDate() : new Date();
+                        if (txDate > fechaUltimoCorte) {
+                            gastosTransito += tx.monto;
+                        }
+                    }
+                });
+
+                // 4. Calcular Pago para no generar intereses
+                // La deuda es el saldo negativo (si es positivo, no se debe)
+                const deudaTotal = acc.saldo_actual < 0 ? Math.abs(acc.saldo_actual) : 0;
+                // Lo que gastaste después del corte NO entra en la factura actual
+                const pagoNoIntereses = Math.max(0, deudaTotal - gastosTransito);
+                
+                const creditoDisponible = limite - deudaTotal;
+                const porcentajeUso = Math.min((deudaTotal / limite) * 100, 100);
+
+                // Formateos visuales
+                const strCorte = fechaUltimoCorte.toLocaleDateString('es-MX', { day: '2-digit', month: 'short' });
+                const strPago = fechaLimitePago.toLocaleDateString('es-MX', { day: '2-digit', month: 'short' });
+                
+                // Alerta si el pago está cerca
+                const diffTime = fechaLimitePago - hoy;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                let colorAlerta = 'text-gray-500 dark:text-gp-muted';
+                let msjAlerta = `Límite: ${strPago}`;
+                if (diffDays <= 5 && diffDays >= 0 && pagoNoIntereses > 0) {
+                    colorAlerta = 'text-orange-500 font-bold animate-pulse';
+                    msjAlerta = `¡Cuidado! Paga en ${diffDays} días`;
+                } else if (diffDays < 0 && pagoNoIntereses > 0) {
+                    colorAlerta = 'text-red-500 font-bold';
+                    msjAlerta = `Pago Vencido (${strPago})`;
+                }
+
+                grid.insertAdjacentHTML('beforeend', `
+                    <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl p-6 relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10">
+                            <i class="ph-fill ph-contactless-payment text-4xl"></i>
+                        </div>
+                        
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="font-bold text-xl text-gray-900 dark:text-white">${acc.nombre}</h3>
+                                <p class="text-xs text-gray-500 font-mono mt-1">Corte realizado: ${strCorte}</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-6 bg-gray-50 dark:bg-gp-bg rounded-xl p-4 border border-gray-100 dark:border-zinc-800">
+                            <p class="text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-1">Para no generar intereses</p>
+                            <h2 class="text-3xl font-mono font-black ${pagoNoIntereses > 0 ? 'text-red-500' : 'text-green-500'}">
+                                $${pagoNoIntereses.toLocaleString('en-US', {minimumFractionDigits: 2})}
+                            </h2>
+                            <p class="text-xs mt-2 ${colorAlerta}"><i class="ph-fill ph-calendar-blank"></i> ${msjAlerta}</p>
+                        </div>
+
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-gray-500">Deuda Total: $${deudaTotal.toLocaleString()}</span>
+                            <span class="text-gray-500">Disponible: $${creditoDisponible.toLocaleString()}</span>
+                        </div>
+                        <div class="w-full bg-gray-100 dark:bg-zinc-800 rounded-full h-1.5 mb-4">
+                            <div class="${porcentajeUso > 80 ? 'bg-red-500' : 'bg-blue-500'} h-1.5 rounded-full transition-all duration-500" style="width: ${porcentajeUso}%"></div>
+                        </div>
+                        
+                        <div class="text-[10px] text-gray-400 font-mono border-t border-gray-100 dark:border-zinc-800 pt-3 flex justify-between">
+                            <span>Gastos sig. corte: $${gastosTransito.toLocaleString()}</span>
+                            <button onclick="window.borrarConfigTDC('${config.id}')" class="hover:text-red-500 transition-colors">Resetear Config</button>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        // --- AÑADIR CONFIGURACIÓN TDC ---
+        document.getElementById('tdc-config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-tdc-config-btn');
+            btn.disabled = true;
+
+            const cuentaSeleccionada = document.getElementById('tdc-config-account').value;
+            const dataConfig = {
+                cuenta: cuentaSeleccionada,
+                limite: parseFloat(document.getElementById('tdc-config-limit').value),
+                dia_corte: parseInt(document.getElementById('tdc-config-cutoff').value),
+                dia_pago: parseInt(document.getElementById('tdc-config-payment').value)
+            };
+
+            try {
+                // Verificar si ya existe config para sobreescribir
+                const existe = estadoApp.tdcConfig.find(c => c.cuenta === cuentaSeleccionada);
+                if (existe) {
+                    await updateDoc(doc(db, `usuarios/${currentUser.uid}/tdc_config`, existe.id), dataConfig);
+                } else {
+                    await addDoc(collection(db, `usuarios/${currentUser.uid}/tdc_config`), dataConfig);
+                }
+                document.getElementById('tdc-config-form').reset();
+                mostrarNotificacion("Configuración TDC guardada");
+            } catch (error) { alert("Error al guardar config TDC."); console.error(error); } 
+            finally { btn.disabled = false; }
+        });
+
+        window.borrarConfigTDC = async (id) => {
+            if(confirm("¿Eliminar la configuración de fechas de esta tarjeta? (No borraremos tus saldos ni transacciones)")) {
+                await deleteDoc(doc(db, `usuarios/${currentUser.uid}/tdc_config`, id));
+            }
+        }
+
+
+        // --- RENDERIZAR Y CREAR PAGOS FIJOS ---
+        function renderizarPagosFijos() {
+            const grid = document.getElementById('fixed-payments-grid');
+            grid.innerHTML = '';
+            if(estadoApp.pagosFijos.length === 0) {
+                grid.innerHTML = '<p class="text-sm text-gray-500 col-span-2">Aún no tienes pagos fijos registrados.</p>'; return;
+            }
+            estadoApp.pagosFijos.forEach(pago => {
+                grid.insertAdjacentHTML('beforeend', `
+                    <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl p-5 flex items-center justify-between group hover:border-blue-500 transition-colors">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 flex flex-col items-center justify-center text-blue-600 dark:text-blue-400">
+                                <span class="text-[10px] font-bold uppercase tracking-wider mb-0.5">Día</span>
+                                <span class="text-xl font-black font-mono leading-none">${pago.dia}</span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-900 dark:text-white">${pago.titulo}</p>
+                                <p class="text-sm font-mono font-bold text-red-500 mt-1">-$${pago.monto.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                            </div>
+                        </div>
+                        <button onclick="window.borrarPagoFijo('${pago.id}')" class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="ph-bold ph-trash text-lg"></i>
+                        </button>
+                    </div>
+                `);
+            });
+        }
+
+        document.getElementById('fixed-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-fixed-btn'); btn.disabled = true;
+            try {
+                await addDoc(collection(db, `usuarios/${currentUser.uid}/pagos_fijos`), { 
+                    titulo: document.getElementById('fixed-title').value, monto: parseFloat(document.getElementById('fixed-amount').value), dia: parseInt(document.getElementById('fixed-day').value)
+                });
+                document.getElementById('fixed-form').reset(); mostrarNotificacion("Pago fijo guardado");
+            } catch (error) { alert("Error al guardar."); } finally { btn.disabled = false; }
+        });
+
+
+        // --- RENDERIZAR CATEGORÍAS (PREFERENCIAS Y SELECTOR) ---
+        function renderizarCategorias() {
+            const list = document.getElementById('categories-list');
+            const select = document.getElementById('tx-category');
+            list.innerHTML = ''; select.innerHTML = '<option value="General" selected>General</option>';
+            estadoApp.categorias.forEach(cat => {
+                list.insertAdjacentHTML('beforeend', `
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gp-bg rounded-xl border border-gray-200 dark:border-gp-border group hover:border-blue-500 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-blue-500"></span><span class="font-medium text-gray-900 dark:text-white text-sm">${cat.nombre}</span>
+                        </div>
+                        <button onclick="window.borrarCategoria('${cat.id}')" class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="ph-bold ph-trash"></i></button>
+                    </div>
+                `);
+                select.insertAdjacentHTML('beforeend', `<option value="${cat.nombre}">${cat.nombre}</option>`);
+            });
+        }
+
+        document.getElementById('category-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-cat-btn'); const nameInput = document.getElementById('cat-name'); btn.disabled = true;
+            try {
+                await addDoc(collection(db, `usuarios/${currentUser.uid}/categorias`), { nombre: nameInput.value });
+                nameInput.value = ''; mostrarNotificacion("Etiqueta añadida");
+            } catch (error) { alert("Error."); } finally { btn.disabled = false; }
+        });
+
+        window.borrarCategoria = async (id) => {
+            if(confirm("¿Eliminar esta etiqueta?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/categorias`, id));
+        };
 
         // --- CREAR Y EDITAR TRANSACCIONES ---
         const txForm = document.getElementById('transaction-form');
         txForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submit-tx-btn');
-            btn.disabled = true;
+            const btn = document.getElementById('submit-tx-btn'); btn.disabled = true;
 
             const idEdicion = document.getElementById('tx-id-hidden').value;
+            const dateInput = document.getElementById('tx-date').value;
+            
             const data = {
                 monto: parseFloat(document.getElementById('tx-amount').value),
                 descripcion: document.getElementById('tx-desc').value,
@@ -686,13 +904,19 @@
                 tipo: document.querySelector('input[name="tx_type"]:checked').value,
             };
 
+            // Manejo de fecha personalizada vs fecha actual del servidor
+            if (dateInput) {
+                data.fecha = new Date(dateInput); 
+            } else if (!idEdicion) {
+                data.fecha = serverTimestamp(); // Solo usar serverTimestamp si es nueva y no tiene fecha manual
+            }
+
             try {
                 if (idEdicion) {
                     await updateDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, idEdicion), data);
                     mostrarNotificacion("Transacción actualizada");
                     cancelarEdicion();
                 } else {
-                    data.fecha = serverTimestamp();
                     await addDoc(collection(db, `usuarios/${currentUser.uid}/transacciones`), data);
                     mostrarNotificacion("Transacción registrada");
                 }
@@ -704,8 +928,7 @@
         // Crear Cuenta
         document.getElementById('account-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submit-acc-btn');
-            btn.disabled = true;
+            const btn = document.getElementById('submit-acc-btn'); btn.disabled = true;
             try {
                 await addDoc(collection(db, `usuarios/${currentUser.uid}/cuentas`), {
                     nombre: document.getElementById('acc-name').value,
@@ -719,117 +942,63 @@
         });
 
         // --- MIGRACIÓN JSON A FIREBASE ---
-        document.getElementById('import-json-btn').addEventListener('click', () => {
-            document.getElementById('import-json-input').click();
-        });
-
+        document.getElementById('import-json-btn').addEventListener('click', () => { document.getElementById('import-json-input').click(); });
         document.getElementById('import-json-input').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const btn = document.getElementById('import-json-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-lg"></i> Procesando Backup...`;
-            btn.disabled = true;
-
+            const file = e.target.files[0]; if (!file) return;
+            const btn = document.getElementById('import-json-btn'); const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-lg"></i> Procesando...`; btn.disabled = true;
             const reader = new FileReader();
             reader.onload = async (event) => {
                 try {
                     const data = JSON.parse(event.target.result);
-                    
-                    // 1. Crear Bóveda comodín para transacciones importadas
                     let cuentaMigrada = estadoApp.cuentas.find(c => c.nombre === "Bóveda Anterior");
                     if (!cuentaMigrada && data.transactions && data.transactions.length > 0) {
-                        await addDoc(collection(db, `usuarios/${currentUser.uid}/cuentas`), {
-                            nombre: "Bóveda Anterior",
-                            tipo: "Efectivo",
-                            saldo_inicial: 0,
-                            fecha_creacion: serverTimestamp()
-                        });
+                        await addDoc(collection(db, `usuarios/${currentUser.uid}/cuentas`), { nombre: "Bóveda Anterior", tipo: "Efectivo", saldo_inicial: 0, fecha_creacion: serverTimestamp() });
                     }
-
-                    // 2. Importar Transacciones
                     if (data.transactions && Array.isArray(data.transactions)) {
                         const categoriasViejas = [...new Set(data.transactions.map(t => t.category).filter(Boolean))];
-                        for (const cat of categoriasViejas) {
-                            if (!estadoApp.categorias.find(c => c.nombre.toLowerCase() === cat.toLowerCase())) {
-                                 await addDoc(collection(db, `usuarios/${currentUser.uid}/categorias`), { nombre: cat });
-                            }
-                        }
-
+                        for (const cat of categoriasViejas) { if (!estadoApp.categorias.find(c => c.nombre.toLowerCase() === cat.toLowerCase())) { await addDoc(collection(db, `usuarios/${currentUser.uid}/categorias`), { nombre: cat }); } }
                         const chunkSize = 400;
                         for (let i = 0; i < data.transactions.length; i += chunkSize) {
-                            const chunk = data.transactions.slice(i, i + chunkSize);
-                            const batch = writeBatch(db);
-                            
+                            const chunk = data.transactions.slice(i, i + chunkSize); const batch = writeBatch(db);
                             chunk.forEach(tx => {
                                 const txRef = doc(collection(db, `usuarios/${currentUser.uid}/transacciones`));
                                 let tipoMapeado = tx.type === 'income' ? 'ingreso' : 'gasto';
                                 let fechaObj = tx.createdAt ? new Date(tx.createdAt) : new Date((tx.date || '') + "T12:00:00");
-
-                                batch.set(txRef, {
-                                    monto: Number(tx.amount) || 0,
-                                    descripcion: tx.title || "Transacción Importada",
-                                    cuenta: "Bóveda Anterior",
-                                    categoria: tx.category || "General",
-                                    tipo: tipoMapeado,
-                                    fecha: fechaObj
-                                });
+                                batch.set(txRef, { monto: Number(tx.amount) || 0, descripcion: tx.title || "Migración", cuenta: "Bóveda Anterior", categoria: tx.category || "General", tipo: tipoMapeado, fecha: fechaObj });
                             });
                             await batch.commit();
                         }
                     }
-
-                    // 3. Importar Pagos Fijos (MODIFICACIÓN PARA EL NUEVO MÓDULO)
                     if (data.fixed && Array.isArray(data.fixed)) {
                         const batchFijos = writeBatch(db);
                         data.fixed.forEach(fijo => {
                             const docRef = doc(collection(db, `usuarios/${currentUser.uid}/pagos_fijos`));
-                            batchFijos.set(docRef, {
-                                titulo: fijo.title || "Pago Fijo Importado",
-                                monto: Number(fijo.amount) || 0,
-                                dia: Number(fijo.day) || 1
-                            });
+                            batchFijos.set(docRef, { titulo: fijo.title || "Pago Fijo Migrado", monto: Number(fijo.amount) || 0, dia: Number(fijo.day) || 1 });
                         });
                         await batchFijos.commit();
                     }
-
-                    mostrarNotificacion(`Backup importado exitosamente.`);
-                    e.target.value = '';
-
-                } catch (error) {
-                    console.error("Error al importar:", error);
-                    alert("Error procesando el archivo: " + error.message);
-                } finally {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                }
+                    mostrarNotificacion(`Backup importado exitosamente.`); e.target.value = '';
+                } catch (error) { alert("Error procesando el archivo: " + error.message); } finally { btn.innerHTML = originalText; btn.disabled = false; }
             };
             reader.readAsText(file);
         });
 
         // --- EXPORTAR CSV ---
         document.getElementById('export-csv-btn').addEventListener('click', () => {
-            if(estadoApp.transacciones.length === 0) {
-                alert("No hay transacciones en el Ledger para exportar.");
-                return;
-            }
+            if(estadoApp.transacciones.length === 0) { alert("No hay datos."); return; }
             let csvContent = "Fecha,Descripcion,Cuenta,Categoria,Tipo,Monto\n";
             estadoApp.transacciones.forEach(tx => {
                 let fechaStr = tx.fecha ? tx.fecha.toDate().toISOString() : new Date().toISOString();
                 csvContent += `${fechaStr},"${tx.descripcion}","${tx.cuenta}","${tx.categoria}",${tx.tipo},${tx.monto}\n`;
             });
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
+            const link = document.createElement("a"); link.setAttribute("href", URL.createObjectURL(blob));
             link.setAttribute("download", `godsplan_ledger_${new Date().toLocaleDateString('es-MX').replace(/\//g, '-')}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         });
 
-        // --- FUNCIONES ACCESIBLES GLOBALMENTE ---
+        // --- FUNCIONES CRUD GLOBALES ---
         window.borrarTx = async (id) => { if(confirm("¿Eliminar este registro?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, id)); mostrarNotificacion("Registro eliminado"); };
         window.borrarCuenta = async (id) => { if(confirm("¿Eliminar esta bóveda?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/cuentas`, id)); mostrarNotificacion("Bóveda eliminada"); };
         window.borrarPagoFijo = async (id) => { if(confirm("¿Dejar de dar seguimiento a este pago fijo?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/pagos_fijos`, id)); mostrarNotificacion("Pago fijo eliminado"); };
@@ -837,23 +1006,9 @@
         window.ajustarCuenta = async (id, saldoActual, nombre) => {
             const saldoRealStr = prompt(`Saldo actual calculado de ${nombre}: $${saldoActual.toFixed(2)}\n\n¿Cuánto dinero REAL tienes en esta cuenta ahora mismo?`);
             if (saldoRealStr === null || saldoRealStr.trim() === '') return;
-            const saldoReal = parseFloat(saldoRealStr);
-            if (isNaN(saldoReal)) { alert("Por favor ingresa un número válido."); return; }
-            
-            const diferencia = saldoReal - saldoActual;
-            if (diferencia === 0) { mostrarNotificacion("El saldo cuadra perfectamente."); return; }
-
-            try {
-                await addDoc(collection(db, `usuarios/${currentUser.uid}/transacciones`), {
-                    monto: diferencia,
-                    descripcion: 'Ajuste de sistema (Cuadre de caja)',
-                    cuenta: nombre,
-                    categoria: 'Sistema',
-                    tipo: 'ajuste',
-                    fecha: serverTimestamp()
-                });
-                mostrarNotificacion("Saldo ajustado correctamente");
-            } catch (error) { alert("Error al realizar el ajuste."); console.error(error); }
+            const saldoReal = parseFloat(saldoRealStr); if (isNaN(saldoReal)) { alert("Número no válido."); return; }
+            const diferencia = saldoReal - saldoActual; if (diferencia === 0) { mostrarNotificacion("El saldo cuadra."); return; }
+            try { await addDoc(collection(db, `usuarios/${currentUser.uid}/transacciones`), { monto: diferencia, descripcion: 'Ajuste de sistema (Cuadre de caja)', cuenta: nombre, categoria: 'Sistema', tipo: 'ajuste', fecha: serverTimestamp() }); mostrarNotificacion("Ajuste realizado"); } catch (error) { alert("Error."); }
         };
 
         window.editarTx = async (id) => {
@@ -866,6 +1021,16 @@
                 document.getElementById('tx-account').value = tx.cuenta;
                 document.getElementById('tx-category').value = tx.categoria;
                 document.querySelector(`input[name="tx_type"][value="${tx.tipo}"]`).checked = true;
+                
+                // Formatear fecha para el input datetime-local si existe
+                if(tx.fecha) {
+                    const dateObj = tx.fecha.toDate();
+                    // Ajuste de formato a YYYY-MM-DDThh:mm compatible con input datetime-local
+                    const tzOffset = dateObj.getTimezoneOffset() * 60000; 
+                    const localISOTime = (new Date(dateObj - tzOffset)).toISOString().slice(0, -1);
+                    document.getElementById('tx-date').value = localISOTime.substring(0, 16);
+                }
+
                 document.getElementById('tx-header-title').textContent = "Editar Operación";
                 document.getElementById('submit-tx-btn').textContent = "Actualizar Cambios";
                 document.getElementById('cancel-edit-btn').classList.remove('hidden');
