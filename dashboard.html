@@ -141,7 +141,6 @@
     </aside>
 
     <!-- MAIN APP AREA -->
-    <!-- Se agrega pt-20 en móviles para no quedar debajo del navbar superior -->
     <main class="flex-1 w-full h-screen overflow-y-auto p-4 pt-20 md:p-8 md:pt-8 relative">
 
         <!-- ================================================================= -->
@@ -159,35 +158,29 @@
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
-                <!-- Tarjeta Patrimonio Dinámica (Toma 2 columnas en Desktop) -->
                 <div class="lg:col-span-2 bg-white dark:bg-gp-surface rounded-2xl md:rounded-3xl p-6 md:p-8 border border-gray-200 dark:border-gp-border shadow-sm flex flex-col justify-between">
                     <div class="flex justify-between items-start mb-6">
                         <div class="flex items-center gap-2 text-gray-500 dark:text-gp-muted font-medium text-xs md:text-sm uppercase tracking-wider">
-                            <i class="ph-fill ph-scales"></i> Patrimonio Neto Total
+                            <i class="ph-fill ph-scales"></i> Patrimonio Neto Exacto
                         </div>
                     </div>
                     <div>
                         <h2 class="text-4xl sm:text-5xl lg:text-6xl font-mono font-extrabold text-gray-900 dark:text-white tracking-tight break-words" id="display-patrimonio">$0<span class="text-gray-400 dark:text-zinc-600 text-2xl md:text-3xl">.00</span></h2>
-                        <p class="text-xs md:text-sm text-gray-500 dark:text-gp-muted mt-2">Suma de TODAS tus cuentas (Activos - Pasivos)</p>
+                        <p class="text-xs md:text-sm text-gray-500 dark:text-gp-muted mt-2">Suma de saldos iniciales ± transacciones</p>
                     </div>
                 </div>
 
-                <!-- Tarjeta Presupuesto Diario Seguro (AHORA DINÁMICA DE VERDAD) -->
                 <div id="daily-budget-card" class="rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-xl flex flex-col justify-center relative overflow-hidden group transition-colors cursor-pointer bg-blue-600 hover:bg-blue-700 text-white" onclick="document.querySelector('[data-target=\'view-quincena\']').click()">
                     <div class="absolute -right-4 -bottom-4 opacity-20 transform group-hover:scale-110 transition-transform">
                         <i class="ph-fill ph-calendar-check text-9xl"></i>
                     </div>
                     <div class="relative z-10" id="daily-budget-content">
-                        <!-- JS Inyectará el cálculo avanzado aquí -->
-                        <h3 class="text-xs md:text-sm font-bold text-blue-200 uppercase tracking-wider mb-2">Presupuesto de Hoy</h3>
-                        <h2 class="text-4xl lg:text-5xl font-mono font-black tracking-tight my-2">$0.00</h2>
-                        <p class="text-xs md:text-sm text-blue-200 mt-2 font-medium">Configura tus días de pago</p>
+                        <!-- JS Inject -->
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
-                <!-- Resumen Rápido -->
                 <div class="lg:col-span-3 bg-white dark:bg-gp-surface rounded-2xl md:rounded-3xl p-6 md:p-8 border border-gray-200 dark:border-gp-border shadow-sm flex flex-col justify-center">
                     <h3 class="text-xs md:text-sm font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-4 md:mb-6">Flujo Histórico (Todas las transacciones)</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -205,7 +198,7 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- VISTA 1.5: ORGANIZADOR QUINCENA (/quincena) *** MEJORADO *** -->
+        <!-- VISTA 1.5: ORGANIZADOR QUINCENA (/quincena)                       -->
         <!-- ================================================================= -->
         <section id="view-quincena" class="view-section hidden max-w-6xl mx-auto">
             <header class="flex flex-col md:flex-row justify-between md:items-end gap-4 mb-8">
@@ -216,19 +209,15 @@
             </header>
 
             <div class="flex flex-col lg:flex-row gap-6 md:gap-8">
-                
-                <!-- Panel Matemático Visual -->
                 <div class="lg:w-2/3 order-2 lg:order-1">
                     <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-sm h-full flex flex-col justify-center">
                         <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gp-border pb-4">Desglose de Liquidez</h3>
-                        
                         <div id="quincena-breakdown-panel" class="space-y-4">
-                            <p class="text-sm text-gray-500">Configura tus fechas de pago en el panel lateral para iniciar el cálculo.</p>
+                            <p class="text-sm text-gray-500">Configura tus fechas de pago en el panel lateral.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Configuración de Quincena -->
                 <div class="lg:w-1/3 order-1 lg:order-2">
                     <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl md:rounded-3xl p-6 shadow-sm sticky top-8">
                         <h3 class="font-bold text-base md:text-lg text-gray-900 dark:text-white mb-4 md:mb-6 flex items-center gap-2">
@@ -253,7 +242,6 @@
                         </form>
                     </div>
                 </div>
-
             </div>
         </section>
 
@@ -276,7 +264,7 @@
                             <tr class="bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-gp-border text-[10px] md:text-xs uppercase tracking-wider text-gray-500 dark:text-gp-muted whitespace-nowrap">
                                 <th class="p-3 md:p-4 font-medium">Fecha</th>
                                 <th class="p-3 md:p-4 font-medium">Descripción</th>
-                                <th class="p-3 md:p-4 font-medium">Cuenta Origen</th>
+                                <th class="p-3 md:p-4 font-medium">Cuenta(s)</th>
                                 <th class="p-3 md:p-4 font-medium">Tipo</th>
                                 <th class="p-3 md:p-4 font-medium text-right">Monto</th>
                                 <th class="p-3 md:p-4 font-medium text-center">Acciones</th>
@@ -291,12 +279,12 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- VISTA 3: TRANSACCIONES (/payments)                                -->
+        <!-- VISTA 3: TRANSACCIONES (/payments)  *** ACTUALIZADO PARA TRANSFERENCIAS *** -->
         <!-- ================================================================= -->
         <section id="view-payments" class="view-section hidden max-w-2xl mx-auto">
             <header class="mb-8 text-center md:mb-10">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" id="tx-header-title">Registrar Operación</h1>
-                <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">El monto afectará el saldo de tu cuenta espejo</p>
+                <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Suma, resta o mueve fondos entre bóvedas</p>
             </header>
 
             <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-xl relative">
@@ -306,7 +294,10 @@
 
                 <form id="transaction-form" class="space-y-6">
                     <input type="hidden" id="tx-id-hidden" value="">
+                    <!-- Input oculto para enlazar el pago a un "Pago Fijo" -->
+                    <input type="hidden" id="tx-fixed-id" value="">
 
+                    <!-- Selector de Tipo -->
                     <div class="flex gap-2 md:gap-4 p-1 bg-gray-100 dark:bg-gp-bg rounded-xl mb-6">
                         <label class="flex-1 cursor-pointer">
                             <input type="radio" name="tx_type" id="tx_type_gasto" value="gasto" class="peer sr-only" checked>
@@ -315,6 +306,11 @@
                         <label class="flex-1 cursor-pointer">
                             <input type="radio" name="tx_type" id="tx_type_ingreso" value="ingreso" class="peer sr-only">
                             <div class="text-center py-2 rounded-lg text-xs md:text-sm font-medium text-gray-500 peer-checked:bg-white peer-checked:dark:bg-gp-surface peer-checked:text-green-500 peer-checked:shadow-sm transition-all">Ingreso</div>
+                        </label>
+                        <!-- NUEVO BOTÓN: Transferencia -->
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="tx_type" id="tx_type_transferencia" value="transferencia" class="peer sr-only">
+                            <div class="text-center py-2 rounded-lg text-xs md:text-sm font-medium text-gray-500 peer-checked:bg-white peer-checked:dark:bg-gp-surface peer-checked:text-blue-500 peer-checked:shadow-sm transition-all">Transferencia</div>
                         </label>
                     </div>
 
@@ -328,15 +324,25 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Cuenta Afectada</label>
+                            <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2" id="lbl-cuenta-origen">Cuenta Afectada</label>
                             <select id="tx-account" required class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
                                 <option value="" disabled selected>Selecciona bóveda...</option>
                             </select>
                         </div>
-                        <div>
+                        
+                        <!-- Categoría (Oculto en Transferencia) -->
+                        <div id="tx-category-container">
                             <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Categoría</label>
                             <select id="tx-category" required class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
                                 <option value="General" selected>General</option>
+                            </select>
+                        </div>
+
+                        <!-- Cuenta Destino (Visible en Transferencia) -->
+                        <div id="tx-dest-container" class="hidden">
+                            <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Cuenta Destino</label>
+                            <select id="tx-account-dest" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                                <option value="" disabled selected>Hacia bóveda...</option>
                             </select>
                         </div>
                     </div>
@@ -352,8 +358,7 @@
                             <input type="datetime-local" id="tx-date" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
                             <p class="text-[10px] text-gray-500 mt-1">Dejar vacío usa la fecha/hora actual.</p>
                         </div>
-                        <div class="flex items-center pt-2 sm:pt-6">
-                            <!-- CASILLA: IGNORAR DEL PRESUPUESTO DIARIO -->
+                        <div class="flex items-center pt-2 sm:pt-6" id="tx-ignore-container">
                             <input type="checkbox" id="tx-ignore-daily" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-zinc-800 dark:border-zinc-700">
                             <label for="tx-ignore-daily" class="ml-2 text-xs font-medium text-gray-500 dark:text-gp-muted cursor-pointer leading-tight">
                                 Ignorar del presupuesto diario (Ej. Pago Fijo ya reservado)
@@ -369,13 +374,13 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- VISTA 3.5: PAGOS FIJOS (/fixed-payments)                          -->
+        <!-- VISTA 3.5: PAGOS FIJOS (/fixed-payments) *** CON PAGAR Y OMITIR *** -->
         <!-- ================================================================= -->
         <section id="view-fixed-payments" class="view-section hidden max-w-6xl mx-auto">
             <header class="flex flex-col md:flex-row justify-between md:items-end gap-4 mb-8">
                 <div>
                     <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Pagos Fijos</h1>
-                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Planifica tus gastos recurrentes mensuales</p>
+                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Tus gastos recurrentes que afectan la liquidez quincenal.</p>
                 </div>
             </header>
 
@@ -523,7 +528,6 @@
             </header>
 
             <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl md:rounded-3xl overflow-hidden shadow-sm">
-                <!-- Perfil -->
                 <div class="p-6 md:p-8 border-b border-gray-100 dark:border-gp-border flex flex-col sm:flex-row items-center sm:items-start gap-4 md:gap-6 text-center sm:text-left">
                     <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center text-3xl md:text-4xl text-blue-500 flex-shrink-0">
                         <i class="ph-fill ph-user-circle"></i>
@@ -534,7 +538,6 @@
                     </div>
                 </div>
 
-                <!-- Categorías -->
                 <div class="p-6 md:p-8 border-b border-gray-100 dark:border-gp-border">
                     <h2 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-2">Gestión de Categorías</h2>
                     <p class="text-xs md:text-sm text-gray-500 dark:text-gp-muted mb-6">Crea etiquetas personalizadas.</p>
@@ -545,7 +548,6 @@
                     <div id="categories-list" class="space-y-2 md:space-y-3"></div>
                 </div>
 
-                <!-- Migración -->
                 <div class="p-6 md:p-8 bg-gray-50 dark:bg-gp-bg">
                     <h2 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-2">Migración y Respaldo</h2>
                     <p class="text-xs md:text-sm text-gray-500 dark:text-gp-muted mb-6">Importa datos o descarga un respaldo completo.</p>
@@ -589,6 +591,20 @@
         let estadoApp = { cuentas: [], transacciones: [], categorias: [], pagosFijos: [], tdcConfig: [], quincenaConfig: null };
         window.cuentasConSaldosGlobal = [];
         window.patrimonioNetoTotalGlobal = 0;
+
+        // --- MANEJO DEL FORMULARIO DE TRANSFERENCIAS (UI) ---
+        document.querySelectorAll('input[name="tx_type"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const isTransfer = e.target.value === 'transferencia';
+                document.getElementById('tx-dest-container').classList.toggle('hidden', !isTransfer);
+                document.getElementById('tx-category-container').classList.toggle('hidden', isTransfer);
+                document.getElementById('tx-ignore-container').classList.toggle('hidden', isTransfer);
+                document.getElementById('lbl-cuenta-origen').textContent = isTransfer ? 'Cuenta Origen' : 'Cuenta Afectada';
+                
+                document.getElementById('tx-account-dest').required = isTransfer;
+                document.getElementById('tx-category').required = !isTransfer;
+            });
+        });
 
         // --- SEGURIDAD ---
         onAuthStateChanged(auth, (user) => {
@@ -637,12 +653,21 @@
 
             estadoApp.transacciones.forEach(tx => {
                 let cuentaAfectada = cuentasCalculadas.find(c => c.nombre === tx.cuenta);
-                if (tx.tipo === 'ingreso') { totalIngresos += tx.monto; if(cuentaAfectada) cuentaAfectada.saldo_actual += tx.monto; } 
-                else if (tx.tipo === 'gasto') { totalGastos += tx.monto; if(cuentaAfectada) cuentaAfectada.saldo_actual -= tx.monto; }
-                else if (tx.tipo === 'ajuste') { if(cuentaAfectada) cuentaAfectada.saldo_actual += tx.monto; }
+                
+                if (tx.tipo === 'ingreso') { 
+                    totalIngresos += tx.monto; if(cuentaAfectada) cuentaAfectada.saldo_actual += tx.monto; 
+                } else if (tx.tipo === 'gasto') { 
+                    totalGastos += tx.monto; if(cuentaAfectada) cuentaAfectada.saldo_actual -= tx.monto; 
+                } else if (tx.tipo === 'ajuste') { 
+                    if(cuentaAfectada) cuentaAfectada.saldo_actual += tx.monto; 
+                } else if (tx.tipo === 'transferencia') {
+                    // LA MAGIA DE LA TRANSFERENCIA: Se resta del origen, se suma al destino. NO afecta ingresos/gastos.
+                    let cuentaDestino = cuentasCalculadas.find(c => c.nombre === tx.cuenta_destino);
+                    if(cuentaAfectada) cuentaAfectada.saldo_actual -= tx.monto;
+                    if(cuentaDestino) cuentaDestino.saldo_actual += tx.monto;
+                }
             });
 
-            // Patrimonio Neto (Total real de todo)
             patrimonioNetoTotal = cuentasCalculadas.reduce((sum, c) => sum + c.saldo_actual, 0);
             window.cuentasConSaldosGlobal = cuentasCalculadas;
             window.patrimonioNetoTotalGlobal = patrimonioNetoTotal; 
@@ -653,7 +678,11 @@
 
             const accountsGrid = document.getElementById('accounts-grid');
             const txAccountSelect = document.getElementById('tx-account');
-            accountsGrid.innerHTML = ''; txAccountSelect.innerHTML = '<option value="" disabled selected>Selecciona bóveda...</option>';
+            const txAccountDestSelect = document.getElementById('tx-account-dest');
+            
+            accountsGrid.innerHTML = ''; 
+            txAccountSelect.innerHTML = '<option value="" disabled selected>Selecciona bóveda...</option>';
+            txAccountDestSelect.innerHTML = '<option value="" disabled selected>Hacia bóveda...</option>';
 
             cuentasCalculadas.forEach(acc => {
                 let icon = 'ph-bank'; let colorClass = 'text-blue-500'; let bgClass = 'bg-blue-100 dark:bg-blue-500/10';
@@ -679,6 +708,7 @@
                     </div>
                 </div>`);
                 txAccountSelect.insertAdjacentHTML('beforeend', `<option value="${acc.nombre}">${acc.nombre} ($${acc.saldo_actual.toFixed(2)})</option>`);
+                txAccountDestSelect.insertAdjacentHTML('beforeend', `<option value="${acc.nombre}">${acc.nombre} ($${acc.saldo_actual.toFixed(2)})</option>`);
             });
 
             const tbody = document.getElementById('history-table-body'); tbody.innerHTML = '';
@@ -686,7 +716,15 @@
                 let fechaStr = "Procesando...";
                 if(tx.fecha) fechaStr = tx.fecha.toDate().toLocaleDateString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' });
                 let colorMonto = 'text-gray-500'; let signo = ''; let montoMostrado = Math.abs(tx.monto).toFixed(2);
-                if (tx.tipo === 'ingreso') { colorMonto = 'text-green-500'; signo = '+'; } else if (tx.tipo === 'gasto') { colorMonto = 'text-red-500'; signo = '-'; } else if (tx.tipo === 'ajuste') { colorMonto = 'text-blue-500'; signo = tx.monto >= 0 ? '+' : '-'; }
+                let cuentaAfectadaHTML = `<td class="p-3 md:p-4 text-gray-500 dark:text-gp-muted truncate max-w-[100px] sm:max-w-none">${tx.cuenta}</td>`;
+                
+                if (tx.tipo === 'ingreso') { colorMonto = 'text-green-500'; signo = '+'; } 
+                else if (tx.tipo === 'gasto') { colorMonto = 'text-red-500'; signo = '-'; } 
+                else if (tx.tipo === 'ajuste') { colorMonto = 'text-blue-500'; signo = tx.monto >= 0 ? '+' : '-'; }
+                else if (tx.tipo === 'transferencia') { 
+                    colorMonto = 'text-blue-500'; 
+                    cuentaAfectadaHTML = `<td class="p-3 md:p-4 text-gray-500 dark:text-gp-muted text-[10px] sm:text-xs font-mono">${tx.cuenta} <i class="ph-bold ph-arrow-right mx-1 text-blue-500"></i> ${tx.cuenta_destino}</td>`;
+                }
                 
                 let ignoreBadge = tx.ignoreDaily ? '<span class="text-[8px] bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400 px-1 rounded ml-1" title="Ignorado del presupuesto diario">IGN</span>' : '';
 
@@ -694,7 +732,7 @@
                     <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
                         <td class="p-3 md:p-4 text-gray-500 dark:text-gp-muted font-mono whitespace-nowrap">${fechaStr}</td>
                         <td class="p-3 md:p-4 font-medium text-gray-900 dark:text-white"><span class="truncate block max-w-[120px] sm:max-w-none">${tx.descripcion} ${ignoreBadge}</span><span class="text-[10px] text-gray-400 font-normal uppercase tracking-wider block mt-0.5">#${tx.categoria}</span></td>
-                        <td class="p-3 md:p-4 text-gray-500 dark:text-gp-muted truncate max-w-[100px] sm:max-w-none">${tx.cuenta}</td>
+                        ${cuentaAfectadaHTML}
                         <td class="p-3 md:p-4 text-[10px] md:text-xs uppercase font-bold text-gray-500">${tx.tipo}</td>
                         <td class="p-3 md:p-4 text-right font-mono font-bold ${colorMonto}">${signo}$${montoMostrado}</td>
                         <td class="p-3 md:p-4 text-center whitespace-nowrap"><button onclick="window.editarTx('${tx.id}')" class="text-blue-500 hover:text-blue-400 mr-2 md:mr-3 p-1"><i class="ph-bold ph-pencil text-lg"></i></button><button onclick="window.borrarTx('${tx.id}')" class="text-red-500 hover:text-red-400 p-1"><i class="ph-bold ph-trash text-lg"></i></button></td>
@@ -706,7 +744,7 @@
             calcularQuincena();
         }
 
-        // --- MÓDULO QUINCENA (ALGORITMO MEJORADO PARA DINERO LÍQUIDO) ---
+        // --- MÓDULO QUINCENA (EXCLUYE TARJETAS DE CRÉDITO) ---
         function calcularQuincena() {
             const config = estadoApp.quincenaConfig;
             const cardDash = document.getElementById('daily-budget-card');
@@ -723,6 +761,7 @@
             const hoy = new Date();
             const hoySoloFecha = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
             const hoyStr = hoy.toLocaleDateString('es-MX');
+            const currentYYYYMM = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2, '0')}`;
 
             let diasPago = [];
             if (config.dia1) diasPago.push(parseInt(config.dia1));
@@ -756,14 +795,21 @@
             for(let i=1; i<=daysLeft; i++) {
                 let checkDate = new Date(hoySoloFecha.getTime() + (i * msPerDay));
                 let checkDay = checkDate.getDate();
+                let checkDateYYYYMM = `${checkDate.getFullYear()}-${String(checkDate.getMonth()+1).padStart(2, '0')}`;
+                
                 estadoApp.pagosFijos.forEach(pf => {
                     let checkDateLastDay = new Date(checkDate.getFullYear(), checkDate.getMonth() + 1, 0).getDate();
                     let effectivePfDia = Math.min(parseInt(pf.dia), checkDateLastDay);
-                    if (effectivePfDia === checkDay) { pagosFijosPendientesTotal += pf.monto; pagosFijosList.push(pf); }
+                    
+                    // Si cae en el rango y NO se ha pagado (o ignorado) este mes
+                    if (effectivePfDia === checkDay && pf.ultimo_pago !== checkDateYYYYMM) { 
+                        pagosFijosPendientesTotal += pf.monto; 
+                        pagosFijosList.push(pf); 
+                    }
                 });
             }
 
-            // GASTOS DE HOY (Incluye TDC, porque un gasto a crédito debe consumir tu límite mental de hoy)
+            // GASTOS DE HOY (Omitiendo los que tienen ignoreDaily)
             let gastosHoy = 0;
             estadoApp.transacciones.forEach(tx => {
                 if(tx.tipo === 'gasto' && !tx.ignoreDaily && tx.fecha) {
@@ -772,7 +818,7 @@
                 }
             });
 
-            // LA SOLUCIÓN: Calculamos los "Activos Líquidos" excluyendo el Crédito
+            // LA SOLUCIÓN: Calculamos la Liquidez (Débito + Efectivo solamente)
             let liquidezActual = 0;
             window.cuentasConSaldosGlobal.forEach(acc => {
                 if (acc.tipo === 'Débito' || acc.tipo === 'Efectivo') {
@@ -785,7 +831,6 @@
             let presupuestoBaseHoy = dineroLibreInicioDia / daysLeft;
             let restanteHoy = presupuestoBaseHoy - gastosHoy;
 
-            // RENDERIZAR DASHBOARD CARD
             if (restanteHoy >= 0) {
                 cardDash.className = "rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-xl flex flex-col justify-center relative overflow-hidden group transition-colors cursor-pointer bg-blue-600 hover:bg-blue-700 text-white";
                 contentDash.innerHTML = `
@@ -805,7 +850,6 @@
                 `;
             }
 
-            // RENDERIZAR PANEL QUINCENA
             if (viewQuincenaPanel) {
                 let strListaPagos = pagosFijosList.length > 0 
                     ? pagosFijosList.map(pf => `<div class="flex justify-between text-xs text-red-500 dark:text-red-400 mb-1.5 font-medium"><span>${pf.titulo} (Día ${pf.dia})</span><span class="font-mono">-$${pf.monto.toLocaleString('en-US', {minimumFractionDigits: 2})}</span></div>`).join('') 
@@ -814,7 +858,7 @@
                 viewQuincenaPanel.innerHTML = `
                     <div class="space-y-4">
                         <div class="flex justify-between items-center border-b border-gray-100 dark:border-gp-border pb-4">
-                            <span class="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Activos Líquidos (Débito y Efectivo)</span>
+                            <span class="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Liquidez (Débito + Efectivo)</span>
                             <span class="font-mono font-bold text-gray-900 dark:text-white text-lg">$${liquidezActual.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
                         </div>
                         <div class="border-b border-gray-100 dark:border-gp-border pb-4">
@@ -854,8 +898,7 @@
             const grid = document.getElementById('tdc-cards-grid');
             const selectConfig = document.getElementById('tdc-config-account');
             
-            grid.innerHTML = '';
-            selectConfig.innerHTML = '<option value="" disabled selected>Selecciona tarjeta...</option>';
+            grid.innerHTML = ''; selectConfig.innerHTML = '<option value="" disabled selected>Selecciona tarjeta...</option>';
 
             const tarjetasCredito = window.cuentasConSaldosGlobal.filter(c => c.tipo === 'Crédito');
             if(tarjetasCredito.length === 0) { grid.innerHTML = '<p class="text-sm text-gray-500">No tienes cuentas de "Crédito".</p>'; return; }
@@ -867,20 +910,13 @@
                 const config = estadoApp.tdcConfig.find(c => c.cuenta === acc.nombre);
                 
                 if(!config) {
-                    grid.insertAdjacentHTML('beforeend', `
-                        <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl md:rounded-3xl p-6 flex flex-col justify-center items-center h-48 border-dashed">
-                            <i class="ph-bold ph-credit-card text-gray-400 text-3xl mb-2"></i>
-                            <p class="font-bold text-gray-900 dark:text-white">${acc.nombre}</p>
-                            <p class="text-xs text-gray-500 text-center mt-1">Requiere configuración de fechas.</p>
-                        </div>
-                    `); return;
+                    grid.insertAdjacentHTML('beforeend', `<div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl md:rounded-3xl p-6 flex flex-col justify-center items-center h-48 border-dashed"><i class="ph-bold ph-credit-card text-gray-400 text-3xl mb-2"></i><p class="font-bold text-gray-900 dark:text-white">${acc.nombre}</p><p class="text-xs text-gray-500 text-center mt-1">Requiere configuración de fechas.</p></div>`); return;
                 }
 
                 const limite = parseFloat(config.limite); const diaCorte = parseInt(config.dia_corte); const diaPago = parseInt(config.dia_pago);
 
                 let fechaUltimoCorte = new Date(anioActual, mesActual, diaCorte, 23, 59, 59);
                 if (diaActual < diaCorte) fechaUltimoCorte.setMonth(fechaUltimoCorte.getMonth() - 1);
-
                 let fechaLimitePago = new Date(fechaUltimoCorte); fechaLimitePago.setDate(diaPago);
                 if (fechaLimitePago <= fechaUltimoCorte) fechaLimitePago.setMonth(fechaLimitePago.getMonth() + 1);
 
@@ -950,33 +986,82 @@
         });
         window.borrarConfigTDC = async (id) => { if(confirm("¿Eliminar la configuración?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/tdc_config`, id)); }
 
-        // --- PAGOS FIJOS ---
+
+        // --- PAGOS FIJOS (AHORA CON BOTONES DE ACCIÓN) ---
         function renderizarPagosFijos() {
             const grid = document.getElementById('fixed-payments-grid'); grid.innerHTML = '';
             if(estadoApp.pagosFijos.length === 0) { grid.innerHTML = '<p class="text-sm text-gray-500 col-span-2">Sin pagos fijos.</p>'; return; }
+            
+            const hoy = new Date();
+            const currentYYYYMM = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2, '0')}`;
+
             estadoApp.pagosFijos.forEach(pago => {
+                const isPaidThisMonth = pago.ultimo_pago === currentYYYYMM;
+                let actionButtons = '';
+                
+                if(isPaidThisMonth) {
+                    actionButtons = `<div class="mt-3 text-center py-1.5 bg-green-500/10 text-green-500 text-xs font-bold rounded-lg border border-green-500/20"><i class="ph-bold ph-check"></i> Resuelto este mes</div>`;
+                } else {
+                    actionButtons = `
+                    <div class="flex gap-2 mt-3 w-full">
+                        <button onclick="window.prepararPagoFijo('${pago.id}')" class="flex-1 py-1.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-xs font-bold rounded-lg transition-transform active:scale-95 shadow-sm">Pagar</button>
+                        <button onclick="window.omitirPagoFijo('${pago.id}')" class="flex-1 py-1.5 bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-300 text-xs font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors">Omitir</button>
+                    </div>`;
+                }
+
                 grid.insertAdjacentHTML('beforeend', `
-                    <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-xl md:rounded-2xl p-4 flex items-center justify-between group">
-                        <div class="flex items-center gap-3 md:gap-4 overflow-hidden">
+                    <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-xl md:rounded-2xl p-4 flex flex-col justify-between group relative overflow-hidden">
+                        <button onclick="window.borrarPagoFijo('${pago.id}')" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 p-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity"><i class="ph-bold ph-trash text-sm"></i></button>
+                        
+                        <div class="flex items-center gap-3 md:gap-4 overflow-hidden mb-2">
                             <div class="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 flex flex-col items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
                                 <span class="text-[8px] md:text-[10px] font-bold uppercase tracking-wider mb-0.5">Día</span>
                                 <span class="text-base md:text-xl font-black font-mono leading-none">${pago.dia}</span>
                             </div>
                             <div class="min-w-0">
-                                <p class="font-bold text-sm md:text-base text-gray-900 dark:text-white truncate">${pago.titulo}</p>
+                                <p class="font-bold text-sm md:text-base text-gray-900 dark:text-white truncate pr-4">${pago.titulo}</p>
                                 <p class="text-xs md:text-sm font-mono font-bold text-red-500 mt-0.5 md:mt-1">-$${pago.monto.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
                             </div>
                         </div>
-                        <button onclick="window.borrarPagoFijo('${pago.id}')" class="text-gray-400 hover:text-red-500 p-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity"><i class="ph-bold ph-trash text-lg"></i></button>
+                        ${actionButtons}
                     </div>
                 `);
             });
             calcularQuincena();
         }
+
+        // Lógica de Pagar y Omitir Pago Fijo
+        window.prepararPagoFijo = (id) => {
+            const pf = estadoApp.pagosFijos.find(p => p.id === id);
+            if(!pf) return;
+            // Pre-llenar el formulario de transacción
+            document.getElementById('tx_type_gasto').checked = true;
+            document.getElementById('tx_type_gasto').dispatchEvent(new Event('change')); // Actualiza la UI
+            document.getElementById('tx-amount').value = pf.monto;
+            document.getElementById('tx-desc').value = `Pago Fijo: ${pf.titulo}`;
+            document.getElementById('tx-ignore-daily').checked = true; // IMPORTANTÍSIMO
+            document.getElementById('tx-fixed-id').value = pf.id; // Enlace invisible
+            
+            mostrarNotificacion("Selecciona la cuenta de origen para pagar.");
+            document.querySelector('[data-target="view-payments"]').click();
+        };
+
+        window.omitirPagoFijo = async (id) => {
+            if(confirm("¿Omitir este pago por este mes? (Se quitará de tu dinero retenido pero no se registrará como gasto).")) {
+                const hoy = new Date();
+                const currentYYYYMM = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2, '0')}`;
+                try {
+                    await updateDoc(doc(db, `usuarios/${currentUser.uid}/pagos_fijos`, id), { ultimo_pago: currentYYYYMM });
+                    mostrarNotificacion("Pago omitido este mes");
+                } catch (error) { alert("Error al omitir."); }
+            }
+        };
+
         document.getElementById('fixed-form').addEventListener('submit', async (e) => {
             e.preventDefault(); const btn = document.getElementById('submit-fixed-btn'); btn.disabled = true;
             try { await addDoc(collection(db, `usuarios/${currentUser.uid}/pagos_fijos`), { titulo: document.getElementById('fixed-title').value, monto: parseFloat(document.getElementById('fixed-amount').value), dia: parseInt(document.getElementById('fixed-day').value) }); document.getElementById('fixed-form').reset(); mostrarNotificacion("Pago fijo guardado"); } catch (error) { alert("Error."); } finally { btn.disabled = false; }
         });
+
 
         // --- CATEGORÍAS ---
         function renderizarCategorias() {
@@ -993,25 +1078,48 @@
         });
         window.borrarCategoria = async (id) => { if(confirm("¿Eliminar esta etiqueta?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/categorias`, id)); };
 
-        // --- TRANSACCIONES ---
+        // --- TRANSACCIONES (GUARDAR Y MARCAR PAGO FIJO SI APLICA) ---
         const txForm = document.getElementById('transaction-form');
         txForm.addEventListener('submit', async (e) => {
             e.preventDefault(); const btn = document.getElementById('submit-tx-btn'); btn.disabled = true;
-            const idEdicion = document.getElementById('tx-id-hidden').value; const dateInput = document.getElementById('tx-date').value;
+            const idEdicion = document.getElementById('tx-id-hidden').value; 
+            const dateInput = document.getElementById('tx-date').value;
             const ignoreDaily = document.getElementById('tx-ignore-daily').checked;
+            const linkedFixedId = document.getElementById('tx-fixed-id').value;
+            const tipoTx = document.querySelector('input[name="tx_type"]:checked').value;
             
             const data = { 
                 monto: parseFloat(document.getElementById('tx-amount').value), 
                 descripcion: document.getElementById('tx-desc').value, 
                 cuenta: document.getElementById('tx-account').value, 
-                categoria: document.getElementById('tx-category').value, 
-                tipo: document.querySelector('input[name="tx_type"]:checked').value,
+                categoria: tipoTx === 'transferencia' ? 'Transferencia' : document.getElementById('tx-category').value, 
+                tipo: tipoTx,
                 ignoreDaily: ignoreDaily
             };
+
+            if (tipoTx === 'transferencia') {
+                data.cuenta_destino = document.getElementById('tx-account-dest').value;
+            }
+
             if (dateInput) data.fecha = new Date(dateInput); else if (!idEdicion) data.fecha = serverTimestamp();
             try {
-                if (idEdicion) { await updateDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, idEdicion), data); mostrarNotificacion("Actualizado"); cancelarEdicion(); } 
-                else { await addDoc(collection(db, `usuarios/${currentUser.uid}/transacciones`), data); mostrarNotificacion("Registrado"); }
+                if (idEdicion) { 
+                    await updateDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, idEdicion), data); 
+                    mostrarNotificacion("Actualizado"); 
+                    cancelarEdicion(); 
+                } else { 
+                    await addDoc(collection(db, `usuarios/${currentUser.uid}/transacciones`), data); 
+                    
+                    // Si viene de pagar un fijo, actualizamos el documento del pago fijo a 'resuelto'
+                    if (linkedFixedId) {
+                        const hoy = new Date();
+                        const currentYYYYMM = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2, '0')}`;
+                        await updateDoc(doc(db, `usuarios/${currentUser.uid}/pagos_fijos`, linkedFixedId), { ultimo_pago: currentYYYYMM });
+                        document.getElementById('tx-fixed-id').value = ''; // Limpiar enlace
+                    }
+
+                    mostrarNotificacion("Registrado"); 
+                }
                 txForm.reset(); document.querySelector('[data-target="view-dashboard"]').click();
             } catch (error) { alert("Error."); } finally { btn.disabled = false; }
         });
@@ -1081,13 +1189,18 @@
         window.editarTx = async (id) => {
             const docSnap = await getDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, id));
             if (docSnap.exists()) {
-                const tx = docSnap.data(); document.getElementById('tx-id-hidden').value = id; document.getElementById('tx-amount').value = tx.monto; document.getElementById('tx-desc').value = tx.descripcion; document.getElementById('tx-account').value = tx.cuenta; document.getElementById('tx-category').value = tx.categoria; document.querySelector(`input[name="tx_type"][value="${tx.tipo}"]`).checked = true;
+                const tx = docSnap.data(); document.getElementById('tx-id-hidden').value = id; document.getElementById('tx-amount').value = tx.monto; document.getElementById('tx-desc').value = tx.descripcion; document.getElementById('tx-account').value = tx.cuenta; document.getElementById('tx-category').value = tx.categoria;
+                document.querySelector(`input[name="tx_type"][value="${tx.tipo}"]`).checked = true;
+                document.querySelector('input[name="tx_type"]:checked').dispatchEvent(new Event('change')); // Trigger UI changes
+                
+                if (tx.tipo === 'transferencia') document.getElementById('tx-account-dest').value = tx.cuenta_destino;
+                
                 document.getElementById('tx-ignore-daily').checked = tx.ignoreDaily || false;
                 if(tx.fecha) { const d = tx.fecha.toDate(); document.getElementById('tx-date').value = (new Date(d - d.getTimezoneOffset() * 60000)).toISOString().slice(0, 16); }
                 document.getElementById('tx-header-title').textContent = "Editar Operación"; document.getElementById('submit-tx-btn').textContent = "Actualizar"; document.getElementById('cancel-edit-btn').classList.remove('hidden'); document.querySelector('[data-target="view-payments"]').click();
             }
         };
-        function cancelarEdicion() { document.getElementById('tx-id-hidden').value = ''; document.getElementById('transaction-form').reset(); document.getElementById('tx-header-title').textContent = "Registrar Operación"; document.getElementById('submit-tx-btn').textContent = "Guardar Operación"; document.getElementById('cancel-edit-btn').classList.add('hidden'); }
+        function cancelarEdicion() { document.getElementById('tx-id-hidden').value = ''; document.getElementById('tx-fixed-id').value = ''; document.getElementById('transaction-form').reset(); document.getElementById('tx-header-title').textContent = "Registrar Operación"; document.getElementById('submit-tx-btn').textContent = "Guardar Operación"; document.getElementById('cancel-edit-btn').classList.add('hidden'); document.getElementById('tx_type_gasto').dispatchEvent(new Event('change'));}
         document.getElementById('cancel-edit-btn').addEventListener('click', (e) => { e.preventDefault(); cancelarEdicion(); });
 
         // --- UI & MOBILE SIDEBAR ---
