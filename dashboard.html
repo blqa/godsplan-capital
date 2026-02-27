@@ -59,7 +59,7 @@
         <span id="toast-message">Operación exitosa</span>
     </div>
 
-    <!-- CABECERA MÓVIL -->
+    <!-- CABECERA MÓVIL (Solo visible en móviles) -->
     <div class="md:hidden fixed top-0 w-full h-16 bg-white dark:bg-gp-surface border-b border-gray-200 dark:border-gp-border flex items-center justify-between px-4 z-[60] transition-colors">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-lg flex items-center justify-center font-bold">G</div>
@@ -80,6 +80,7 @@
                 <div class="w-8 h-8 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-lg flex items-center justify-center font-bold">G</div>
                 <span class="font-bold text-lg tracking-tight text-gray-900 dark:text-white">Godsplan.</span>
             </div>
+            <!-- Botón cerrar solo móvil -->
             <button id="close-sidebar-btn" class="md:hidden text-gray-400 hover:text-white">
                 <i class="ph-bold ph-x text-xl"></i>
             </button>
@@ -140,6 +141,7 @@
     </aside>
 
     <!-- MAIN APP AREA -->
+    <!-- Se agrega pt-20 en móviles para no quedar debajo del navbar superior -->
     <main class="flex-1 w-full h-screen overflow-y-auto p-4 pt-20 md:p-8 md:pt-8 relative">
 
         <!-- ================================================================= -->
@@ -161,12 +163,12 @@
                 <div class="lg:col-span-2 bg-white dark:bg-gp-surface rounded-2xl md:rounded-3xl p-6 md:p-8 border border-gray-200 dark:border-gp-border shadow-sm flex flex-col justify-between">
                     <div class="flex justify-between items-start mb-6">
                         <div class="flex items-center gap-2 text-gray-500 dark:text-gp-muted font-medium text-xs md:text-sm uppercase tracking-wider">
-                            <i class="ph-fill ph-scales"></i> Patrimonio Neto Exacto
+                            <i class="ph-fill ph-scales"></i> Patrimonio Neto Total
                         </div>
                     </div>
                     <div>
                         <h2 class="text-4xl sm:text-5xl lg:text-6xl font-mono font-extrabold text-gray-900 dark:text-white tracking-tight break-words" id="display-patrimonio">$0<span class="text-gray-400 dark:text-zinc-600 text-2xl md:text-3xl">.00</span></h2>
-                        <p class="text-xs md:text-sm text-gray-500 dark:text-gp-muted mt-2">Suma de saldos iniciales ± transacciones</p>
+                        <p class="text-xs md:text-sm text-gray-500 dark:text-gp-muted mt-2">Suma de TODAS tus cuentas (Activos - Pasivos)</p>
                     </div>
                 </div>
 
@@ -209,7 +211,7 @@
             <header class="flex flex-col md:flex-row justify-between md:items-end gap-4 mb-8">
                 <div>
                     <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Organizador de Quincena</h1>
-                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Calculadora algorítmica para conocer tu presupuesto diario seguro</p>
+                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Calculadora algorítmica de dinero líquido para llegar al siguiente pago.</p>
                 </div>
             </header>
 
@@ -218,7 +220,7 @@
                 <!-- Panel Matemático Visual -->
                 <div class="lg:w-2/3 order-2 lg:order-1">
                     <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-sm h-full flex flex-col justify-center">
-                        <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gp-border pb-4">Desglose Matemático</h3>
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gp-border pb-4">Desglose de Liquidez</h3>
                         
                         <div id="quincena-breakdown-panel" class="space-y-4">
                             <p class="text-sm text-gray-500">Configura tus fechas de pago en el panel lateral para iniciar el cálculo.</p>
@@ -254,6 +256,7 @@
 
             </div>
         </section>
+
 
         <!-- ================================================================= -->
         <!-- VISTA 2: HISTORIAL (/history)                                     -->
@@ -347,9 +350,10 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Fecha (Opcional)</label>
                             <input type="datetime-local" id="tx-date" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                            <p class="text-[10px] text-gray-500 mt-1">Dejar vacío usa la fecha/hora actual.</p>
                         </div>
-                        <div class="flex items-center pt-6">
-                            <!-- NUEVA CASILLA: IGNORAR DEL PRESUPUESTO DIARIO -->
+                        <div class="flex items-center pt-2 sm:pt-6">
+                            <!-- CASILLA: IGNORAR DEL PRESUPUESTO DIARIO -->
                             <input type="checkbox" id="tx-ignore-daily" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-zinc-800 dark:border-zinc-700">
                             <label for="tx-ignore-daily" class="ml-2 text-xs font-medium text-gray-500 dark:text-gp-muted cursor-pointer leading-tight">
                                 Ignorar del presupuesto diario (Ej. Pago Fijo ya reservado)
@@ -638,9 +642,10 @@
                 else if (tx.tipo === 'ajuste') { if(cuentaAfectada) cuentaAfectada.saldo_actual += tx.monto; }
             });
 
+            // Patrimonio Neto (Total real de todo)
             patrimonioNetoTotal = cuentasCalculadas.reduce((sum, c) => sum + c.saldo_actual, 0);
             window.cuentasConSaldosGlobal = cuentasCalculadas;
-            window.patrimonioNetoTotalGlobal = Math.max(0, patrimonioNetoTotal);
+            window.patrimonioNetoTotalGlobal = patrimonioNetoTotal; 
 
             document.getElementById('display-patrimonio').innerHTML = `$${patrimonioNetoTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             document.getElementById('display-ingresos').textContent = `$${totalIngresos.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
@@ -701,7 +706,7 @@
             calcularQuincena();
         }
 
-        // --- MÓDULO QUINCENA (ALGORITMO MEJORADO) ---
+        // --- MÓDULO QUINCENA (ALGORITMO MEJORADO PARA DINERO LÍQUIDO) ---
         function calcularQuincena() {
             const config = estadoApp.quincenaConfig;
             const cardDash = document.getElementById('daily-budget-card');
@@ -758,7 +763,7 @@
                 });
             }
 
-            // GASTOS DE HOY (Omitiendo los que tienen ignoreDaily)
+            // GASTOS DE HOY (Incluye TDC, porque un gasto a crédito debe consumir tu límite mental de hoy)
             let gastosHoy = 0;
             estadoApp.transacciones.forEach(tx => {
                 if(tx.tipo === 'gasto' && !tx.ignoreDaily && tx.fecha) {
@@ -767,8 +772,15 @@
                 }
             });
 
-            let patrimonioActual = window.patrimonioNetoTotalGlobal || 0;
-            let dineroLibreActual = patrimonioActual - pagosFijosPendientesTotal;
+            // LA SOLUCIÓN: Calculamos los "Activos Líquidos" excluyendo el Crédito
+            let liquidezActual = 0;
+            window.cuentasConSaldosGlobal.forEach(acc => {
+                if (acc.tipo === 'Débito' || acc.tipo === 'Efectivo') {
+                    liquidezActual += acc.saldo_actual;
+                }
+            });
+
+            let dineroLibreActual = liquidezActual - pagosFijosPendientesTotal;
             let dineroLibreInicioDia = dineroLibreActual + gastosHoy;
             let presupuestoBaseHoy = dineroLibreInicioDia / daysLeft;
             let restanteHoy = presupuestoBaseHoy - gastosHoy;
@@ -802,8 +814,8 @@
                 viewQuincenaPanel.innerHTML = `
                     <div class="space-y-4">
                         <div class="flex justify-between items-center border-b border-gray-100 dark:border-gp-border pb-4">
-                            <span class="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Patrimonio Total</span>
-                            <span class="font-mono font-bold text-gray-900 dark:text-white text-lg">$${patrimonioActual.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                            <span class="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Activos Líquidos (Débito y Efectivo)</span>
+                            <span class="font-mono font-bold text-gray-900 dark:text-white text-lg">$${liquidezActual.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
                         </div>
                         <div class="border-b border-gray-100 dark:border-gp-border pb-4">
                             <span class="text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider block mb-3"><i class="ph-fill ph-lock-key"></i> Reservado para Pagos Fijos</span>
@@ -1058,7 +1070,7 @@
         });
 
         // --- CRUD WINDOW ---
-        window.borrarTx = async (id) => { if(confirm("¿Eliminar registro?")) { await deleteDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, id)); mostrarNotificacion("Eliminado"); } };
+        window.borrarTx = async (id) => { if(confirm("¿Eliminar este registro?")) { await deleteDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, id)); mostrarNotificacion("Eliminado"); } };
         window.borrarCuenta = async (id) => { if(confirm("¿Eliminar bóveda?")) { await deleteDoc(doc(db, `usuarios/${currentUser.uid}/cuentas`, id)); mostrarNotificacion("Eliminada"); } };
         window.borrarPagoFijo = async (id) => { if(confirm("¿Eliminar pago fijo?")) { await deleteDoc(doc(db, `usuarios/${currentUser.uid}/pagos_fijos`, id)); mostrarNotificacion("Eliminado"); } };
         window.ajustarCuenta = async (id, saldoActual, nombre) => {
