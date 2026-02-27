@@ -59,7 +59,7 @@
         <span id="toast-message">Operación exitosa</span>
     </div>
 
-    <!-- CABECERA MÓVIL (Solo visible en móviles) -->
+    <!-- CABECERA MÓVIL -->
     <div class="md:hidden fixed top-0 w-full h-16 bg-white dark:bg-gp-surface border-b border-gray-200 dark:border-gp-border flex items-center justify-between px-4 z-[60] transition-colors">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-lg flex items-center justify-center font-bold">G</div>
@@ -80,7 +80,6 @@
                 <div class="w-8 h-8 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-lg flex items-center justify-center font-bold">G</div>
                 <span class="font-bold text-lg tracking-tight text-gray-900 dark:text-white">Godsplan.</span>
             </div>
-            <!-- Botón cerrar solo móvil -->
             <button id="close-sidebar-btn" class="md:hidden text-gray-400 hover:text-white">
                 <i class="ph-bold ph-x text-xl"></i>
             </button>
@@ -171,16 +170,16 @@
                     </div>
                 </div>
 
-                <!-- Tarjeta Presupuesto Diario Seguro (Toma 1 columna) -->
-                <div class="bg-blue-600 dark:bg-blue-600 text-white rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-xl flex flex-col justify-center relative overflow-hidden group hover:bg-blue-700 transition-colors cursor-pointer" onclick="document.querySelector('[data-target=\'view-quincena\']').click()">
+                <!-- Tarjeta Presupuesto Diario Seguro (AHORA DINÁMICA DE VERDAD) -->
+                <div id="daily-budget-card" class="rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-xl flex flex-col justify-center relative overflow-hidden group transition-colors cursor-pointer bg-blue-600 hover:bg-blue-700 text-white" onclick="document.querySelector('[data-target=\'view-quincena\']').click()">
                     <div class="absolute -right-4 -bottom-4 opacity-20 transform group-hover:scale-110 transition-transform">
                         <i class="ph-fill ph-calendar-check text-9xl"></i>
                     </div>
-                    <div class="relative z-10">
-                        <h3 class="text-xs md:text-sm font-bold text-blue-200 uppercase tracking-wider mb-2">Presupuesto Diario Seguro</h3>
-                        <h2 class="text-4xl lg:text-5xl font-mono font-black tracking-tight my-2" id="display-daily-budget">$0<span class="text-blue-300 text-2xl">.00</span></h2>
-                        <p class="text-xs md:text-sm text-blue-200 mt-2 font-medium">Libre para gastar hoy</p>
-                        <p class="text-[10px] text-blue-300 mt-1 font-mono"><span id="display-days-left">--</span> días al prox. pago</p>
+                    <div class="relative z-10" id="daily-budget-content">
+                        <!-- JS Inyectará el cálculo avanzado aquí -->
+                        <h3 class="text-xs md:text-sm font-bold text-blue-200 uppercase tracking-wider mb-2">Presupuesto de Hoy</h3>
+                        <h2 class="text-4xl lg:text-5xl font-mono font-black tracking-tight my-2">$0.00</h2>
+                        <p class="text-xs md:text-sm text-blue-200 mt-2 font-medium">Configura tus días de pago</p>
                     </div>
                 </div>
             </div>
@@ -204,13 +203,13 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- VISTA 1.5: ORGANIZADOR QUINCENA (/quincena) *** NUEVO MÓDULO *** -->
+        <!-- VISTA 1.5: ORGANIZADOR QUINCENA (/quincena) *** MEJORADO *** -->
         <!-- ================================================================= -->
         <section id="view-quincena" class="view-section hidden max-w-6xl mx-auto">
             <header class="flex flex-col md:flex-row justify-between md:items-end gap-4 mb-8">
                 <div>
                     <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Organizador de Quincena</h1>
-                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Calculadora matemática para conocer tu presupuesto diario seguro</p>
+                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Calculadora algorítmica para conocer tu presupuesto diario seguro</p>
                 </div>
             </header>
 
@@ -219,7 +218,7 @@
                 <!-- Panel Matemático Visual -->
                 <div class="lg:w-2/3 order-2 lg:order-1">
                     <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-sm h-full flex flex-col justify-center">
-                        <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gp-border pb-4">Desglose de Efectivo</h3>
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gp-border pb-4">Desglose Matemático</h3>
                         
                         <div id="quincena-breakdown-panel" class="space-y-4">
                             <p class="text-sm text-gray-500">Configura tus fechas de pago en el panel lateral para iniciar el cálculo.</p>
@@ -255,7 +254,6 @@
 
             </div>
         </section>
-
 
         <!-- ================================================================= -->
         <!-- VISTA 2: HISTORIAL (/history)                                     -->
@@ -345,10 +343,18 @@
                         <input type="text" id="tx-desc" required placeholder="Ej. Compra supermercado" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Fecha (Opcional)</label>
-                        <input type="datetime-local" id="tx-date" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
-                        <p class="text-[10px] text-gray-500 mt-1">Dejar vacío usa la fecha/hora actual.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 dark:text-gp-muted uppercase tracking-wider mb-2">Fecha (Opcional)</label>
+                            <input type="datetime-local" id="tx-date" class="w-full bg-gray-50 dark:bg-gp-bg border border-gray-200 dark:border-gp-border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div class="flex items-center pt-6">
+                            <!-- NUEVA CASILLA: IGNORAR DEL PRESUPUESTO DIARIO -->
+                            <input type="checkbox" id="tx-ignore-daily" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-zinc-800 dark:border-zinc-700">
+                            <label for="tx-ignore-daily" class="ml-2 text-xs font-medium text-gray-500 dark:text-gp-muted cursor-pointer leading-tight">
+                                Ignorar del presupuesto diario (Ej. Pago Fijo ya reservado)
+                            </label>
+                        </div>
                     </div>
 
                     <button type="submit" id="submit-tx-btn" class="w-full py-4 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 font-bold md:text-lg transition-transform active:scale-95 shadow-lg disabled:opacity-50">
@@ -365,7 +371,7 @@
             <header class="flex flex-col md:flex-row justify-between md:items-end gap-4 mb-8">
                 <div>
                     <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Pagos Fijos</h1>
-                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Planifica tus gastos recurrentes. El Organizador Quincena usa estos datos.</p>
+                    <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Planifica tus gastos recurrentes mensuales</p>
                 </div>
             </header>
 
@@ -634,7 +640,7 @@
 
             patrimonioNetoTotal = cuentasCalculadas.reduce((sum, c) => sum + c.saldo_actual, 0);
             window.cuentasConSaldosGlobal = cuentasCalculadas;
-            window.patrimonioNetoTotalGlobal = Math.max(0, patrimonioNetoTotal); // Guardar para módulo Quincena
+            window.patrimonioNetoTotalGlobal = Math.max(0, patrimonioNetoTotal);
 
             document.getElementById('display-patrimonio').innerHTML = `$${patrimonioNetoTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             document.getElementById('display-ingresos').textContent = `$${totalIngresos.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
@@ -676,10 +682,13 @@
                 if(tx.fecha) fechaStr = tx.fecha.toDate().toLocaleDateString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' });
                 let colorMonto = 'text-gray-500'; let signo = ''; let montoMostrado = Math.abs(tx.monto).toFixed(2);
                 if (tx.tipo === 'ingreso') { colorMonto = 'text-green-500'; signo = '+'; } else if (tx.tipo === 'gasto') { colorMonto = 'text-red-500'; signo = '-'; } else if (tx.tipo === 'ajuste') { colorMonto = 'text-blue-500'; signo = tx.monto >= 0 ? '+' : '-'; }
+                
+                let ignoreBadge = tx.ignoreDaily ? '<span class="text-[8px] bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400 px-1 rounded ml-1" title="Ignorado del presupuesto diario">IGN</span>' : '';
+
                 tbody.insertAdjacentHTML('beforeend', `
                     <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
                         <td class="p-3 md:p-4 text-gray-500 dark:text-gp-muted font-mono whitespace-nowrap">${fechaStr}</td>
-                        <td class="p-3 md:p-4 font-medium text-gray-900 dark:text-white"><span class="truncate block max-w-[120px] sm:max-w-none">${tx.descripcion}</span><span class="text-[10px] text-gray-400 font-normal uppercase tracking-wider block mt-0.5">#${tx.categoria}</span></td>
+                        <td class="p-3 md:p-4 font-medium text-gray-900 dark:text-white"><span class="truncate block max-w-[120px] sm:max-w-none">${tx.descripcion} ${ignoreBadge}</span><span class="text-[10px] text-gray-400 font-normal uppercase tracking-wider block mt-0.5">#${tx.categoria}</span></td>
                         <td class="p-3 md:p-4 text-gray-500 dark:text-gp-muted truncate max-w-[100px] sm:max-w-none">${tx.cuenta}</td>
                         <td class="p-3 md:p-4 text-[10px] md:text-xs uppercase font-bold text-gray-500">${tx.tipo}</td>
                         <td class="p-3 md:p-4 text-right font-mono font-bold ${colorMonto}">${signo}$${montoMostrado}</td>
@@ -689,25 +698,26 @@
             });
 
             actualizarVistaTDC();
-            calcularQuincena(); // Recalcular presupuesto diario cuando cambie el patrimonio
+            calcularQuincena();
         }
 
-        // --- MÓDULO QUINCENA (NUEVO) ---
+        // --- MÓDULO QUINCENA (ALGORITMO MEJORADO) ---
         function calcularQuincena() {
             const config = estadoApp.quincenaConfig;
-            const displayDailyDash = document.getElementById('display-daily-budget');
-            const displayDaysDash = document.getElementById('display-days-left');
+            const cardDash = document.getElementById('daily-budget-card');
+            const contentDash = document.getElementById('daily-budget-content');
             const viewQuincenaPanel = document.getElementById('quincena-breakdown-panel');
 
             if (!config || (!config.dia1 && !config.dia2)) {
-                displayDailyDash.innerHTML = "$0<span class='text-blue-300 text-2xl'>.00</span>";
-                displayDaysDash.textContent = "--";
+                cardDash.className = "rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-xl flex flex-col justify-center relative overflow-hidden group transition-colors cursor-pointer bg-blue-600 hover:bg-blue-700 text-white";
+                contentDash.innerHTML = `<h3 class="text-xs md:text-sm font-bold text-blue-200 uppercase tracking-wider mb-2">Presupuesto de Hoy</h3><h2 class="text-4xl lg:text-5xl font-mono font-black tracking-tight my-2">$0.00</h2><p class="text-xs md:text-sm text-blue-200 mt-2 font-medium">Configura tus días de pago</p>`;
                 if (viewQuincenaPanel) viewQuincenaPanel.innerHTML = '<p class="text-gray-500 text-sm">Configura tus fechas de pago en el panel lateral para iniciar el análisis.</p>';
                 return;
             }
 
             const hoy = new Date();
             const hoySoloFecha = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+            const hoyStr = hoy.toLocaleDateString('es-MX');
 
             let diasPago = [];
             if (config.dia1) diasPago.push(parseInt(config.dia1));
@@ -718,71 +728,81 @@
             let currentMonth = hoy.getMonth();
             let currentYear = hoy.getFullYear();
 
-            // Buscar siguiente pago en el mes actual
             for (let dia of diasPago) {
                 let lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
                 let effectiveDay = Math.min(dia, lastDayOfMonth);
                 let possibleDate = new Date(currentYear, currentMonth, effectiveDay);
-                if (possibleDate > hoySoloFecha) {
-                    nextPayday = possibleDate; break;
-                }
+                if (possibleDate > hoySoloFecha) { nextPayday = possibleDate; break; }
             }
 
-            // Si no hay pago restante este mes, saltar al mes siguiente
             if (!nextPayday) {
-                currentMonth++;
-                if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+                currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; }
                 let dia = diasPago[0];
                 let lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
                 let effectiveDay = Math.min(dia, lastDayOfMonth);
                 nextPayday = new Date(currentYear, currentMonth, effectiveDay);
             }
 
-            // Calcular días restantes
             const msPerDay = 1000 * 60 * 60 * 24;
             let daysLeft = Math.ceil((nextPayday - hoySoloFecha) / msPerDay);
             if (daysLeft === 0) daysLeft = 1;
 
-            // Calcular Pagos Fijos en Tránsito
-            let pagosFijosPendientesTotal = 0;
-            let pagosFijosList = [];
-
+            let pagosFijosPendientesTotal = 0; let pagosFijosList = [];
             for(let i=1; i<=daysLeft; i++) {
                 let checkDate = new Date(hoySoloFecha.getTime() + (i * msPerDay));
                 let checkDay = checkDate.getDate();
-
                 estadoApp.pagosFijos.forEach(pf => {
-                    let pfDia = parseInt(pf.dia);
                     let checkDateLastDay = new Date(checkDate.getFullYear(), checkDate.getMonth() + 1, 0).getDate();
-                    let effectivePfDia = Math.min(pfDia, checkDateLastDay);
-
-                    if (effectivePfDia === checkDay) {
-                        pagosFijosPendientesTotal += pf.monto;
-                        pagosFijosList.push(pf);
-                    }
+                    let effectivePfDia = Math.min(parseInt(pf.dia), checkDateLastDay);
+                    if (effectivePfDia === checkDay) { pagosFijosPendientesTotal += pf.monto; pagosFijosList.push(pf); }
                 });
             }
 
+            // GASTOS DE HOY (Omitiendo los que tienen ignoreDaily)
+            let gastosHoy = 0;
+            estadoApp.transacciones.forEach(tx => {
+                if(tx.tipo === 'gasto' && !tx.ignoreDaily && tx.fecha) {
+                    const txDateStr = tx.fecha.toDate().toLocaleDateString('es-MX');
+                    if(txDateStr === hoyStr) gastosHoy += tx.monto;
+                }
+            });
+
             let patrimonioActual = window.patrimonioNetoTotalGlobal || 0;
-            let dineroLibre = patrimonioActual - pagosFijosPendientesTotal;
-            let presupuestoDiario = 0;
-            if (dineroLibre > 0) presupuestoDiario = dineroLibre / daysLeft;
+            let dineroLibreActual = patrimonioActual - pagosFijosPendientesTotal;
+            let dineroLibreInicioDia = dineroLibreActual + gastosHoy;
+            let presupuestoBaseHoy = dineroLibreInicioDia / daysLeft;
+            let restanteHoy = presupuestoBaseHoy - gastosHoy;
 
-            // Renderizar en Dashboard (El monto grande separando centavos para estilo)
-            const pts = presupuestoDiario.toFixed(2).split('.');
-            displayDailyDash.innerHTML = `$${parseInt(pts[0]).toLocaleString()}<span class='text-blue-300 text-2xl'>.${pts[1]}</span>`;
-            displayDaysDash.textContent = `${daysLeft}`;
+            // RENDERIZAR DASHBOARD CARD
+            if (restanteHoy >= 0) {
+                cardDash.className = "rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-xl flex flex-col justify-center relative overflow-hidden group transition-colors cursor-pointer bg-blue-600 hover:bg-blue-700 text-white";
+                contentDash.innerHTML = `
+                    <h3 class="text-xs md:text-sm font-bold text-blue-200 uppercase tracking-wider mb-2">Libres Para Hoy</h3>
+                    <h2 class="text-4xl lg:text-5xl font-mono font-black tracking-tight my-2">$${restanteHoy.toLocaleString('en-US', {minimumFractionDigits: 2})}</h2>
+                    <p class="text-xs text-blue-100 mt-2 font-medium">Límite base: $${presupuestoBaseHoy.toLocaleString('en-US', {minimumFractionDigits: 2})} | Has gastado: $${gastosHoy.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                    <p class="text-[10px] text-blue-300 mt-1 font-mono">${daysLeft} días al prox. pago</p>
+                `;
+            } else {
+                cardDash.className = "rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-xl flex flex-col justify-center relative overflow-hidden group transition-colors cursor-pointer bg-red-600 hover:bg-red-700 text-white";
+                let presupuestoFuturo = daysLeft > 1 ? (dineroLibreActual / (daysLeft - 1)) : 0;
+                contentDash.innerHTML = `
+                    <h3 class="text-xs md:text-sm font-bold text-red-200 uppercase tracking-wider mb-2">Presupuesto Excedido</h3>
+                    <h2 class="text-4xl lg:text-5xl font-mono font-black tracking-tight my-2 text-red-100">-$${Math.abs(restanteHoy).toLocaleString('en-US', {minimumFractionDigits: 2})}</h2>
+                    <p class="text-xs text-red-100 mt-2 font-medium">Has gastado: $${gastosHoy.toLocaleString('en-US', {minimumFractionDigits: 2})} (Límite era: $${presupuestoBaseHoy.toLocaleString('en-US', {minimumFractionDigits: 2})})</p>
+                    <p class="text-[10px] text-red-200 mt-1 font-mono font-bold uppercase">Nuevo límite mañana: $${presupuestoFuturo.toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                `;
+            }
 
-            // Renderizar Desglose en Vista Quincena
+            // RENDERIZAR PANEL QUINCENA
             if (viewQuincenaPanel) {
                 let strListaPagos = pagosFijosList.length > 0 
                     ? pagosFijosList.map(pf => `<div class="flex justify-between text-xs text-red-500 dark:text-red-400 mb-1.5 font-medium"><span>${pf.titulo} (Día ${pf.dia})</span><span class="font-mono">-$${pf.monto.toLocaleString('en-US', {minimumFractionDigits: 2})}</span></div>`).join('') 
-                    : `<p class="text-xs text-gray-500 bg-gray-50 dark:bg-zinc-800/50 p-2 rounded">No hay pagos fijos agendados antes de tu próximo pago.</p>`;
+                    : `<p class="text-xs text-gray-500 bg-gray-50 dark:bg-zinc-800/50 p-2 rounded">No hay pagos fijos pendientes antes de tu próximo pago.</p>`;
 
                 viewQuincenaPanel.innerHTML = `
                     <div class="space-y-4">
                         <div class="flex justify-between items-center border-b border-gray-100 dark:border-gp-border pb-4">
-                            <span class="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Patrimonio Actual</span>
+                            <span class="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Patrimonio Total</span>
                             <span class="font-mono font-bold text-gray-900 dark:text-white text-lg">$${patrimonioActual.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
                         </div>
                         <div class="border-b border-gray-100 dark:border-gp-border pb-4">
@@ -794,31 +814,27 @@
                             </div>
                         </div>
                         <div class="flex justify-between items-center border-b border-gray-100 dark:border-gp-border pb-4">
-                            <span class="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Dinero Libre</span>
-                            <span class="font-mono font-bold text-blue-600 dark:text-blue-500 text-lg">$${dineroLibre.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                            <span class="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Dinero Libre (Base)</span>
+                            <span class="font-mono font-bold text-blue-600 dark:text-blue-500 text-lg">$${dineroLibreActual.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
                         </div>
-                        <div class="bg-blue-50 dark:bg-blue-500/10 rounded-2xl p-6 mt-6 text-center border border-blue-100 dark:border-blue-500/20 shadow-inner">
-                            <p class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">Presupuesto Diario Seguro</p>
-                            <h2 class="text-4xl md:text-5xl font-mono font-black text-blue-700 dark:text-blue-500 my-2">$${presupuestoDiario.toLocaleString('en-US', {minimumFractionDigits: 2})}</h2>
-                            <p class="text-xs text-blue-600/70 dark:text-blue-400/70 mt-3 font-medium">Puedes gastar esto diario durante los próximos ${daysLeft} días <br>(hasta el ${nextPayday.toLocaleDateString('es-MX', {day: 'numeric', month: 'long'})})</p>
+                        <div class="bg-gray-50 dark:bg-zinc-800/30 rounded-2xl p-6 mt-6 border border-gray-100 dark:border-gp-border">
+                            <p class="text-xs text-gray-500 dark:text-gp-muted mb-2">Para mantener tus finanzas estables hasta el <strong>${nextPayday.toLocaleDateString('es-MX', {day: 'numeric', month: 'long'})}</strong> (${daysLeft} días):</p>
+                            <ul class="text-sm space-y-2 font-mono text-gray-900 dark:text-white">
+                                <li>• Tu base diaria de hoy era: <strong class="text-blue-500">$${presupuestoBaseHoy.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong></li>
+                                <li>• Gastos regulares de hoy: <strong class="text-red-500">-$${gastosHoy.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong></li>
+                                <li class="pt-2 border-t border-gray-200 dark:border-zinc-700 font-black text-lg">
+                                    ESTADO ACTUAL: <span class="${restanteHoy >= 0 ? 'text-green-500' : 'text-red-500'}">$${restanteHoy.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 `;
             }
         }
 
-        // Formulario Guardar Configuración Quincena
         document.getElementById('quincena-config-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submit-q-config-btn');
-            btn.disabled = true;
-            try {
-                await setDoc(doc(db, `usuarios/${currentUser.uid}/configuraciones`, 'quincena'), {
-                    dia1: parseInt(document.getElementById('q-day1').value),
-                    dia2: document.getElementById('q-day2').value ? parseInt(document.getElementById('q-day2').value) : null
-                });
-                mostrarNotificacion("Días de pago actualizados");
-            } catch (error) { alert("Error al guardar"); console.error(error); } finally { btn.disabled = false; }
+            e.preventDefault(); const btn = document.getElementById('submit-q-config-btn'); btn.disabled = true;
+            try { await setDoc(doc(db, `usuarios/${currentUser.uid}/configuraciones`, 'quincena'), { dia1: parseInt(document.getElementById('q-day1').value), dia2: document.getElementById('q-day2').value ? parseInt(document.getElementById('q-day2').value) : null }); mostrarNotificacion("Días actualizados"); } catch (error) { alert("Error"); } finally { btn.disabled = false; }
         });
 
         // --- ORGANIZADOR TDC ---
@@ -943,7 +959,6 @@
                     </div>
                 `);
             });
-            // Recalculamos la quincena porque los pagos fijos afectan el presupuesto diario
             calcularQuincena();
         }
         document.getElementById('fixed-form').addEventListener('submit', async (e) => {
@@ -971,7 +986,16 @@
         txForm.addEventListener('submit', async (e) => {
             e.preventDefault(); const btn = document.getElementById('submit-tx-btn'); btn.disabled = true;
             const idEdicion = document.getElementById('tx-id-hidden').value; const dateInput = document.getElementById('tx-date').value;
-            const data = { monto: parseFloat(document.getElementById('tx-amount').value), descripcion: document.getElementById('tx-desc').value, cuenta: document.getElementById('tx-account').value, categoria: document.getElementById('tx-category').value, tipo: document.querySelector('input[name="tx_type"]:checked').value };
+            const ignoreDaily = document.getElementById('tx-ignore-daily').checked;
+            
+            const data = { 
+                monto: parseFloat(document.getElementById('tx-amount').value), 
+                descripcion: document.getElementById('tx-desc').value, 
+                cuenta: document.getElementById('tx-account').value, 
+                categoria: document.getElementById('tx-category').value, 
+                tipo: document.querySelector('input[name="tx_type"]:checked').value,
+                ignoreDaily: ignoreDaily
+            };
             if (dateInput) data.fecha = new Date(dateInput); else if (!idEdicion) data.fecha = serverTimestamp();
             try {
                 if (idEdicion) { await updateDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, idEdicion), data); mostrarNotificacion("Actualizado"); cancelarEdicion(); } 
@@ -979,6 +1003,8 @@
                 txForm.reset(); document.querySelector('[data-target="view-dashboard"]').click();
             } catch (error) { alert("Error."); } finally { btn.disabled = false; }
         });
+
+        // Crear Cuenta
         document.getElementById('account-form').addEventListener('submit', async (e) => {
             e.preventDefault(); const btn = document.getElementById('submit-acc-btn'); btn.disabled = true;
             try { await addDoc(collection(db, `usuarios/${currentUser.uid}/cuentas`), { nombre: document.getElementById('acc-name').value, tipo: document.getElementById('acc-type').value, saldo_inicial: parseFloat(document.getElementById('acc-balance').value), fecha_creacion: serverTimestamp() }); document.getElementById('account-form').reset(); mostrarNotificacion("Bóveda creada"); } catch (error) { alert("Error."); } finally { btn.disabled = false; }
@@ -1002,7 +1028,12 @@
                         for (let i = 0; i < data.transactions.length; i += 400) {
                             const batch = writeBatch(db);
                             data.transactions.slice(i, i + 400).forEach(tx => {
-                                batch.set(doc(collection(db, `usuarios/${currentUser.uid}/transacciones`)), { monto: Number(tx.amount)||0, descripcion: tx.title||"Migración", cuenta: "Bóveda Anterior", categoria: tx.category||"General", tipo: tx.type==='income'?'ingreso':'gasto', fecha: tx.createdAt ? new Date(tx.createdAt) : new Date((tx.date||'')+"T12:00:00") });
+                                batch.set(doc(collection(db, `usuarios/${currentUser.uid}/transacciones`)), { 
+                                    monto: Number(tx.amount)||0, descripcion: tx.title||"Migración", cuenta: "Bóveda Anterior", 
+                                    categoria: tx.category||"General", tipo: tx.type==='income'?'ingreso':'gasto', 
+                                    fecha: tx.createdAt ? new Date(tx.createdAt) : new Date((tx.date||'')+"T12:00:00"),
+                                    ignoreDaily: tx.ignoreDaily || tx.ignoreBudget || false
+                                });
                             });
                             await batch.commit();
                         }
@@ -1016,10 +1047,12 @@
                 } catch (error) { alert("Error: " + error.message); } finally { btn.innerHTML = originalText; btn.disabled = false; }
             }; reader.readAsText(file);
         });
+
+        // --- EXPORTAR CSV ---
         document.getElementById('export-csv-btn').addEventListener('click', () => {
             if(estadoApp.transacciones.length === 0) return alert("Sin datos.");
-            let csv = "Fecha,Descripcion,Cuenta,Categoria,Tipo,Monto\n";
-            estadoApp.transacciones.forEach(tx => csv += `${tx.fecha ? tx.fecha.toDate().toISOString() : new Date().toISOString()},"${tx.descripcion}","${tx.cuenta}","${tx.categoria}",${tx.tipo},${tx.monto}\n`);
+            let csv = "Fecha,Descripcion,Cuenta,Categoria,Tipo,Monto,IgnoradoPresupuesto\n";
+            estadoApp.transacciones.forEach(tx => csv += `${tx.fecha ? tx.fecha.toDate().toISOString() : new Date().toISOString()},"${tx.descripcion}","${tx.cuenta}","${tx.categoria}",${tx.tipo},${tx.monto},${tx.ignoreDaily||false}\n`);
             const link = document.createElement("a"); link.setAttribute("href", URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })));
             link.setAttribute("download", `godsplan_${Date.now()}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
         });
@@ -1031,12 +1064,13 @@
         window.ajustarCuenta = async (id, saldoActual, nombre) => {
             const saldoReal = parseFloat(prompt(`Saldo actual: $${saldoActual.toFixed(2)}\nDinero REAL:`));
             if (isNaN(saldoReal)) return; const dif = saldoReal - saldoActual; if (dif === 0) return;
-            await addDoc(collection(db, `usuarios/${currentUser.uid}/transacciones`), { monto: dif, descripcion: 'Cuadre de caja', cuenta: nombre, categoria: 'Sistema', tipo: 'ajuste', fecha: serverTimestamp() });
+            await addDoc(collection(db, `usuarios/${currentUser.uid}/transacciones`), { monto: dif, descripcion: 'Cuadre de caja', cuenta: nombre, categoria: 'Sistema', tipo: 'ajuste', fecha: serverTimestamp(), ignoreDaily: true });
         };
         window.editarTx = async (id) => {
             const docSnap = await getDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, id));
             if (docSnap.exists()) {
                 const tx = docSnap.data(); document.getElementById('tx-id-hidden').value = id; document.getElementById('tx-amount').value = tx.monto; document.getElementById('tx-desc').value = tx.descripcion; document.getElementById('tx-account').value = tx.cuenta; document.getElementById('tx-category').value = tx.categoria; document.querySelector(`input[name="tx_type"][value="${tx.tipo}"]`).checked = true;
+                document.getElementById('tx-ignore-daily').checked = tx.ignoreDaily || false;
                 if(tx.fecha) { const d = tx.fecha.toDate(); document.getElementById('tx-date').value = (new Date(d - d.getTimezoneOffset() * 60000)).toISOString().slice(0, 16); }
                 document.getElementById('tx-header-title').textContent = "Editar Operación"; document.getElementById('submit-tx-btn').textContent = "Actualizar"; document.getElementById('cancel-edit-btn').classList.remove('hidden'); document.querySelector('[data-target="view-payments"]').click();
             }
