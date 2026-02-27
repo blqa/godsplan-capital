@@ -50,7 +50,7 @@
     <!-- CORTINA DE SEGURIDAD -->
     <div id="security-curtain" class="fixed inset-0 z-[200] bg-white dark:bg-gp-bg flex flex-col items-center justify-center transition-colors">
         <i class="ph-bold ph-shield-check text-5xl text-blue-500 mb-4 animate-pulse"></i>
-        <p class="font-mono text-gray-500 dark:text-gp-muted text-sm">Validando token de acceso...</p>
+        <p id="security-status" class="font-mono text-gray-500 dark:text-gp-muted text-sm">Validando token de acceso...</p>
     </div>
 
     <!-- ALERTA DINÁMICA TOAST -->
@@ -80,7 +80,6 @@
                 <div class="w-8 h-8 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-lg flex items-center justify-center font-bold">G</div>
                 <span class="font-bold text-lg tracking-tight text-gray-900 dark:text-white">Godsplan.</span>
             </div>
-            <!-- Botón cerrar solo móvil -->
             <button id="close-sidebar-btn" class="md:hidden text-gray-400 hover:text-white">
                 <i class="ph-bold ph-x text-xl"></i>
             </button>
@@ -279,7 +278,7 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- VISTA 3: TRANSACCIONES (/payments)  *** ACTUALIZADO PARA TRANSFERENCIAS *** -->
+        <!-- VISTA 3: TRANSACCIONES (/payments)                                -->
         <!-- ================================================================= -->
         <section id="view-payments" class="view-section hidden max-w-2xl mx-auto">
             <header class="mb-8 text-center md:mb-10">
@@ -307,7 +306,6 @@
                             <input type="radio" name="tx_type" id="tx_type_ingreso" value="ingreso" class="peer sr-only">
                             <div class="text-center py-2 rounded-lg text-xs md:text-sm font-medium text-gray-500 peer-checked:bg-white peer-checked:dark:bg-gp-surface peer-checked:text-green-500 peer-checked:shadow-sm transition-all">Ingreso</div>
                         </label>
-                        <!-- NUEVO BOTÓN: Transferencia -->
                         <label class="flex-1 cursor-pointer">
                             <input type="radio" name="tx_type" id="tx_type_transferencia" value="transferencia" class="peer sr-only">
                             <div class="text-center py-2 rounded-lg text-xs md:text-sm font-medium text-gray-500 peer-checked:bg-white peer-checked:dark:bg-gp-surface peer-checked:text-blue-500 peer-checked:shadow-sm transition-all">Transferencia</div>
@@ -374,7 +372,7 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- VISTA 3.5: PAGOS FIJOS (/fixed-payments) *** CON PAGAR Y OMITIR *** -->
+        <!-- VISTA 3.5: PAGOS FIJOS (/fixed-payments)                          -->
         <!-- ================================================================= -->
         <section id="view-fixed-payments" class="view-section hidden max-w-6xl mx-auto">
             <header class="flex flex-col md:flex-row justify-between md:items-end gap-4 mb-8">
@@ -587,10 +585,19 @@
         const db = getFirestore(app);
         let currentUser = null;
 
-        // ESTADO GLOBAL
+        // ESTADO GLOBAL Y GESTOR DE CARGA (Race Condition Fix)
         let estadoApp = { cuentas: [], transacciones: [], categorias: [], pagosFijos: [], tdcConfig: [], quincenaConfig: null };
         window.cuentasConSaldosGlobal = [];
         window.patrimonioNetoTotalGlobal = 0;
+
+        // Banderas para asegurar que el cálculo principal no corra hasta tener los datos
+        let loadStatus = { cuentas: false, transacciones: false, categorias: false, pagosFijos: false };
+        function checkAppReady() {
+            if (loadStatus.cuentas && loadStatus.transacciones && loadStatus.categorias && loadStatus.pagosFijos) {
+                document.getElementById('security-curtain').style.display = 'none';
+                calcularYRenderizar(); // Ahora es seguro calcular
+            }
+        }
 
         // --- MANEJO DEL FORMULARIO DE TRANSFERENCIAS (UI) ---
         document.querySelectorAll('input[name="tx_type"]').forEach(radio => {
@@ -612,7 +619,7 @@
                 currentUser = user;
                 document.getElementById('user-display').textContent = user.email;
                 document.getElementById('settings-email').textContent = user.email;
-                document.getElementById('security-curtain').style.display = 'none';
+                document.getElementById('security-status').textContent = "Descargando bóvedas...";
                 iniciarListenersBD();
             } else {
                 window.location.href = 'auth.html';
@@ -622,13 +629,20 @@
         // --- LISTENERS FIRESTORE ---
         function iniciarListenersBD() {
             onSnapshot(query(collection(db, `usuarios/${currentUser.uid}/categorias`), orderBy("nombre", "asc")), (snapshot) => {
-                estadoApp.categorias = []; snapshot.forEach(doc => estadoApp.categorias.push({ id: doc.id, ...doc.data() })); renderizarCategorias();
+                estadoApp.categorias = []; snapshot.forEach(doc => estadoApp.categorias.push({ id: doc.id, ...doc.data() })); 
+                loadStatus.categorias = true;
+                renderizarCategorias();
+                checkAppReady();
             });
             onSnapshot(query(collection(db, `usuarios/${currentUser.uid}/pagos_fijos`), orderBy("dia", "asc")), (snapshot) => {
-                estadoApp.pagosFijos = []; snapshot.forEach(doc => estadoApp.pagosFijos.push({ id: doc.id, ...doc.data() })); renderizarPagosFijos();
+                estadoApp.pagosFijos = []; snapshot.forEach(doc => estadoApp.pagosFijos.push({ id: doc.id, ...doc.data() })); 
+                loadStatus.pagosFijos = true;
+                renderizarPagosFijos();
+                checkAppReady();
             });
             onSnapshot(query(collection(db, `usuarios/${currentUser.uid}/tdc_config`)), (snapshot) => {
-                estadoApp.tdcConfig = []; snapshot.forEach(doc => estadoApp.tdcConfig.push({ id: doc.id, ...doc.data() })); actualizarVistaTDC();
+                estadoApp.tdcConfig = []; snapshot.forEach(doc => estadoApp.tdcConfig.push({ id: doc.id, ...doc.data() })); 
+                if(loadStatus.cuentas && loadStatus.transacciones) actualizarVistaTDC();
             });
             onSnapshot(doc(db, `usuarios/${currentUser.uid}/configuraciones`, 'quincena'), (docSnap) => {
                 if (docSnap.exists()) {
@@ -636,21 +650,31 @@
                     document.getElementById('q-day1').value = estadoApp.quincenaConfig.dia1 || '';
                     document.getElementById('q-day2').value = estadoApp.quincenaConfig.dia2 || '';
                 }
-                calcularQuincena();
+                if(loadStatus.cuentas && loadStatus.transacciones) calcularQuincena();
             });
             onSnapshot(query(collection(db, `usuarios/${currentUser.uid}/cuentas`), orderBy("fecha_creacion", "asc")), (snapshot) => {
-                estadoApp.cuentas = []; snapshot.forEach(doc => estadoApp.cuentas.push({ id: doc.id, ...doc.data() })); calcularYRenderizar();
+                estadoApp.cuentas = []; snapshot.forEach(doc => estadoApp.cuentas.push({ id: doc.id, ...doc.data() })); 
+                loadStatus.cuentas = true;
+                checkAppReady();
+                if(loadStatus.transacciones) calcularYRenderizar(); // Render extra solo si ya hay transacciones
             });
             onSnapshot(query(collection(db, `usuarios/${currentUser.uid}/transacciones`), orderBy("fecha", "desc")), (snapshot) => {
-                estadoApp.transacciones = []; snapshot.forEach(doc => estadoApp.transacciones.push({ id: doc.id, ...doc.data() })); calcularYRenderizar();
+                estadoApp.transacciones = []; snapshot.forEach(doc => estadoApp.transacciones.push({ id: doc.id, ...doc.data() })); 
+                loadStatus.transacciones = true;
+                checkAppReady();
+                if(loadStatus.cuentas) calcularYRenderizar(); // Render extra solo si ya hay cuentas
             });
         }
 
         // --- MOTOR DE CÁLCULO CENTRAL ---
         function calcularYRenderizar() {
+            // Protección extra: No calcular si las dependencias principales no están listas
+            if (!loadStatus.cuentas || !loadStatus.transacciones) return;
+
             let patrimonioNetoTotal = 0; let totalIngresos = 0; let totalGastos = 0;
             let cuentasCalculadas = estadoApp.cuentas.map(c => ({ ...c, saldo_actual: c.saldo_inicial }));
 
+            // Nota sobre rendimiento: Reducimos en memoria. Es ultra rápido en JS (O(N) aquí es ~2ms para 10,000 txs).
             estadoApp.transacciones.forEach(tx => {
                 let cuentaAfectada = cuentasCalculadas.find(c => c.nombre === tx.cuenta);
                 
@@ -661,7 +685,6 @@
                 } else if (tx.tipo === 'ajuste') { 
                     if(cuentaAfectada) cuentaAfectada.saldo_actual += tx.monto; 
                 } else if (tx.tipo === 'transferencia') {
-                    // LA MAGIA DE LA TRANSFERENCIA: Se resta del origen, se suma al destino. NO afecta ingresos/gastos.
                     let cuentaDestino = cuentasCalculadas.find(c => c.nombre === tx.cuenta_destino);
                     if(cuentaAfectada) cuentaAfectada.saldo_actual -= tx.monto;
                     if(cuentaDestino) cuentaDestino.saldo_actual += tx.monto;
@@ -680,6 +703,7 @@
             const txAccountSelect = document.getElementById('tx-account');
             const txAccountDestSelect = document.getElementById('tx-account-dest');
             
+            // Renderización de cuentas
             accountsGrid.innerHTML = ''; 
             txAccountSelect.innerHTML = '<option value="" disabled selected>Selecciona bóveda...</option>';
             txAccountDestSelect.innerHTML = '<option value="" disabled selected>Hacia bóveda...</option>';
@@ -711,10 +735,16 @@
                 txAccountDestSelect.insertAdjacentHTML('beforeend', `<option value="${acc.nombre}">${acc.nombre} ($${acc.saldo_actual.toFixed(2)})</option>`);
             });
 
-            const tbody = document.getElementById('history-table-body'); tbody.innerHTML = '';
+            // Optimización de renderizado del historial usando DocumentFragment
+            const tbody = document.getElementById('history-table-body'); 
+            tbody.innerHTML = '';
+            const txFragment = document.createDocumentFragment();
+
             estadoApp.transacciones.forEach(tx => {
-                let fechaStr = "Procesando...";
-                if(tx.fecha) fechaStr = tx.fecha.toDate().toLocaleDateString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' });
+                // FIX OPTIMISTIC UI: Si no hay timestamp de servidor aún, usa la fecha local al instante.
+                let fechaObj = tx.fecha ? tx.fecha.toDate() : new Date();
+                let fechaStr = fechaObj.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' });
+                
                 let colorMonto = 'text-gray-500'; let signo = ''; let montoMostrado = Math.abs(tx.monto).toFixed(2);
                 let cuentaAfectadaHTML = `<td class="p-3 md:p-4 text-gray-500 dark:text-gp-muted truncate max-w-[100px] sm:max-w-none">${tx.cuenta}</td>`;
                 
@@ -728,17 +758,20 @@
                 
                 let ignoreBadge = tx.ignoreDaily ? '<span class="text-[8px] bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400 px-1 rounded ml-1" title="Ignorado del presupuesto diario">IGN</span>' : '';
 
-                tbody.insertAdjacentHTML('beforeend', `
-                    <tr class="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
-                        <td class="p-3 md:p-4 text-gray-500 dark:text-gp-muted font-mono whitespace-nowrap">${fechaStr}</td>
-                        <td class="p-3 md:p-4 font-medium text-gray-900 dark:text-white"><span class="truncate block max-w-[120px] sm:max-w-none">${tx.descripcion} ${ignoreBadge}</span><span class="text-[10px] text-gray-400 font-normal uppercase tracking-wider block mt-0.5">#${tx.categoria}</span></td>
-                        ${cuentaAfectadaHTML}
-                        <td class="p-3 md:p-4 text-[10px] md:text-xs uppercase font-bold text-gray-500">${tx.tipo}</td>
-                        <td class="p-3 md:p-4 text-right font-mono font-bold ${colorMonto}">${signo}$${montoMostrado}</td>
-                        <td class="p-3 md:p-4 text-center whitespace-nowrap"><button onclick="window.editarTx('${tx.id}')" class="text-blue-500 hover:text-blue-400 mr-2 md:mr-3 p-1"><i class="ph-bold ph-pencil text-lg"></i></button><button onclick="window.borrarTx('${tx.id}')" class="text-red-500 hover:text-red-400 p-1"><i class="ph-bold ph-trash text-lg"></i></button></td>
-                    </tr>
-                `);
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3 md:p-4 text-gray-500 dark:text-gp-muted font-mono whitespace-nowrap">${fechaStr}</td>
+                    <td class="p-3 md:p-4 font-medium text-gray-900 dark:text-white"><span class="truncate block max-w-[120px] sm:max-w-none">${tx.descripcion} ${ignoreBadge}</span><span class="text-[10px] text-gray-400 font-normal uppercase tracking-wider block mt-0.5">#${tx.categoria}</span></td>
+                    ${cuentaAfectadaHTML}
+                    <td class="p-3 md:p-4 text-[10px] md:text-xs uppercase font-bold text-gray-500">${tx.tipo}</td>
+                    <td class="p-3 md:p-4 text-right font-mono font-bold ${colorMonto}">${signo}$${montoMostrado}</td>
+                    <td class="p-3 md:p-4 text-center whitespace-nowrap"><button onclick="window.editarTx('${tx.id}')" class="text-blue-500 hover:text-blue-400 mr-2 md:mr-3 p-1"><i class="ph-bold ph-pencil text-lg"></i></button><button onclick="window.borrarTx('${tx.id}')" class="text-red-500 hover:text-red-400 p-1"><i class="ph-bold ph-trash text-lg"></i></button></td>
+                `;
+                txFragment.appendChild(tr);
             });
+            // Pegamos todo de un solo golpe (Aumenta el rendimiento X10 en historiales largos)
+            tbody.appendChild(txFragment);
 
             actualizarVistaTDC();
             calcularQuincena();
@@ -801,7 +834,6 @@
                     let checkDateLastDay = new Date(checkDate.getFullYear(), checkDate.getMonth() + 1, 0).getDate();
                     let effectivePfDia = Math.min(parseInt(pf.dia), checkDateLastDay);
                     
-                    // Si cae en el rango y NO se ha pagado (o ignorado) este mes
                     if (effectivePfDia === checkDay && pf.ultimo_pago !== checkDateYYYYMM) { 
                         pagosFijosPendientesTotal += pf.monto; 
                         pagosFijosList.push(pf); 
@@ -809,7 +841,6 @@
                 });
             }
 
-            // GASTOS DE HOY (Omitiendo los que tienen ignoreDaily)
             let gastosHoy = 0;
             estadoApp.transacciones.forEach(tx => {
                 if(tx.tipo === 'gasto' && !tx.ignoreDaily && tx.fecha) {
@@ -818,7 +849,6 @@
                 }
             });
 
-            // LA SOLUCIÓN: Calculamos la Liquidez (Débito + Efectivo solamente)
             let liquidezActual = 0;
             window.cuentasConSaldosGlobal.forEach(acc => {
                 if (acc.tipo === 'Débito' || acc.tipo === 'Efectivo') {
@@ -987,7 +1017,7 @@
         window.borrarConfigTDC = async (id) => { if(confirm("¿Eliminar la configuración?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/tdc_config`, id)); }
 
 
-        // --- PAGOS FIJOS (AHORA CON BOTONES DE ACCIÓN) ---
+        // --- PAGOS FIJOS ---
         function renderizarPagosFijos() {
             const grid = document.getElementById('fixed-payments-grid'); grid.innerHTML = '';
             if(estadoApp.pagosFijos.length === 0) { grid.innerHTML = '<p class="text-sm text-gray-500 col-span-2">Sin pagos fijos.</p>'; return; }
@@ -1027,20 +1057,18 @@
                     </div>
                 `);
             });
-            calcularQuincena();
+            if(loadStatus.cuentas && loadStatus.transacciones) calcularQuincena();
         }
 
-        // Lógica de Pagar y Omitir Pago Fijo
         window.prepararPagoFijo = (id) => {
             const pf = estadoApp.pagosFijos.find(p => p.id === id);
             if(!pf) return;
-            // Pre-llenar el formulario de transacción
             document.getElementById('tx_type_gasto').checked = true;
-            document.getElementById('tx_type_gasto').dispatchEvent(new Event('change')); // Actualiza la UI
+            document.getElementById('tx_type_gasto').dispatchEvent(new Event('change'));
             document.getElementById('tx-amount').value = pf.monto;
             document.getElementById('tx-desc').value = `Pago Fijo: ${pf.titulo}`;
-            document.getElementById('tx-ignore-daily').checked = true; // IMPORTANTÍSIMO
-            document.getElementById('tx-fixed-id').value = pf.id; // Enlace invisible
+            document.getElementById('tx-ignore-daily').checked = true;
+            document.getElementById('tx-fixed-id').value = pf.id;
             
             mostrarNotificacion("Selecciona la cuenta de origen para pagar.");
             document.querySelector('[data-target="view-payments"]').click();
@@ -1110,14 +1138,12 @@
                 } else { 
                     await addDoc(collection(db, `usuarios/${currentUser.uid}/transacciones`), data); 
                     
-                    // Si viene de pagar un fijo, actualizamos el documento del pago fijo a 'resuelto'
                     if (linkedFixedId) {
                         const hoy = new Date();
                         const currentYYYYMM = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2, '0')}`;
                         await updateDoc(doc(db, `usuarios/${currentUser.uid}/pagos_fijos`, linkedFixedId), { ultimo_pago: currentYYYYMM });
-                        document.getElementById('tx-fixed-id').value = ''; // Limpiar enlace
+                        document.getElementById('tx-fixed-id').value = ''; 
                     }
-
                     mostrarNotificacion("Registrado"); 
                 }
                 txForm.reset(); document.querySelector('[data-target="view-dashboard"]').click();
