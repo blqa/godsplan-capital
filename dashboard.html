@@ -87,24 +87,25 @@
 
         <nav class="flex-1 overflow-y-auto no-scrollbar py-6 px-4 space-y-1">
             <p class="px-3 text-[10px] font-bold text-gray-400 dark:text-zinc-600 uppercase tracking-widest mb-2">Visibilidad</p>
-            <button data-target="view-dashboard" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-100 dark:bg-zinc-800 text-blue-600 dark:text-white font-medium transition-colors">
+            <!-- BUG FIX: Agregué clases de hover para cuando el dashboard no está seleccionado -->
+            <button data-target="view-dashboard" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-100 dark:bg-zinc-800 text-blue-600 dark:text-white font-medium hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <i class="ph-fill ph-layout text-xl"></i> Dashboard
             </button>
-            <button data-target="view-history" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
+            <button id="nav-history" data-target="view-history" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <i class="ph-fill ph-clock-counter-clockwise text-xl"></i> Historial
             </button>
-            <a href="statements.html" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
+            <a href="statements.html" id="nav-statements" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <i class="ph-fill ph-file-text text-xl"></i> Estados de Cuenta
             </a>
             
-            <p class="px-3 text-[10px] font-bold text-gray-400 dark:text-zinc-600 uppercase tracking-widest mt-6 mb-2">Planificación</p>
-            <button data-target="view-quincena" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
+            <p id="nav-group-plan-title" class="px-3 text-[10px] font-bold text-gray-400 dark:text-zinc-600 uppercase tracking-widest mt-6 mb-2">Planificación</p>
+            <button id="nav-quincena" data-target="view-quincena" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <i class="ph-fill ph-calendar-check text-xl"></i> Org. Quincena
             </button>
-            <button data-target="view-fixed-payments" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
+            <button id="nav-fixed" data-target="view-fixed-payments" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <i class="ph-fill ph-calendar-blank text-xl"></i> Pagos Fijos
             </button>
-            <button data-target="view-tdc" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
+            <button id="nav-tdc" data-target="view-tdc" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-gp-muted hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <i class="ph-fill ph-credit-card text-xl"></i> Organizador TDC
             </button>
             
@@ -157,7 +158,8 @@
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
-                <div class="lg:col-span-2 bg-white dark:bg-gp-surface rounded-2xl md:rounded-3xl p-6 md:p-8 border border-gray-200 dark:border-gp-border shadow-sm flex flex-col justify-between">
+                <!-- Se ajusta la clase lg:col-span-2 a dinámico en caso de apagar el modulo quincena -->
+                <div id="patrimonio-card" class="lg:col-span-2 bg-white dark:bg-gp-surface rounded-2xl md:rounded-3xl p-6 md:p-8 border border-gray-200 dark:border-gp-border shadow-sm flex flex-col justify-between transition-all duration-300">
                     <div class="flex justify-between items-start mb-6">
                         <div class="flex items-center gap-2 text-gray-500 dark:text-gp-muted font-medium text-xs md:text-sm uppercase tracking-wider">
                             <i class="ph-fill ph-scales"></i> Patrimonio Neto Exacto
@@ -522,11 +524,11 @@
         <section id="view-settings" class="view-section hidden max-w-4xl mx-auto">
             <header class="mb-8 md:mb-10">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Preferencias</h1>
-                <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Configura etiquetas, importa y exporta tu información</p>
+                <p class="text-gray-500 dark:text-gp-muted text-sm mt-1">Configura módulos, etiquetas, e importa/exporta tu información</p>
             </header>
 
-            <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl md:rounded-3xl overflow-hidden shadow-sm">
-                <div class="p-6 md:p-8 border-b border-gray-100 dark:border-gp-border flex flex-col sm:flex-row items-center sm:items-start gap-4 md:gap-6 text-center sm:text-left">
+            <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl md:rounded-3xl overflow-hidden shadow-sm mb-6">
+                <div class="p-6 md:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-4 md:gap-6 text-center sm:text-left">
                     <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center text-3xl md:text-4xl text-blue-500 flex-shrink-0">
                         <i class="ph-fill ph-user-circle"></i>
                     </div>
@@ -535,7 +537,79 @@
                         <p class="text-xs md:text-sm text-gray-500 dark:text-gp-muted font-mono mt-1"><i class="ph-fill ph-lock-key"></i> Autenticado vía Firebase Auth</p>
                     </div>
                 </div>
+            </div>
 
+            <!-- SECCIÓN NUEVA: MÓDULOS ACTIVOS -->
+            <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl md:rounded-3xl overflow-hidden shadow-sm mb-6">
+                <div class="p-6 md:p-8">
+                    <h2 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2"><i class="ph-fill ph-plugs text-blue-500"></i> Módulos de la Aplicación</h2>
+                    <p class="text-xs md:text-sm text-gray-500 dark:text-gp-muted mb-6">Enciende o apaga las características que necesites para simplificar tu interfaz.</p>
+                    
+                    <div class="space-y-4">
+                        <!-- Switch Historial -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gp-bg rounded-xl border border-gray-100 dark:border-gp-border">
+                            <div>
+                                <p class="text-sm font-bold text-gray-900 dark:text-white">Libro Mayor (Historial)</p>
+                                <p class="text-[10px] text-gray-500 dark:text-gp-muted">Registro detallado de tus transacciones.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-mod-history" class="sr-only peer module-toggle" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                        
+                        <!-- Switch Estados de Cuenta -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gp-bg rounded-xl border border-gray-100 dark:border-gp-border">
+                            <div>
+                                <p class="text-sm font-bold text-gray-900 dark:text-white">Estados de Cuenta</p>
+                                <p class="text-[10px] text-gray-500 dark:text-gp-muted">Acceso a la vista de estados de cuenta y cortes mensuales.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-mod-statements" class="sr-only peer module-toggle" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- Switch Quincena -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gp-bg rounded-xl border border-gray-100 dark:border-gp-border">
+                            <div>
+                                <p class="text-sm font-bold text-gray-900 dark:text-white">Organizador de Quincena</p>
+                                <p class="text-[10px] text-gray-500 dark:text-gp-muted">Calcula tu presupuesto diario para llegar a tu siguiente pago.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-mod-quincena" class="sr-only peer module-toggle" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- Switch Pagos Fijos -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gp-bg rounded-xl border border-gray-100 dark:border-gp-border">
+                            <div>
+                                <p class="text-sm font-bold text-gray-900 dark:text-white">Pagos Fijos</p>
+                                <p class="text-[10px] text-gray-500 dark:text-gp-muted">Gestiona gastos recurrentes mensuales (luz, renta, suscripciones).</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-mod-fixed" class="sr-only peer module-toggle" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- Switch TDC -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gp-bg rounded-xl border border-gray-100 dark:border-gp-border">
+                            <div>
+                                <p class="text-sm font-bold text-gray-900 dark:text-white">Organizador TDC</p>
+                                <p class="text-[10px] text-gray-500 dark:text-gp-muted">Calculadora de "para no generar intereses" para tarjetas de crédito.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-mod-tdc" class="sr-only peer module-toggle" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gp-surface border border-gray-200 dark:border-gp-border rounded-2xl md:rounded-3xl overflow-hidden shadow-sm">
                 <div class="p-6 md:p-8 border-b border-gray-100 dark:border-gp-border">
                     <h2 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-2">Gestión de Categorías</h2>
                     <p class="text-xs md:text-sm text-gray-500 dark:text-gp-muted mb-6">Crea etiquetas personalizadas.</p>
@@ -585,17 +659,17 @@
         const db = getFirestore(app);
         let currentUser = null;
 
-        // ESTADO GLOBAL Y GESTOR DE CARGA (Race Condition Fix)
-        let estadoApp = { cuentas: [], transacciones: [], categorias: [], pagosFijos: [], tdcConfig: [], quincenaConfig: null };
+        // ESTADO GLOBAL Y GESTOR DE CARGA
+        let estadoApp = { cuentas: [], transacciones: [], categorias: [], pagosFijos: [], tdcConfig: [], quincenaConfig: null, modulosConfig: { history: true, statements: true, quincena: true, fixedPayments: true, tdc: true } };
         window.cuentasConSaldosGlobal = [];
         window.patrimonioNetoTotalGlobal = 0;
 
-        // Banderas para asegurar que el cálculo principal no corra hasta tener los datos
-        let loadStatus = { cuentas: false, transacciones: false, categorias: false, pagosFijos: false };
+        let loadStatus = { cuentas: false, transacciones: false, categorias: false, pagosFijos: false, modulos: false };
         function checkAppReady() {
-            if (loadStatus.cuentas && loadStatus.transacciones && loadStatus.categorias && loadStatus.pagosFijos) {
+            if (loadStatus.cuentas && loadStatus.transacciones && loadStatus.categorias && loadStatus.pagosFijos && loadStatus.modulos) {
                 document.getElementById('security-curtain').style.display = 'none';
-                calcularYRenderizar(); // Ahora es seguro calcular
+                aplicarConfiguracionModulos();
+                calcularYRenderizar(); 
             }
         }
 
@@ -628,6 +702,19 @@
 
         // --- LISTENERS FIRESTORE ---
         function iniciarListenersBD() {
+            // Listener de Módulos (NUEVO)
+            onSnapshot(doc(db, `usuarios/${currentUser.uid}/configuraciones`, 'modulos'), (docSnap) => {
+                if (docSnap.exists()) {
+                    estadoApp.modulosConfig = { ...estadoApp.modulosConfig, ...docSnap.data() };
+                }
+                loadStatus.modulos = true;
+                if (document.getElementById('security-curtain').style.display === 'none') {
+                    aplicarConfiguracionModulos(); // Si ya cargó, aplicarlo de inmediato
+                } else {
+                    checkAppReady();
+                }
+            });
+
             onSnapshot(query(collection(db, `usuarios/${currentUser.uid}/categorias`), orderBy("nombre", "asc")), (snapshot) => {
                 estadoApp.categorias = []; snapshot.forEach(doc => estadoApp.categorias.push({ id: doc.id, ...doc.data() })); 
                 loadStatus.categorias = true;
@@ -656,25 +743,92 @@
                 estadoApp.cuentas = []; snapshot.forEach(doc => estadoApp.cuentas.push({ id: doc.id, ...doc.data() })); 
                 loadStatus.cuentas = true;
                 checkAppReady();
-                if(loadStatus.transacciones) calcularYRenderizar(); // Render extra solo si ya hay transacciones
+                if(loadStatus.transacciones) calcularYRenderizar();
             });
             onSnapshot(query(collection(db, `usuarios/${currentUser.uid}/transacciones`), orderBy("fecha", "desc")), (snapshot) => {
                 estadoApp.transacciones = []; snapshot.forEach(doc => estadoApp.transacciones.push({ id: doc.id, ...doc.data() })); 
                 loadStatus.transacciones = true;
                 checkAppReady();
-                if(loadStatus.cuentas) calcularYRenderizar(); // Render extra solo si ya hay cuentas
+                if(loadStatus.cuentas) calcularYRenderizar();
             });
         }
 
+        // --- GESTIÓN DE MÓDULOS ACTIVOS (NUEVO) ---
+        function aplicarConfiguracionModulos() {
+            const mod = estadoApp.modulosConfig;
+            
+            // 1. Actualizar los switches en la vista de configuración
+            document.getElementById('toggle-mod-history').checked = mod.history;
+            document.getElementById('toggle-mod-statements').checked = mod.statements;
+            document.getElementById('toggle-mod-quincena').checked = mod.quincena;
+            document.getElementById('toggle-mod-fixed').checked = mod.fixedPayments;
+            document.getElementById('toggle-mod-tdc').checked = mod.tdc;
+
+            // 2. Ocultar o mostrar elementos en el Sidebar
+            document.getElementById('nav-history').classList.toggle('hidden', !mod.history);
+            document.getElementById('nav-statements').classList.toggle('hidden', !mod.statements);
+            document.getElementById('nav-quincena').classList.toggle('hidden', !mod.quincena);
+            document.getElementById('nav-fixed').classList.toggle('hidden', !mod.fixedPayments);
+            document.getElementById('nav-tdc').classList.toggle('hidden', !mod.tdc);
+
+            // Ocultar el título "Planificación" si todos sus hijos están apagados
+            const planifVisible = mod.quincena || mod.fixedPayments || mod.tdc;
+            document.getElementById('nav-group-plan-title').classList.toggle('hidden', !planifVisible);
+
+            // 3. Ajustar el Dashboard (Ocultar tarjeta de quincena y expandir patrimonio)
+            const dailyBudgetCard = document.getElementById('daily-budget-card');
+            const patrimonioCard = document.getElementById('patrimonio-card');
+            
+            if (mod.quincena) {
+                dailyBudgetCard.classList.remove('hidden');
+                patrimonioCard.classList.replace('lg:col-span-3', 'lg:col-span-2');
+            } else {
+                dailyBudgetCard.classList.add('hidden');
+                patrimonioCard.classList.replace('lg:col-span-2', 'lg:col-span-3');
+            }
+
+            // 4. Si el usuario está viendo una vista que acaba de apagar, redirigirlo al Dashboard
+            const vistasActivas = document.querySelectorAll('.view-section:not(.hidden)');
+            vistasActivas.forEach(vista => {
+                if (vista.id === 'view-history' && !mod.history) document.querySelector('[data-target="view-dashboard"]').click();
+                if (vista.id === 'view-quincena' && !mod.quincena) document.querySelector('[data-target="view-dashboard"]').click();
+                if (vista.id === 'view-fixed-payments' && !mod.fixedPayments) document.querySelector('[data-target="view-dashboard"]').click();
+                if (vista.id === 'view-tdc' && !mod.tdc) document.querySelector('[data-target="view-dashboard"]').click();
+            });
+        }
+
+        // Escuchar cambios en los switches de configuración
+        document.querySelectorAll('.module-toggle').forEach(toggle => {
+            toggle.addEventListener('change', async (e) => {
+                const id = e.target.id;
+                let campo = '';
+                if(id === 'toggle-mod-history') campo = 'history';
+                if(id === 'toggle-mod-statements') campo = 'statements';
+                if(id === 'toggle-mod-quincena') campo = 'quincena';
+                if(id === 'toggle-mod-fixed') campo = 'fixedPayments';
+                if(id === 'toggle-mod-tdc') campo = 'tdc';
+
+                // Guardar en Firestore inmediatamente
+                if(campo) {
+                    try {
+                        const nuevaConfig = { ...estadoApp.modulosConfig, [campo]: e.target.checked };
+                        await setDoc(doc(db, `usuarios/${currentUser.uid}/configuraciones`, 'modulos'), nuevaConfig, { merge: true });
+                        mostrarNotificacion("Interfaz actualizada");
+                    } catch (error) {
+                        alert("Error guardando preferencias.");
+                        e.target.checked = !e.target.checked; // Revertir visualmente
+                    }
+                }
+            });
+        });
+
         // --- MOTOR DE CÁLCULO CENTRAL ---
         function calcularYRenderizar() {
-            // Protección extra: No calcular si las dependencias principales no están listas
             if (!loadStatus.cuentas || !loadStatus.transacciones) return;
 
             let patrimonioNetoTotal = 0; let totalIngresos = 0; let totalGastos = 0;
             let cuentasCalculadas = estadoApp.cuentas.map(c => ({ ...c, saldo_actual: c.saldo_inicial }));
 
-            // Nota sobre rendimiento: Reducimos en memoria. Es ultra rápido en JS (O(N) aquí es ~2ms para 10,000 txs).
             estadoApp.transacciones.forEach(tx => {
                 let cuentaAfectada = cuentasCalculadas.find(c => c.nombre === tx.cuenta);
                 
@@ -703,7 +857,6 @@
             const txAccountSelect = document.getElementById('tx-account');
             const txAccountDestSelect = document.getElementById('tx-account-dest');
             
-            // Renderización de cuentas
             accountsGrid.innerHTML = ''; 
             txAccountSelect.innerHTML = '<option value="" disabled selected>Selecciona bóveda...</option>';
             txAccountDestSelect.innerHTML = '<option value="" disabled selected>Hacia bóveda...</option>';
@@ -735,13 +888,11 @@
                 txAccountDestSelect.insertAdjacentHTML('beforeend', `<option value="${acc.nombre}">${acc.nombre} ($${acc.saldo_actual.toFixed(2)})</option>`);
             });
 
-            // Optimización de renderizado del historial usando DocumentFragment
             const tbody = document.getElementById('history-table-body'); 
             tbody.innerHTML = '';
             const txFragment = document.createDocumentFragment();
 
             estadoApp.transacciones.forEach(tx => {
-                // FIX OPTIMISTIC UI: Si no hay timestamp de servidor aún, usa la fecha local al instante.
                 let fechaObj = tx.fecha ? tx.fecha.toDate() : new Date();
                 let fechaStr = fechaObj.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' });
                 
@@ -770,14 +921,13 @@
                 `;
                 txFragment.appendChild(tr);
             });
-            // Pegamos todo de un solo golpe (Aumenta el rendimiento X10 en historiales largos)
             tbody.appendChild(txFragment);
 
-            actualizarVistaTDC();
-            calcularQuincena();
+            if(estadoApp.modulosConfig.tdc) actualizarVistaTDC();
+            if(estadoApp.modulosConfig.quincena) calcularQuincena();
         }
 
-        // --- MÓDULO QUINCENA (EXCLUYE TARJETAS DE CRÉDITO) ---
+        // --- MÓDULO QUINCENA ---
         function calcularQuincena() {
             const config = estadoApp.quincenaConfig;
             const cardDash = document.getElementById('daily-budget-card');
@@ -1057,7 +1207,7 @@
                     </div>
                 `);
             });
-            if(loadStatus.cuentas && loadStatus.transacciones) calcularQuincena();
+            if(loadStatus.cuentas && loadStatus.transacciones && estadoApp.modulosConfig.quincena) calcularQuincena();
         }
 
         window.prepararPagoFijo = (id) => {
@@ -1259,8 +1409,16 @@
                     const targetId = link.getAttribute('data-target');
                     viewSections.forEach(s => s.classList.add('hidden'));
                     document.getElementById(targetId).classList.remove('hidden');
-                    navLinks.forEach(nav => { nav.classList.remove('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white'); nav.classList.add('text-gray-500', 'dark:text-gp-muted'); });
-                    link.classList.remove('text-gray-500', 'dark:text-gp-muted'); link.classList.add('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white');
+                    
+                    // Restablecer estilos en todos
+                    navLinks.forEach(nav => { 
+                        nav.classList.remove('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white'); 
+                        nav.classList.add('text-gray-500', 'dark:text-gp-muted'); 
+                    });
+                    
+                    // Aplicar estilo activo
+                    link.classList.remove('text-gray-500', 'dark:text-gp-muted'); 
+                    link.classList.add('bg-gray-100', 'dark:bg-zinc-800', 'text-blue-600', 'dark:text-white');
                 });
             }
         });
