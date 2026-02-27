@@ -908,12 +908,14 @@
                 }
                 
                 let ignoreBadge = tx.ignoreDaily ? '<span class="text-[8px] bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400 px-1 rounded ml-1" title="Ignorado del presupuesto diario">IGN</span>' : '';
+                // Badge visual para identificar si viene de un pago fijo
+                let fixedBadge = tx.linked_fixed_payment_id ? '<span class="text-[8px] bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400 px-1 rounded ml-1" title="Pago Fijo Vinculado">FIJO</span>' : '';
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors";
                 tr.innerHTML = `
                     <td class="p-3 md:p-4 text-gray-500 dark:text-gp-muted font-mono whitespace-nowrap">${fechaStr}</td>
-                    <td class="p-3 md:p-4 font-medium text-gray-900 dark:text-white"><span class="truncate block max-w-[120px] sm:max-w-none">${tx.descripcion} ${ignoreBadge}</span><span class="text-[10px] text-gray-400 font-normal uppercase tracking-wider block mt-0.5">#${tx.categoria}</span></td>
+                    <td class="p-3 md:p-4 font-medium text-gray-900 dark:text-white"><span class="truncate block max-w-[120px] sm:max-w-none">${tx.descripcion} ${ignoreBadge} ${fixedBadge}</span><span class="text-[10px] text-gray-400 font-normal uppercase tracking-wider block mt-0.5">#${tx.categoria}</span></td>
                     ${cuentaAfectadaHTML}
                     <td class="p-3 md:p-4 text-[10px] md:text-xs uppercase font-bold text-gray-500">${tx.tipo}</td>
                     <td class="p-3 md:p-4 text-right font-mono font-bold ${colorMonto}">${signo}$${montoMostrado}</td>
@@ -981,7 +983,6 @@
                 let checkDateYYYYMM = `${checkDate.getFullYear()}-${String(checkDate.getMonth()+1).padStart(2, '0')}`;
                 
                 estadoApp.pagosFijos.forEach(pf => {
-                    // Ignorar pagos fijos pausados/inactivos
                     if(pf.activo === false) return;
 
                     let checkDateLastDay = new Date(checkDate.getFullYear(), checkDate.getMonth() + 1, 0).getDate();
@@ -1170,7 +1171,7 @@
         window.borrarConfigTDC = async (id) => { if(confirm("¿Eliminar la configuración?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/tdc_config`, id)); }
 
 
-        // --- PAGOS FIJOS (RENOVADO: CRUD Y ESTADOS VISUALES) ---
+        // --- PAGOS FIJOS (RENOVADO: VINCULACIÓN BIDIRECCIONAL Y UNDO) ---
         function renderizarPagosFijos() {
             const grid = document.getElementById('fixed-payments-grid'); grid.innerHTML = '';
             if(estadoApp.pagosFijos.length === 0) { grid.innerHTML = '<p class="text-sm text-gray-500 col-span-2">No hay pagos fijos configurados.</p>'; return; }
@@ -1180,9 +1181,8 @@
 
             estadoApp.pagosFijos.forEach(pago => {
                 const isPaidThisMonth = pago.ultimo_pago === currentYYYYMM;
-                const isActivo = pago.activo !== false; // Por defecto es true
+                const isActivo = pago.activo !== false; 
                 
-                // Lógica para detectar si está vencido (overdue) en el mes actual
                 const checkDateLastDay = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
                 const effectivePfDia = Math.min(parseInt(pago.dia), checkDateLastDay);
                 const isOverdue = !isPaidThisMonth && isActivo && (hoy.getDate() > effectivePfDia);
@@ -1197,7 +1197,17 @@
                     actionButtons = `<div class="mt-3 text-center py-1.5 bg-gray-100 dark:bg-zinc-800 text-gray-500 text-xs font-bold rounded-lg border border-gray-200 dark:border-zinc-700"><i class="ph-bold ph-pause"></i> Reactiva para pagar</div>`;
                 } else if(isPaidThisMonth) {
                     statusBadge = `<span class="bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 text-[10px] px-2 py-0.5 rounded-full font-bold">Al día</span>`;
-                    actionButtons = `<div class="mt-3 text-center py-1.5 bg-green-500/10 text-green-500 text-xs font-bold rounded-lg border border-green-500/20"><i class="ph-bold ph-check"></i> Resuelto este mes</div>`;
+                    
+                    // BOTÓN DESHACER AÑADIDO AQUÍ
+                    actionButtons = `
+                    <div class="flex gap-2 mt-3 w-full items-stretch">
+                        <div class="flex-1 py-1.5 bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-bold rounded-lg border border-green-500/20 flex items-center justify-center gap-1">
+                            <i class="ph-bold ph-check"></i> Resuelto
+                        </div>
+                        <button onclick="window.deshacerPagoFijo('${pago.id}')" class="px-3 bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10 dark:hover:text-red-400 text-xs font-bold rounded-lg transition-colors flex items-center justify-center" title="Deshacer (Marcar como pendiente)">
+                            <i class="ph-bold ph-arrow-u-up-left text-base"></i>
+                        </button>
+                    </div>`;
                 } else {
                     if (isOverdue) {
                         statusBadge = `<span class="bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse">¡Atrasado!</span>`;
@@ -1213,7 +1223,7 @@
 
                 grid.insertAdjacentHTML('beforeend', `
                     <div class="bg-white dark:bg-gp-surface border ${isOverdue ? 'border-red-300 dark:border-red-500/50 shadow-red-500/10' : 'border-gray-200 dark:border-gp-border'} rounded-xl md:rounded-2xl p-4 flex flex-col justify-between group relative overflow-hidden transition-all ${cardOpacity}">
-                        <div class="absolute top-2 right-2 flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity bg-white/80 dark:bg-gp-surface/80 backdrop-blur-sm rounded-lg p-0.5">
+                        <div class="absolute top-2 right-2 flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity bg-white/80 dark:bg-gp-surface/80 backdrop-blur-sm rounded-lg p-0.5 z-10">
                             <button onclick="window.editarPagoFijo('${pago.id}')" class="text-gray-400 hover:text-blue-500 p-1"><i class="ph-bold ph-pencil text-sm"></i></button>
                             <button onclick="window.borrarPagoFijo('${pago.id}')" class="text-gray-400 hover:text-red-500 p-1"><i class="ph-bold ph-trash text-sm"></i></button>
                         </div>
@@ -1238,7 +1248,7 @@
             if(loadStatus.cuentas && loadStatus.transacciones && estadoApp.modulosConfig.quincena) calcularQuincena();
         }
 
-        // Lógica de Edición y Creación de Pago Fijo
+        // --- LÓGICA DE INTERACCIONES DE PAGOS FIJOS ---
         window.editarPagoFijo = (id) => {
             const pf = estadoApp.pagosFijos.find(p => p.id === id);
             if (!pf) return;
@@ -1291,7 +1301,6 @@
             }
         });
 
-        // Lógica de Pagar y Omitir Pago Fijo
         window.prepararPagoFijo = (id) => {
             const pf = estadoApp.pagosFijos.find(p => p.id === id);
             if(!pf) return;
@@ -1300,7 +1309,7 @@
             document.getElementById('tx-amount').value = pf.monto;
             document.getElementById('tx-desc').value = `Pago Fijo: ${pf.titulo}`;
             document.getElementById('tx-ignore-daily').checked = true;
-            document.getElementById('tx-fixed-id').value = pf.id;
+            document.getElementById('tx-fixed-id').value = pf.id; // Vinculación secreta
             
             mostrarNotificacion("Revisa el monto y selecciona la cuenta de origen para pagar.");
             document.querySelector('[data-target="view-payments"]').click();
@@ -1314,6 +1323,18 @@
                     await updateDoc(doc(db, `usuarios/${currentUser.uid}/pagos_fijos`, id), { ultimo_pago: currentYYYYMM });
                     mostrarNotificacion("Pago omitido este mes");
                 } catch (error) { alert("Error al omitir."); }
+            }
+        };
+
+        // NUEVO: DESHACER PAGO (Manual desde UI)
+        window.deshacerPagoFijo = async (id) => {
+            if(confirm("¿Marcar este pago como PENDIENTE de nuevo?\n\nNota: Si habías registrado una transacción real para este pago, tendrás que ir al Historial a borrarla manualmente para que el dinero regrese a tu cuenta.")) {
+                try {
+                    await updateDoc(doc(db, `usuarios/${currentUser.uid}/pagos_fijos`, id), { ultimo_pago: "" });
+                    mostrarNotificacion("Pago marcado como pendiente");
+                } catch (error) {
+                    alert("Error al deshacer.");
+                }
             }
         };
 
@@ -1333,7 +1354,7 @@
         });
         window.borrarCategoria = async (id) => { if(confirm("¿Eliminar esta etiqueta?")) await deleteDoc(doc(db, `usuarios/${currentUser.uid}/categorias`, id)); };
 
-        // --- TRANSACCIONES (GUARDAR Y MARCAR PAGO FIJO SI APLICA) ---
+        // --- TRANSACCIONES ---
         const txForm = document.getElementById('transaction-form');
         txForm.addEventListener('submit', async (e) => {
             e.preventDefault(); const btn = document.getElementById('submit-tx-btn'); btn.disabled = true;
@@ -1349,7 +1370,8 @@
                 cuenta: document.getElementById('tx-account').value, 
                 categoria: tipoTx === 'transferencia' ? 'Transferencia' : document.getElementById('tx-category').value, 
                 tipo: tipoTx,
-                ignoreDaily: ignoreDaily
+                ignoreDaily: ignoreDaily,
+                linked_fixed_payment_id: linkedFixedId || null // Vínculo Fuerte al crear
             };
 
             if (tipoTx === 'transferencia') {
@@ -1430,10 +1452,29 @@
             link.setAttribute("download", `godsplan_${Date.now()}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
         });
 
-        // --- CRUD WINDOW ---
-        window.borrarTx = async (id) => { if(confirm("¿Eliminar este registro?")) { await deleteDoc(doc(db, `usuarios/${currentUser.uid}/transacciones`, id)); mostrarNotificacion("Eliminado"); } };
+        // --- CRUD WINDOW (CON INTERCEPTOR DE BORRADO) ---
+        
+        window.borrarTx = async (id) => { 
+            if(confirm("¿Eliminar este registro?")) { 
+                const docRef = doc(db, `usuarios/${currentUser.uid}/transacciones`, id);
+                
+                // MAGIA: Antes de borrar, verificamos si era de un pago fijo
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const txData = docSnap.data();
+                    if (txData.linked_fixed_payment_id) {
+                        // Deshacemos el estado del pago fijo automáticamente
+                        await updateDoc(doc(db, `usuarios/${currentUser.uid}/pagos_fijos`, txData.linked_fixed_payment_id), { ultimo_pago: "" });
+                    }
+                }
+
+                await deleteDoc(docRef); 
+                mostrarNotificacion("Eliminado"); 
+            } 
+        };
+
         window.borrarCuenta = async (id) => { if(confirm("¿Eliminar bóveda?")) { await deleteDoc(doc(db, `usuarios/${currentUser.uid}/cuentas`, id)); mostrarNotificacion("Eliminada"); } };
-        window.borrarPagoFijo = async (id) => { if(confirm("¿Eliminar pago fijo?")) { await deleteDoc(doc(db, `usuarios/${currentUser.uid}/pagos_fijos`, id)); mostrarNotificacion("Eliminado"); } };
+        window.borrarPagoFijo = async (id) => { if(confirm("¿Eliminar pago fijo por completo?")) { await deleteDoc(doc(db, `usuarios/${currentUser.uid}/pagos_fijos`, id)); mostrarNotificacion("Eliminado"); } };
         window.ajustarCuenta = async (id, saldoActual, nombre) => {
             const saldoReal = parseFloat(prompt(`Saldo actual: $${saldoActual.toFixed(2)}\nDinero REAL:`));
             if (isNaN(saldoReal)) return; const dif = saldoReal - saldoActual; if (dif === 0) return;
@@ -1444,11 +1485,15 @@
             if (docSnap.exists()) {
                 const tx = docSnap.data(); document.getElementById('tx-id-hidden').value = id; document.getElementById('tx-amount').value = tx.monto; document.getElementById('tx-desc').value = tx.descripcion; document.getElementById('tx-account').value = tx.cuenta; document.getElementById('tx-category').value = tx.categoria;
                 document.querySelector(`input[name="tx_type"][value="${tx.tipo}"]`).checked = true;
-                document.querySelector('input[name="tx_type"]:checked').dispatchEvent(new Event('change')); // Trigger UI changes
+                document.querySelector('input[name="tx_type"]:checked').dispatchEvent(new Event('change')); 
                 
                 if (tx.tipo === 'transferencia') document.getElementById('tx-account-dest').value = tx.cuenta_destino;
                 
                 document.getElementById('tx-ignore-daily').checked = tx.ignoreDaily || false;
+                
+                // Mantenemos la vinculación secreta si la editamos
+                document.getElementById('tx-fixed-id').value = tx.linked_fixed_payment_id || ''; 
+
                 if(tx.fecha) { const d = tx.fecha.toDate(); document.getElementById('tx-date').value = (new Date(d - d.getTimezoneOffset() * 60000)).toISOString().slice(0, 16); }
                 document.getElementById('tx-header-title').textContent = "Editar Operación"; document.getElementById('submit-tx-btn').textContent = "Actualizar"; document.getElementById('cancel-edit-btn').classList.remove('hidden'); document.querySelector('[data-target="view-payments"]').click();
             }
